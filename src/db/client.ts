@@ -1,3 +1,5 @@
+import { mkdirSync } from "node:fs";
+import path from "node:path";
 import { createClient, type Client } from "@libsql/client";
 import { drizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
 import * as schema from "@/db/schema";
@@ -20,6 +22,8 @@ const globalWithDatabase = globalThis as typeof globalThis & {
 
 function createDatabaseSingleton(): DatabaseSingleton {
   const databaseFilePath = resolveDatabaseFilePath();
+  // libsql opens the file synchronously here, before ensureSchema's async mkdir runs.
+  mkdirSync(path.dirname(databaseFilePath), { recursive: true });
   const libsqlClient = createClient({ url: `file:${databaseFilePath}` });
   const database = drizzle(libsqlClient, { schema });
   const schemaReady = ensureSchema(libsqlClient);
