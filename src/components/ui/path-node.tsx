@@ -38,7 +38,7 @@ const STATE_PRESENTATION: Record<
   },
   under_review: {
     icon: Clock,
-    stateWord: "submitted for review",
+    stateWord: "reviewing",
     className: "bg-info text-white [--lip-color:var(--color-info-lip)]",
   },
   needs_work: {
@@ -109,9 +109,8 @@ export function PathNode({
       <motion.button
         type="button"
         id={id}
-        aria-label={`${label}: ${accepted ? "met" : presentation?.stateWord}`}
+        aria-label={`${label}: ${accepted ? "accepted" : presentation?.stateWord}`}
         aria-current={isCurrent ? "step" : undefined}
-        aria-disabled={state === "locked" ? true : undefined}
         onClick={onClick}
         animate={poppingToAccepted && !reduceMotion ? { scale: [1, 1.25, 1] } : { scale: 1 }}
         transition={{ duration: 0.4, ease: POP_EASE }}

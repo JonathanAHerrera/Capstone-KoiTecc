@@ -12,7 +12,7 @@ export function PathFooter({ showDesignShowcaseLink }: PathFooterProps) {
     <footer className="flex flex-col items-center gap-2 border-t-2 border-border pt-4 text-center">
       <p className="text-xs font-medium leading-snug text-muted">{PATH_DISCLAIMER_TEXT}</p>
       {showDesignShowcaseLink ? (
-        <Link href="/design" className="caption text-muted underline underline-offset-4 hover:text-primary">
+        <Link href="/design" className="caption inline-flex min-h-11 items-center text-muted underline underline-offset-4 hover:text-primary">
           Design showcase
         </Link>
       ) : null}

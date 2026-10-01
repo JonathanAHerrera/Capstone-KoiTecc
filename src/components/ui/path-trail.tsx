@@ -1,10 +1,12 @@
 "use client";
 
 import { PathNode, type PathNodeState } from "./path-node";
+import { pathNodeElementId } from "./path-node-element-id";
 
 export type PathTrailNode = {
   id: string;
   title: string;
+  visibleLabel?: string;
   state: PathNodeState;
 };
 
@@ -18,13 +20,15 @@ export type PathTrailProps = {
 };
 
 const TRAIL_WIDTH_PX = 240;
-const ROW_HEIGHT_PX = 108;
+// Node (72) + 4px gap + two 14px label lines = 104; the rest keeps the next node's
+// "Start here" tooltip (43px tall with its offset) clear of the label above it.
+const ROW_HEIGHT_PX = 148;
 const NODE_SIZE_PX = 72;
+// Headroom so the first node's tooltip is not painted under the sticky family header.
+const TRAIL_TOP_PADDING_PX = 32;
+const LABEL_WIDTH_PX = 120;
+const LABEL_GAP_PX = 4;
 const WAVE_AMPLITUDE_PX = 48;
-
-export function pathNodeElementId(nodeId: string) {
-  return `path-node-${nodeId}`;
-}
 
 function nodeXOffset(index: number) {
   return Math.round(Math.sin((index * Math.PI) / 2) * WAVE_AMPLITUDE_PX);
@@ -38,10 +42,10 @@ export function PathTrail({
   startHereText = "Start here",
   className = "",
 }: PathTrailProps) {
-  const trailHeightPx = nodes.length * ROW_HEIGHT_PX;
+  const trailHeightPx = TRAIL_TOP_PADDING_PX + nodes.length * ROW_HEIGHT_PX;
   const currentIndex = nodes.findIndex((node) => node.id === currentNodeId);
   const centerX = TRAIL_WIDTH_PX / 2;
-  const centerYForRow = (index: number) => index * ROW_HEIGHT_PX + ROW_HEIGHT_PX / 2;
+  const centerYForRow = (index: number) => TRAIL_TOP_PADDING_PX + index * ROW_HEIGHT_PX + NODE_SIZE_PX / 2;
 
   return (
     <div className={`relative mx-auto ${className}`} style={{ width: TRAIL_WIDTH_PX, height: trailHeightPx }}>
@@ -92,6 +96,15 @@ export function PathTrail({
               onClick={() => onSelect(node)}
               sizePx={NODE_SIZE_PX}
             />
+            <span
+              aria-hidden
+              className={`pointer-events-none absolute left-1/2 line-clamp-2 -translate-x-1/2 rounded-md bg-canvas px-1 text-center text-[12px] font-bold leading-[14px] ${
+                node.state === "locked" ? "text-disabled" : "text-muted"
+              }`}
+              style={{ top: NODE_SIZE_PX + LABEL_GAP_PX, width: "max-content", maxWidth: LABEL_WIDTH_PX }}
+            >
+              {node.visibleLabel ?? node.title}
+            </span>
           </div>
         );
       })}

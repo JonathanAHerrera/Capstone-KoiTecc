@@ -100,7 +100,7 @@ export default async function SummaryPage() {
       <p className="text-[13px] font-medium leading-snug text-muted">{READINESS_DISCLAIMER}</p>
 
       <BottomActionBar>
-        <BigButton href="/api/export" download fullWidth icon={<Download />}>
+        <BigButton href="/api/export" prefetch={false} download fullWidth icon={<Download />}>
           Download readiness package
         </BigButton>
         <CopySummaryButton summaryText={summaryText} />

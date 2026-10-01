@@ -322,7 +322,7 @@ export function PracticeWorkspace({
             <ChevronLeft className="size-7" strokeWidth={2.5} aria-hidden />
           </Link>
           <p className="min-w-0 flex-1 truncate text-[15px] font-extrabold text-ink">
-            <span className="caption mr-2 text-primary">{practice.family}</span>
+            <span className="caption mr-2 text-primary">{practice.family}</span>{" "}
             {practice.id}
           </p>
           <motion.span

@@ -50,21 +50,25 @@ const allPractices: Practice[] = loadPracticeCatalog();
 const practicesById: ReadonlyMap<string, Practice> = new Map(
   allPractices.map((practice) => [practice.id, practice]),
 );
+// The catalog lists practices in official order; sorting ids as strings would put "ix" before "viii".
+const catalogIndexById: ReadonlyMap<string, number> = new Map(
+  allPractices.map((practice, catalogIndex) => [practice.id, catalogIndex]),
+);
 
 function familySortRank(familyCode: string): number {
   const rank = CANONICAL_FAMILY_ORDER.indexOf(familyCode);
   return rank === -1 ? CANONICAL_FAMILY_ORDER.length : rank;
 }
 
-function comparePracticesByFamilyThenId(left: Practice, right: Practice): number {
+function comparePracticesByFamilyThenCatalogOrder(left: Practice, right: Practice): number {
   const familyDifference = familySortRank(left.family) - familySortRank(right.family);
   if (familyDifference !== 0) return familyDifference;
   if (left.level !== right.level) return left.level - right.level;
-  return left.id.localeCompare(right.id, "en", { numeric: true });
+  return (catalogIndexById.get(left.id) ?? 0) - (catalogIndexById.get(right.id) ?? 0);
 }
 
 export function getAllPractices(): Practice[] {
-  return [...allPractices].sort(comparePracticesByFamilyThenId);
+  return [...allPractices].sort(comparePracticesByFamilyThenCatalogOrder);
 }
 
 export function getPractice(practiceId: string): Practice | undefined {

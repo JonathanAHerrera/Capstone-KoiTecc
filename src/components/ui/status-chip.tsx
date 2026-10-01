@@ -29,13 +29,13 @@ const STATUS_PRESENTATION: Record<PracticeStatus, { word: string; icon: LucideIc
     icon: CircleDotDashed,
     className: "bg-primary-pale text-primary border-primary/20",
   },
-  under_review: { word: "Submitted", icon: Clock, className: "bg-info-pale text-info-ink border-info/30" },
+  under_review: { word: "Reviewing", icon: Clock, className: "bg-info-pale text-info-ink border-info/30" },
   needs_work: {
     word: "Needs work",
     icon: CircleAlert,
     className: "bg-warning-pale text-warning-ink border-warning/40",
   },
-  accepted: { word: "Met", icon: CircleCheck, className: "bg-success-pale text-success-ink border-success/40" },
+  accepted: { word: "Accepted", icon: CircleCheck, className: "bg-success-pale text-success-ink border-success/40" },
   not_applicable: { word: "N/A", icon: CircleMinus, className: "bg-canvas text-muted border-border" },
 };
 

@@ -46,7 +46,7 @@ export function ReviewVerdictCard({
           <p className="text-[22px] font-black leading-tight">{accepted ? "Accepted" : "Almost there"}</p>
           <p className="caption flex flex-wrap items-center gap-x-2 gap-y-1 text-white/85">
             {accepted ? "This requirement is met" : `${missingItems.length || "A few"} things to fix`}
-            {isMock ? <span className="rounded-chip bg-ink/30 px-2 py-0.5 text-[11px] text-white">Sample review</span> : null}
+            {isMock ? <span className="rounded-chip bg-ink/30 px-2 py-0.5 text-[11px] text-white">Mock review</span> : null}
           </p>
         </div>
       </header>

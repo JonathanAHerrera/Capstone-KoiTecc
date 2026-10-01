@@ -4,7 +4,8 @@ import { useCallback, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { FamilyHeader } from "@/components/ui/family-header";
 import { JumpToCurrentButton } from "@/components/ui/jump-to-current-button";
-import { PathTrail, pathNodeElementId, type PathTrailNode } from "@/components/ui/path-trail";
+import { pathNodeElementId } from "@/components/ui/path-node-element-id";
+import { PathTrail, type PathTrailNode } from "@/components/ui/path-trail";
 import type { PathFamilyViewModel, PathNodeViewModel } from "./build-path-view-model";
 import { PracticePreviewSheet } from "./practice-preview-sheet";
 
@@ -28,8 +29,13 @@ export function PathFamilies({ families, currentPracticeId }: PathFamiliesProps)
       new Map(
         families.map((family): [string, PathTrailNode[]] => [
           family.code,
-          // The trail renders no visible text, so the aria-label (built from title) carries the ID too.
-          family.nodes.map((node) => ({ id: node.id, title: `${node.id} · ${node.title}`, state: node.nodeState })),
+          // The visible label is the short title only, so the aria-label (built from title) carries the ID too.
+          family.nodes.map((node) => ({
+            id: node.id,
+            title: `${node.id} · ${node.title}`,
+            visibleLabel: node.title,
+            state: node.nodeState,
+          })),
         ]),
       ),
     [families],

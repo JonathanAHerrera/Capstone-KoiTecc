@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { LoaderCircle } from "lucide-react";
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import type { ComponentProps, ComponentPropsWithoutRef, ReactNode } from "react";
 
 export type BigButtonVariant = "primary" | "success" | "danger" | "secondary" | "ghost";
 export type BigButtonSize = "default" | "compact";
@@ -24,6 +24,7 @@ type BigButtonAsButtonProps = BigButtonBaseProps & {
 
 type BigButtonAsLinkProps = BigButtonBaseProps & {
   href: string;
+  prefetch?: ComponentProps<typeof Link>["prefetch"];
 } & Omit<ComponentPropsWithoutRef<"a">, keyof BigButtonBaseProps | "href">;
 
 export type BigButtonProps = BigButtonAsButtonProps | BigButtonAsLinkProps;
@@ -91,10 +92,16 @@ export function BigButton(props: BigButtonProps) {
     );
   }
 
-  const { href: _ignoredHref, ...buttonRest } = rest as Omit<BigButtonAsButtonProps, keyof BigButtonBaseProps> & {
+  const {
+    href: _ignoredHref,
+    prefetch: _ignoredPrefetch,
+    ...buttonRest
+  } = rest as Omit<BigButtonAsButtonProps, keyof BigButtonBaseProps> & {
     href?: string;
+    prefetch?: BigButtonAsLinkProps["prefetch"];
   };
   void _ignoredHref;
+  void _ignoredPrefetch;
 
   return (
     <button

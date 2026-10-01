@@ -3,6 +3,7 @@ import { CircleAlert, CircleCheck, Target } from "lucide-react";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { SpeechBubble } from "@/components/ui/speech-bubble";
 import { StatTile } from "@/components/ui/stat-tile";
+import { readinessRemainingCount } from "@/components/summary/readiness-overview";
 import type { ProgressSummary } from "@/lib/progress";
 
 export type PathHeroCardProps = {
@@ -10,7 +11,7 @@ export type PathHeroCardProps = {
 };
 
 function ProgressGuideMessage({ progress }: { progress: ProgressSummary }) {
-  const remainingCount = progress.total - progress.accepted;
+  const remainingCount = readinessRemainingCount(progress);
   if (progress.accepted === 0) {
     return (
       <>
@@ -18,7 +19,7 @@ function ProgressGuideMessage({ progress }: { progress: ProgressSummary }) {
       </>
     );
   }
-  if (remainingCount === 0) {
+  if (remainingCount === 0 && progress.needsWork === 0) {
     return (
       <>
         Every requirement has an accepted review.{" "}
@@ -31,13 +32,18 @@ function ProgressGuideMessage({ progress }: { progress: ProgressSummary }) {
   }
   return (
     <>
-      Nice. <strong>{remainingCount}</strong> to go.
+      Nice. <strong>{remainingCount}</strong> to go
+      {progress.needsWork > 0 ? (
+        <>
+          , <strong>{progress.needsWork}</strong> to fix
+        </>
+      ) : null}
+      .
     </>
   );
 }
 
 export function PathHeroCard({ progress }: PathHeroCardProps) {
-  const remainingCount = progress.total - progress.accepted;
   const fraction = progress.total === 0 ? 0 : progress.accepted / progress.total;
 
   return (
@@ -59,7 +65,7 @@ export function PathHeroCard({ progress }: PathHeroCardProps) {
       <div className="grid grid-cols-3 gap-3">
         <StatTile value={progress.accepted} label="Accepted" icon={<CircleCheck />} accentColor="var(--color-success-ink)" />
         <StatTile value={progress.needsWork} label="Needs work" icon={<CircleAlert />} accentColor="var(--color-warning-ink)" />
-        <StatTile value={remainingCount} label="Remaining" icon={<Target />} />
+        <StatTile value={readinessRemainingCount(progress)} label="Remaining" icon={<Target />} />
       </div>
 
       <SpeechBubble>
