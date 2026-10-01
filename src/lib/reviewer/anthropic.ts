@@ -47,7 +47,7 @@ export async function runAnthropicReviewer(input: ReviewerInput): Promise<Review
     const client = new Anthropic();
     const response = await client.messages.parse({
       model: reviewerModel,
-      max_tokens: 4000,
+      max_tokens: 16000,
       system: buildReviewerSystemPrompt(),
       messages: [{ role: "user", content: buildReviewerUserContent(input) }],
       output_config: { format: zodOutputFormat(ReviewVerdictSchema) },

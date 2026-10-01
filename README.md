@@ -1,36 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CMMC Ready
 
-## Getting Started
+Mobile-first web app that walks a small defense contractor through CMMC Level 1 (and a Level 2 preview) one requirement at a time: see what is missing, open a requirement, upload proof from your phone (photo, file, video, note), get an AI readiness review, watch the path fill up, export a readiness package.
 
-First, run the development server:
+CMMC Ready is a self-assessment aid, not an assessment or certification. Only a C3PAO/DIBCAC certifies; only your Affirming Official affirms in SPRS.
+
+## Run it
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
+cp .env.example .env        # leave ANTHROPIC_API_KEY empty to use the mock reviewer
+pnpm dev                    # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open it on a phone on the same Wi-Fi: `pnpm dev -H 0.0.0.0` then visit `http://<your-mac-ip>:3000`. Camera capture requires HTTPS or localhost on iOS; for a phone test use a tunnel (for example `npx localtunnel --port 3000`) or add the app to the home screen from a deployed HTTPS host.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Turn on real AI review
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Set `ANTHROPIC_API_KEY` in `.env` and restart. The reviewer uses `claude-opus-5-5` by default (`CMMC_REVIEWER_MODEL` overrides). Images and PDFs are sent to the model; videos are described by filename only. Without a key, a deterministic mock reviewer runs and every verdict is labelled "Sample review".
 
-## Learn More
+## Scripts
 
-To learn more about Next.js, take a look at the following resources:
+| Command | What it does |
+|---|---|
+| `pnpm dev` | Dev server |
+| `pnpm build && pnpm start` | Production build and serve |
+| `pnpm typecheck` / `pnpm lint` | Type and lint checks |
+| `pnpm smoke` | End-to-end data-layer smoke test against a temp DB |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Storage: SQLite at `data/app.db`, uploads at `data/uploads/` (override with `CMMC_DB_PATH`, `CMMC_UPLOADS_DIR`). Delete `data/` to reset.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Where things are
 
-## Deploy on Vercel
+- `docs/SPEC.md` product spec, `docs/ARCHITECTURE.md` module contract, `docs/research/` the CMMC, evidence, competitor and UI research behind the design.
+- `src/data/cmmc-practices.json` the 44-practice catalog (all 15 Level 1 practices plus 29 Level 2 practices that are photo/document verifiable), with verbatim assessment objectives from the v2.13 assessment guides.
+- `src/lib/reviewer/` the AI review (prompt, zod schema, Anthropic call, mock).
+- `/design` dev-only showcase of every UI primitive.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Known limits (MVP)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Single organization per database, no auth, local disk storage, Level 2 covers 44 of 110 requirements, no SSP generator, no HEIC conversion (pick from Photos instead of Files on iOS).
