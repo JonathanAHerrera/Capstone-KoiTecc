@@ -39,3 +39,4 @@ Storage: SQLite at `data/app.db`, uploads at `data/uploads/` (override with `CMM
 ## Known limits (MVP)
 
 Single organization per database, no auth, local disk storage, Level 2 covers 44 of 110 requirements, no SSP generator, no HEIC conversion (pick from Photos instead of Files on iOS).
+# Capstone-KoiTecc
