@@ -3,7 +3,7 @@
 import { FileText, Film, LoaderCircle, Trash2, TriangleAlert } from "lucide-react";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { formatBytes } from "@/lib/client/format";
-import type { EvidenceKind } from "./evidence-kind";
+import type { EvidenceKind } from "@/lib/practice-types";
 
 export type EvidenceCardStatus = "uploading" | "uploaded" | "error";
 

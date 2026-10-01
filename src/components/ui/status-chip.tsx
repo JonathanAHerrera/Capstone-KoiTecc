@@ -46,7 +46,7 @@ export function StatusChip({ status, size = "default", className = "" }: StatusC
 
   return (
     <span
-      className={`inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-chip border-2 font-extrabold uppercase tracking-[0.04em] ${sizeClassName} ${presentation.className} ${className}`}
+      className={`inline-flex shrink-0 self-start items-center gap-1.5 whitespace-nowrap rounded-chip border-2 font-extrabold uppercase tracking-[0.04em] ${sizeClassName} ${presentation.className} ${className}`}
     >
       <StatusIcon className="size-4 shrink-0" strokeWidth={2.5} aria-hidden />
       {presentation.word}

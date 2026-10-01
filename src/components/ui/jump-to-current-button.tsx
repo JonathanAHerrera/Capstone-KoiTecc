@@ -20,20 +20,30 @@ export function JumpToCurrentButton({
   const [targetDirection, setTargetDirection] = useState<"up" | "down" | null>(null);
 
   useEffect(() => {
-    const targetElement = document.getElementById(targetElementId);
-    if (!targetElement) return;
-    const intersectionObserver = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTargetDirection(null);
-          return;
-        }
-        setTargetDirection(entry.boundingClientRect.top < 0 ? "up" : "down");
-      },
-      { threshold: 0.5 },
-    );
-    intersectionObserver.observe(targetElement);
-    return () => intersectionObserver.disconnect();
+    let animationFrameId = 0;
+    const updateTargetDirection = () => {
+      const targetElement = document.getElementById(targetElementId);
+      if (!targetElement) {
+        setTargetDirection(null);
+        return;
+      }
+      const targetRect = targetElement.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const targetVisible = targetRect.bottom > viewportHeight * 0.1 && targetRect.top < viewportHeight * 0.85;
+      setTargetDirection(targetVisible ? null : targetRect.top < 0 ? "up" : "down");
+    };
+    const scheduleUpdate = () => {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(updateTargetDirection);
+    };
+    scheduleUpdate();
+    window.addEventListener("scroll", scheduleUpdate, { passive: true });
+    window.addEventListener("resize", scheduleUpdate);
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("scroll", scheduleUpdate);
+      window.removeEventListener("resize", scheduleUpdate);
+    };
   }, [targetElementId]);
 
   const scrollToTarget = () => {
@@ -50,8 +60,12 @@ export function JumpToCurrentButton({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 16, scale: 0.9 }}
           transition={{ type: "spring", stiffness: 380, damping: 28 }}
-          className={`lip lip-press caption fixed right-4 z-30 flex h-12 items-center gap-2 rounded-chip bg-primary px-4 text-white [--lip-color:var(--color-primary-lip)] ${className}`}
-          style={{ bottom: `calc(${bottomOffsetPx}px + env(safe-area-inset-bottom))` }}
+          className={`lip lip-press caption fixed z-30 flex h-12 items-center gap-2 rounded-chip bg-primary px-4 text-white [--lip-color:var(--color-primary-lip)] ${className}`}
+          style={{
+            bottom: `calc(${bottomOffsetPx}px + env(safe-area-inset-bottom))`,
+            // Anchors to the 640px content column on wide screens instead of the viewport edge.
+            right: "max(16px, calc((100vw - 640px) / 2 + 16px))",
+          }}
         >
           {targetDirection === "up" ? <ArrowUp className="size-4" aria-hidden /> : <ArrowDown className="size-4" aria-hidden />}
           {label}

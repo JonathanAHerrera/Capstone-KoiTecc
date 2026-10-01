@@ -8,7 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { compressImageForUpload } from "@/lib/client/compress-image";
 import { detectHeicFile } from "@/lib/client/detect-heic";
 import { formatBytes } from "@/lib/client/format";
-import type { EvidenceKind } from "./evidence-kind";
+import type { EvidenceKind } from "@/lib/practice-types";
 
 export type EvidencePickerReadyFile = { file: File; kind: EvidenceKind };
 

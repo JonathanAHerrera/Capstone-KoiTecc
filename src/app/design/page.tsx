@@ -155,18 +155,23 @@ export default function DesignShowcasePage() {
 
       <ShowcaseSection title="FamilyHeader + PathTrail">
         <div className="flex flex-col gap-4">
-          <FamilyHeader
-            familyCode="AC"
-            familyName="Access Control"
-            description="Who can get to the systems and data that touch CUI, and what they can do once inside."
-            completedCount={2}
-            totalCount={4}
-            accentIndex={0}
-            onGuideClick={() => showToast({ message: "Guide opens here", tone: "info" })}
-          />
-          <PathTrail nodes={ACCESS_CONTROL_NODES} currentNodeId="AC.L1-b.1.iv" onSelect={handlePathNodeSelect} />
-          <FamilyHeader familyCode="AT" familyName="Awareness & Training" completedCount={0} totalCount={4} accentIndex={1} />
-          <PathTrail nodes={AWARENESS_TRAINING_NODES} onSelect={handlePathNodeSelect} />
+          {/* Each family lives in its own <section> so the next sticky header pushes the previous one out instead of stacking. */}
+          <section className="flex flex-col gap-4">
+            <FamilyHeader
+              familyCode="AC"
+              familyName="Access Control"
+              description="Who can get to the systems and data that touch CUI, and what they can do once inside."
+              completedCount={2}
+              totalCount={4}
+              accentIndex={0}
+              onGuideClick={() => showToast({ message: "Guide opens here", tone: "info" })}
+            />
+            <PathTrail nodes={ACCESS_CONTROL_NODES} currentNodeId="AC.L1-b.1.iv" onSelect={handlePathNodeSelect} />
+          </section>
+          <section className="flex flex-col gap-4">
+            <FamilyHeader familyCode="AT" familyName="Awareness & Training" completedCount={0} totalCount={4} accentIndex={1} />
+            <PathTrail nodes={AWARENESS_TRAINING_NODES} onSelect={handlePathNodeSelect} />
+          </section>
           <div className="flex flex-wrap gap-2">
             {[2, 3, 4, 5].map((accentIndex) => (
               <FamilyHeader
