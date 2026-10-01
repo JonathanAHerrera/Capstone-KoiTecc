@@ -12,7 +12,7 @@ cp .env.example .env        # leave ANTHROPIC_API_KEY empty to use the mock revi
 pnpm dev                    # http://localhost:3000
 ```
 
-Open it on a phone on the same Wi-Fi: `pnpm dev -H 0.0.0.0` then visit `http://<your-mac-ip>:3000`. Camera capture requires HTTPS or localhost on iOS; for a phone test use a tunnel (for example `npx localtunnel --port 3000`) or add the app to the home screen from a deployed HTTPS host.
+Open it on a phone on the same Wi-Fi: `pnpm dev -H 0.0.0.0` then visit `http://<your-mac-ip>:3000`. Camera capture works over plain HTTP because it uses a file input, not getUserMedia. Only "Add to Home Screen" standalone mode benefits from HTTPS.
 
 ## Turn on real AI review
 
