@@ -1,0 +1,146 @@
+@import "tailwindcss";
+
+@theme static {
+  --font-sans: var(--font-nunito), "Nunito", "Nunito Sans", system-ui, -apple-system, sans-serif;
+
+  --color-primary: #1e40af;
+  --color-primary-lip: #172f8a;
+  --color-primary-pale: #e0e7ff;
+  --color-ink: #0f1f4b;
+
+  --color-success: #58cc02;
+  --color-success-lip: #58a700;
+  --color-success-pale: #d7ffb8;
+  --color-success-ink: #2f6f00;
+
+  --color-warning: #ff9600;
+  --color-warning-lip: #cc7a00;
+  --color-warning-pale: #fff1dc;
+  --color-warning-ink: #9a4d00;
+
+  --color-danger: #ff4b4b;
+  --color-danger-lip: #d33131;
+  --color-danger-pale: #ffdfe0;
+  --color-danger-ink: #a51f1f;
+
+  --color-gold: #ffc800;
+  --color-gold-lip: #e5a800;
+
+  --color-info: #1cb0f6;
+  --color-info-lip: #1899d6;
+  --color-info-pale: #ddf4ff;
+  --color-info-ink: #0b6a99;
+
+  --color-surface: #ffffff;
+  --color-canvas: #f6f7fb;
+  --color-border: #e5e7eb;
+  --color-border-strong: #cfd4dc;
+  --color-text: #3c3c3c;
+  --color-muted: #6b7280;
+  --color-disabled: #afafaf;
+
+  --color-family-1: #1e40af;
+  --color-family-2: #0e9f6e;
+  --color-family-3: #7c3aed;
+  --color-family-4: #d97706;
+  --color-family-5: #0891b2;
+  --color-family-6: #db2777;
+
+  --radius-card: 16px;
+  --radius-btn: 16px;
+  --radius-chip: 9999px;
+
+  --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+:root {
+  color-scheme: light;
+  --lip-height: 4px;
+}
+
+html,
+body {
+  overscroll-behavior-y: none;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
+}
+
+button,
+a,
+label,
+input,
+textarea,
+select,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* iOS Safari zooms the page on focus when an input's font-size is under 16px. */
+input,
+textarea,
+select {
+  font-size: max(16px, 1em);
+  font-family: inherit;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--color-ink);
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+@layer components {
+  .lip {
+    box-shadow: 0 var(--lip-height) 0 var(--lip-color, var(--color-border));
+  }
+
+  .lip-press {
+    transition:
+      transform 180ms var(--ease-pop),
+      box-shadow 180ms var(--ease-pop),
+      background-color 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease;
+  }
+
+  .lip-press:active:not(:disabled):not([aria-disabled="true"]) {
+    transform: translateY(var(--lip-height));
+    box-shadow: 0 0 0 var(--lip-color, var(--color-border));
+    transition-duration: 100ms;
+    transition-timing-function: ease-out;
+  }
+}
+
+@utility tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+@utility caption {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lip-press {
+    transition-duration: 0ms;
+  }
+}

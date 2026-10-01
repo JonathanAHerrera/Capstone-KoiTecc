@@ -1,0 +1,48 @@
+import { createClient, type Client } from "@libsql/client";
+import { drizzle, type LibSQLDatabase } from "drizzle-orm/libsql";
+import * as schema from "@/db/schema";
+import { ensureSchema, resolveDatabaseFilePath } from "@/db/migrate";
+
+export type Database = LibSQLDatabase<typeof schema>;
+
+type DatabaseSingleton = {
+  databaseFilePath: string;
+  libsqlClient: Client;
+  database: Database;
+  schemaReady: Promise<void>;
+};
+
+// Stored on globalThis so Next.js dev hot-reload reuses one connection instead of
+// opening a new SQLite handle on every module re-evaluation.
+const globalWithDatabase = globalThis as typeof globalThis & {
+  __cmmcDatabaseSingleton?: DatabaseSingleton;
+};
+
+function createDatabaseSingleton(): DatabaseSingleton {
+  const databaseFilePath = resolveDatabaseFilePath();
+  const libsqlClient = createClient({ url: `file:${databaseFilePath}` });
+  const database = drizzle(libsqlClient, { schema });
+  const schemaReady = ensureSchema(libsqlClient);
+  return { databaseFilePath, libsqlClient, database, schemaReady };
+}
+
+function getDatabaseSingleton(): DatabaseSingleton {
+  const expectedFilePath = resolveDatabaseFilePath();
+  const existingSingleton = globalWithDatabase.__cmmcDatabaseSingleton;
+  if (existingSingleton && existingSingleton.databaseFilePath === expectedFilePath) {
+    return existingSingleton;
+  }
+  const singleton = createDatabaseSingleton();
+  globalWithDatabase.__cmmcDatabaseSingleton = singleton;
+  return singleton;
+}
+
+export async function getDb(): Promise<Database> {
+  const singleton = getDatabaseSingleton();
+  await singleton.schemaReady;
+  return singleton.database;
+}
+
+export function nowIsoTimestamp(): string {
+  return new Date().toISOString();
+}
