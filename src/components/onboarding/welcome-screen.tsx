@@ -21,16 +21,18 @@ export function WelcomeScreen({ hasExistingPath, onStart }: WelcomeScreenProps) 
     >
       <div className="flex flex-1 flex-col items-center justify-center gap-8 text-center">
         <span
-          className="lip flex size-24 items-center justify-center rounded-full bg-primary text-white [--lip-color:var(--color-primary-lip)] [--lip-height:6px]"
+          className="flex size-20 items-center justify-center rounded-full bg-primary text-white"
           role="img"
           aria-label="CMMC Ready shield"
         >
-          <ShieldCheck className="size-14" strokeWidth={2.25} aria-hidden />
+          <ShieldCheck className="size-11" strokeWidth={1.75} aria-hidden />
         </span>
         <div className="flex flex-col gap-3">
-          <p className="caption text-primary">CMMC Ready</p>
-          <h1 className="text-[28px] leading-tight sm:text-[32px]">Let&apos;s get your shop CMMC-ready</h1>
-          <p className="text-base font-medium text-muted">
+          <p className="caption text-primary-text">CMMC Ready</p>
+          <h1 className="display text-[40px] sm:text-[48px]">
+            Let&apos;s get your shop <span className="whitespace-nowrap">CMMC-ready</span>
+          </h1>
+          <p className="text-base text-text-secondary">
             Answer a few quick questions and we&apos;ll build your requirement-by-requirement path.
           </p>
         </div>
@@ -38,19 +40,19 @@ export function WelcomeScreen({ hasExistingPath, onStart }: WelcomeScreenProps) 
           {VALUE_PROPS.map((valueProp) => (
             <li
               key={valueProp.text}
-              className="flex items-center gap-3 rounded-card border-2 border-border bg-surface px-4 py-3"
+              className="flex items-center gap-3 rounded-card border border-border bg-surface px-4 py-3"
             >
               <span
-                className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-pale text-primary [&>svg]:size-6"
+                className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-primary-pale text-primary-text [&>svg]:size-6"
                 aria-hidden
               >
                 {valueProp.icon}
               </span>
-              <span className="text-base font-bold text-ink">{valueProp.text}</span>
+              <span className="text-base font-medium text-ink">{valueProp.text}</span>
             </li>
           ))}
         </ul>
-        <p className="flex items-center gap-2 text-sm font-bold text-muted">
+        <p className="flex items-center gap-2 text-sm font-medium text-muted">
           <Timer className="size-4" aria-hidden />
           Takes about 2 minutes
         </p>

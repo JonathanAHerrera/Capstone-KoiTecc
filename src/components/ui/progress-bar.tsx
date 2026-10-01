@@ -9,6 +9,7 @@ export type ProgressBarProps = {
   showCountLabel?: boolean;
   heightPx?: number;
   fillColor?: string;
+  rainbowWhenComplete?: boolean;
   className?: string;
 };
 
@@ -17,13 +18,15 @@ export function ProgressBar({
   total,
   label,
   showCountLabel = false,
-  heightPx = 12,
-  fillColor = "var(--color-primary)",
+  heightPx = 10,
+  fillColor = "var(--color-primary-text)",
+  rainbowWhenComplete = true,
   className = "",
 }: ProgressBarProps) {
   const reduceMotion = useReducedMotion();
   const fraction = total > 0 ? Math.min(Math.max(completed / total, 0), 1) : 0;
   const percent = Math.round(fraction * 100);
+  const complete = total > 0 && fraction >= 1;
 
   return (
     <div className={`flex items-center gap-3 ${className}`}>
@@ -33,12 +36,12 @@ export function ProgressBar({
         aria-valuemin={0}
         aria-valuemax={total}
         aria-valuenow={completed}
-        className="flex-1 overflow-hidden rounded-chip bg-border"
+        className="flex-1 overflow-hidden rounded-chip bg-border-subtle"
         style={{ height: heightPx }}
       >
         <motion.div
           className="h-full rounded-chip"
-          style={{ background: fillColor }}
+          style={{ background: complete && rainbowWhenComplete ? "var(--gradient-progress)" : fillColor }}
           initial={false}
           animate={{ width: `${percent}%` }}
           transition={
@@ -47,7 +50,7 @@ export function ProgressBar({
         />
       </div>
       {showCountLabel ? (
-        <span className="tabular-nums shrink-0 text-[13px] font-extrabold text-muted">
+        <span className="tabular-nums shrink-0 text-[13px] font-medium text-text-secondary">
           {completed} / {total}
         </span>
       ) : null}

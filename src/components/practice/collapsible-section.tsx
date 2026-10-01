@@ -18,20 +18,20 @@ export function CollapsibleSection({ title, icon, defaultOpen = false, children,
   const contentId = useId();
 
   return (
-    <section className={`overflow-hidden rounded-card border-2 border-border bg-surface ${className}`}>
+    <section className={`overflow-hidden rounded-card border border-border bg-surface ${className}`}>
       <button
         type="button"
         aria-expanded={sectionOpen}
         aria-controls={contentId}
         onClick={() => setSectionOpen((currentlyOpen) => !currentlyOpen)}
-        className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left outline-none focus-visible:ring-4 focus-visible:ring-primary/30"
+        className="focus-outline flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left"
       >
         {icon ? (
-          <span className="flex shrink-0 items-center text-primary [&>svg]:size-5" aria-hidden>
+          <span className="flex shrink-0 items-center text-primary-text [&>svg]:size-5" aria-hidden>
             {icon}
           </span>
         ) : null}
-        <span className="min-w-0 flex-1 text-base font-extrabold text-ink">{title}</span>
+        <span className="min-w-0 flex-1 text-base font-semibold text-ink">{title}</span>
         <ChevronDown
           className={`size-5 shrink-0 text-muted transition-transform duration-200 ${sectionOpen ? "rotate-180" : ""}`}
           aria-hidden
@@ -48,7 +48,7 @@ export function CollapsibleSection({ title, icon, defaultOpen = false, children,
             transition={{ duration: 0.22, ease: "easeOut" }}
             className="overflow-hidden"
           >
-            <div className="border-t-2 border-border px-4 py-4">{children}</div>
+            <div className="border-t border-border-subtle px-4 py-4">{children}</div>
           </motion.div>
         ) : null}
       </AnimatePresence>

@@ -1,6 +1,6 @@
 export type CelebrationConfettiIntensity = "family" | "complete";
 
-const CONFETTI_COLORS = ["#1e40af", "#58cc02", "#ffc800", "#1cb0f6", "#ffffff"];
+const GUSTO_RAINBOW = ["#3fa199", "#ce63de", "#ff5765", "#ff8316", "#eca4f7"];
 
 export async function fireCelebrationConfetti({
   intensity,
@@ -11,39 +11,32 @@ export async function fireCelebrationConfetti({
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
   const { default: confetti } = await import("canvas-confetti");
-  const durationMs = intensity === "complete" ? 3000 : 1200;
-  const particleCount = intensity === "complete" ? 7 : 4;
-  const endTime = Date.now() + durationMs;
+  const particleBudget = intensity === "complete" ? 220 : 140;
+  const origin = { x: 0.5, y: intensity === "complete" ? 0.55 : 0.6 };
 
-  const fireSideCannons = () => {
+  const burst = (particleRatio: number, options: confetti.Options) =>
     confetti({
-      particleCount,
-      angle: 60,
-      spread: 55,
-      origin: { x: 0, y: 0.7 },
-      colors: CONFETTI_COLORS,
+      particleCount: Math.floor(particleBudget * particleRatio),
+      origin,
+      colors: GUSTO_RAINBOW,
+      shapes: ["star", "circle"],
+      scalar: 1.2,
+      ticks: 220,
+      gravity: 0.6,
       disableForReducedMotion: true,
+      ...options,
     });
-    confetti({
-      particleCount,
-      angle: 120,
-      spread: 55,
-      origin: { x: 1, y: 0.7 },
-      colors: CONFETTI_COLORS,
-      disableForReducedMotion: true,
-    });
-    if (Date.now() < endTime) requestAnimationFrame(fireSideCannons);
-  };
+
+  burst(0.25, { spread: 26, startVelocity: 55 });
+  burst(0.2, { spread: 60 });
+  burst(0.35, { spread: 100, decay: 0.91, scalar: 0.9 });
+  burst(0.1, { spread: 120, startVelocity: 25, decay: 0.92, scalar: 1.4 });
+  burst(0.1, { spread: 120, startVelocity: 45 });
 
   if (intensity === "complete") {
-    confetti({
-      particleCount: 160,
-      spread: 90,
-      startVelocity: 45,
-      origin: { x: 0.5, y: 0.6 },
-      colors: CONFETTI_COLORS,
-      disableForReducedMotion: true,
-    });
+    window.setTimeout(() => {
+      burst(0.3, { spread: 160, startVelocity: 35, origin: { x: 0.2, y: 0.5 } });
+      burst(0.3, { spread: 160, startVelocity: 35, origin: { x: 0.8, y: 0.5 } });
+    }, 500);
   }
-  fireSideCannons();
 }

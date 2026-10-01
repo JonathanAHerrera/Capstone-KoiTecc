@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { LoaderCircle } from "lucide-react";
+import { motion, useReducedMotion, type HTMLMotionProps } from "motion/react";
 import type { ComponentProps, ComponentPropsWithoutRef, ReactNode } from "react";
 
 export type BigButtonVariant = "primary" | "success" | "danger" | "secondary" | "ghost";
@@ -29,20 +30,35 @@ type BigButtonAsLinkProps = BigButtonBaseProps & {
 
 export type BigButtonProps = BigButtonAsButtonProps | BigButtonAsLinkProps;
 
-const VARIANT_CLASSES: Record<BigButtonVariant, string> = {
-  primary: "lip bg-primary text-white [--lip-color:var(--color-primary-lip)] hover:brightness-105",
-  success: "lip bg-success text-white [--lip-color:var(--color-success-lip)] hover:brightness-105",
-  danger: "lip bg-danger text-white [--lip-color:var(--color-danger-lip)] hover:brightness-105",
+export const GUMMY_PRESS_TRANSITION = { type: "spring", visualDuration: 0.18, bounce: 0.55 } as const;
+export const GUMMY_PRESS_TRANSITION_REDUCED = { type: "spring", visualDuration: 0.18, bounce: 0 } as const;
+
+const MotionLink = motion.create(Link);
+
+const VARIANT_WRAPPER_CLASSES: Record<BigButtonVariant, string> = {
+  primary:
+    "btn-plate [--btn-surface:var(--color-primary)] [--btn-surface-hover:var(--color-primary-hover)] [--btn-surface-pressed:var(--color-primary-pressed)] [--btn-text:#ffffff]",
+  success:
+    "btn-plate [--btn-plate-color:color-mix(in_srgb,#000_22%,var(--color-success-lip))] [--btn-surface:var(--color-success-lip)] [--btn-surface-hover:color-mix(in_srgb,#fff_14%,var(--color-success-lip))] [--btn-surface-pressed:color-mix(in_srgb,#000_16%,var(--color-success-lip))] [--btn-text:#ffffff]",
+  danger:
+    "btn-plate [--btn-plate-color:color-mix(in_srgb,#000_22%,var(--color-danger-lip))] [--btn-surface:var(--color-danger-lip)] [--btn-surface-hover:color-mix(in_srgb,#fff_14%,var(--color-danger-lip))] [--btn-surface-pressed:color-mix(in_srgb,#000_16%,var(--color-danger-lip))] [--btn-text:#ffffff]",
   secondary:
-    "lip bg-surface text-primary border-2 border-border [--lip-color:var(--color-border)] hover:bg-canvas",
-  ghost: "bg-transparent text-primary hover:bg-primary-pale/60",
+    "btn-plate btn-outline [--btn-surface:var(--color-surface)] [--btn-surface-hover:color-mix(in_srgb,#000_6%,#fff)] [--btn-surface-pressed:color-mix(in_srgb,#000_14%,#fff)] [--btn-text:var(--color-dark-surface)] [--btn-text-hover:var(--color-ink)]",
+  ghost:
+    "btn-plate btn-outline [--btn-surface:transparent] [--btn-surface-hover:var(--color-primary-pale)] [--btn-surface-pressed:color-mix(in_srgb,#000_6%,var(--color-primary-pale))] [--btn-text:var(--color-primary-text)]",
 };
 
-const DISABLED_CLASSES = "bg-border text-disabled cursor-not-allowed";
+const VARIANT_BODY_CLASSES: Record<BigButtonVariant, string> = {
+  primary: "",
+  success: "",
+  danger: "",
+  secondary: "ring-gradient",
+  ghost: "border-transparent!",
+};
 
-const SIZE_CLASSES: Record<BigButtonSize, string> = {
-  default: "min-h-14 px-6 text-base",
-  compact: "min-h-11 px-4 text-[15px]",
+const SIZE_BODY_CLASSES: Record<BigButtonSize, string> = {
+  default: "min-h-12 px-5 text-base",
+  compact: "min-h-10 px-4 text-base",
 };
 
 export function BigButton(props: BigButtonProps) {
@@ -57,21 +73,28 @@ export function BigButton(props: BigButtonProps) {
     children,
     ...rest
   } = props;
+  const reduceMotion = useReducedMotion();
 
   const inactive = disabled || loading;
-  const sharedClassName = [
-    "lip-press relative inline-flex select-none items-center justify-center gap-2 rounded-btn font-extrabold uppercase tracking-[0.04em]",
-    "outline-none focus-visible:ring-4 focus-visible:ring-primary/30",
-    SIZE_CLASSES[size],
+  const wrapperClassName = [
+    "focus-outline select-none cursor-pointer font-medium leading-6",
+    VARIANT_WRAPPER_CLASSES[variant],
     fullWidth ? "w-full" : "",
-    inactive ? DISABLED_CLASSES : VARIANT_CLASSES[variant],
+    inactive ? "cursor-not-allowed opacity-50" : "",
     className,
   ]
     .filter(Boolean)
     .join(" ");
 
+  const bodyClassName = ["btn-plate-body w-full", SIZE_BODY_CLASSES[size], VARIANT_BODY_CLASSES[variant]]
+    .filter(Boolean)
+    .join(" ");
+
+  const pressAnimation = inactive ? undefined : { scale: 0.96 };
+  const pressTransition = reduceMotion ? GUMMY_PRESS_TRANSITION_REDUCED : GUMMY_PRESS_TRANSITION;
+
   const content = (
-    <>
+    <span className={bodyClassName}>
       {loading ? (
         <LoaderCircle className="size-5 shrink-0 animate-spin" aria-hidden />
       ) : icon ? (
@@ -80,15 +103,21 @@ export function BigButton(props: BigButtonProps) {
         </span>
       ) : null}
       <span>{children}</span>
-    </>
+    </span>
   );
 
   if ("href" in props && props.href !== undefined && !inactive) {
     const { href, ...linkRest } = rest as Omit<BigButtonAsLinkProps, keyof BigButtonBaseProps>;
     return (
-      <Link href={href} className={sharedClassName} {...linkRest}>
+      <MotionLink
+        href={href}
+        className={wrapperClassName}
+        whileTap={pressAnimation}
+        transition={pressTransition}
+        {...(linkRest as HTMLMotionProps<"a">)}
+      >
         {content}
-      </Link>
+      </MotionLink>
     );
   }
 
@@ -104,14 +133,16 @@ export function BigButton(props: BigButtonProps) {
   void _ignoredPrefetch;
 
   return (
-    <button
+    <motion.button
       type="button"
       disabled={inactive}
       aria-busy={loading || undefined}
-      className={sharedClassName}
-      {...buttonRest}
+      className={wrapperClassName}
+      whileTap={pressAnimation}
+      transition={pressTransition}
+      {...(buttonRest as HTMLMotionProps<"button">)}
     >
       {content}
-    </button>
+    </motion.button>
   );
 }

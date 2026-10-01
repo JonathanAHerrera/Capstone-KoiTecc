@@ -31,28 +31,39 @@ export function ReviewVerdictCard({
 
   return (
     <section
-      className={`lip overflow-hidden rounded-card border-2 bg-surface ${
-        accepted
-          ? "border-success-lip [--lip-color:var(--color-success-lip)]"
-          : "border-warning-lip [--lip-color:var(--color-warning-lip)]"
-      } ${className}`}
+      className={`overflow-hidden rounded-card border bg-surface ${accepted ? "border-success-edge" : "border-warning-edge"} ${className}`}
       aria-label={accepted ? "Review result: accepted" : "Review result: needs work"}
     >
-      <header className={`flex items-center gap-3 px-4 py-4 text-white ${accepted ? "bg-success" : "bg-warning"}`}>
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-white/25" aria-hidden>
-          {accepted ? <CircleCheck className="size-8" strokeWidth={2.5} /> : <CircleAlert className="size-8" strokeWidth={2.5} />}
+      <header
+        className={`flex items-center gap-3 border-b px-4 py-4 ${
+          accepted ? "border-success-edge bg-success-pale text-success-ink" : "border-warning-edge bg-warning-pale text-warning-ink"
+        }`}
+      >
+        <span
+          className={`flex size-11 shrink-0 items-center justify-center rounded-full text-white ${accepted ? "bg-success-lip" : "bg-warning"}`}
+          aria-hidden
+        >
+          {accepted ? (
+            <CircleCheck className="size-7" strokeWidth={2.25} />
+          ) : (
+            <CircleAlert className="size-7 text-ink" strokeWidth={2.25} />
+          )}
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-[22px] font-black leading-tight">{accepted ? "Accepted" : "Almost there"}</p>
-          <p className="caption flex flex-wrap items-center gap-x-2 gap-y-1 text-white/85">
+          <p className="display text-[26px] leading-none">{accepted ? "Accepted" : "Almost there"}</p>
+          <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium">
             {accepted ? "This requirement is met" : `${missingItems.length || "A few"} things to fix`}
-            {isMock ? <span className="rounded-chip bg-ink/30 px-2 py-0.5 text-[11px] text-white">Mock review</span> : null}
+            {isMock ? (
+              <span className="rounded-chip border border-border bg-surface px-2 py-0.5 text-[11px] font-medium text-text-secondary">
+                Mock review
+              </span>
+            ) : null}
           </p>
         </div>
       </header>
 
       <div className="flex flex-col gap-5 px-4 py-4">
-        <p className="text-base font-medium leading-relaxed text-text">{summary}</p>
+        <p className="text-base leading-relaxed text-text">{summary}</p>
 
         {objectiveFindings.length > 0 ? (
           <div>
@@ -64,18 +75,18 @@ export function ReviewVerdictCard({
               {objectiveFindings.map((finding, findingIndex) => (
                 <li
                   key={findingIndex}
-                  className={`flex gap-3 rounded-xl border-2 px-3 py-2.5 ${
-                    finding.met ? "border-success/40 bg-success-pale/50" : "border-warning/40 bg-warning-pale/60"
+                  className={`flex gap-3 rounded-[10px] border px-3 py-2.5 ${
+                    finding.met ? "border-success-edge bg-success-pale" : "border-warning-edge bg-warning-pale"
                   }`}
                 >
                   {finding.met ? (
-                    <CircleCheck className="mt-0.5 size-5 shrink-0 text-success-ink" strokeWidth={2.5} aria-label="Met" />
+                    <CircleCheck className="mt-0.5 size-5 shrink-0 text-success-ink" strokeWidth={2.25} aria-label="Met" />
                   ) : (
-                    <CircleX className="mt-0.5 size-5 shrink-0 text-warning-ink" strokeWidth={2.5} aria-label="Not met" />
+                    <CircleX className="mt-0.5 size-5 shrink-0 text-warning-ink" strokeWidth={2.25} aria-label="Not met" />
                   )}
                   <div className="min-w-0">
-                    <p className="text-[15px] font-bold leading-snug text-ink">{finding.objective}</p>
-                    {finding.note ? <p className="mt-0.5 text-sm font-medium text-muted">{finding.note}</p> : null}
+                    <p className="text-[15px] font-medium leading-snug text-ink">{finding.objective}</p>
+                    {finding.note ? <p className="mt-0.5 text-sm text-text-secondary">{finding.note}</p> : null}
                   </div>
                 </li>
               ))}
@@ -90,12 +101,12 @@ export function ReviewVerdictCard({
               {missingItems.map((missingItem, itemIndex) => (
                 <li key={itemIndex} className="flex gap-3">
                   <span
-                    className="flex size-7 shrink-0 items-center justify-center rounded-full bg-warning text-sm font-black text-white"
+                    className="tabular-nums flex size-7 shrink-0 items-center justify-center rounded-full bg-warning text-sm font-semibold text-ink"
                     aria-hidden
                   >
                     {itemIndex + 1}
                   </span>
-                  <p className="pt-0.5 text-[15px] font-bold leading-snug text-ink">{missingItem}</p>
+                  <p className="pt-0.5 text-[15px] font-medium leading-snug text-ink">{missingItem}</p>
                 </li>
               ))}
             </ol>
@@ -103,12 +114,12 @@ export function ReviewVerdictCard({
         ) : null}
 
         {nextSteps.length > 0 ? (
-          <div className="rounded-xl bg-canvas px-3 py-3">
-            <p className="caption mb-1.5 flex items-center gap-1.5 text-primary">
+          <div className="rounded-[10px] border border-border-subtle bg-canvas px-3 py-3">
+            <p className="caption mb-1.5 flex items-center gap-1.5 text-primary-text">
               <Sparkles className="size-4" aria-hidden />
               Next steps
             </p>
-            <ul className="flex flex-col gap-1.5 pl-4 text-[15px] font-medium leading-snug text-text [list-style:disc]">
+            <ul className="flex flex-col gap-1.5 pl-4 text-[15px] leading-snug text-text [list-style:disc]">
               {nextSteps.map((nextStep, stepIndex) => (
                 <li key={stepIndex}>{nextStep}</li>
               ))}

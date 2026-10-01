@@ -3,6 +3,7 @@
 import { Camera, ClipboardCheck, FolderOpen, Rocket } from "lucide-react";
 import { BigButton } from "@/components/ui/big-button";
 import { BottomActionBar } from "@/components/ui/bottom-action-bar";
+import { GlareHover } from "@/components/ui/glare-hover";
 import { SpeechBubble } from "@/components/ui/speech-bubble";
 import type { CmmcLevel } from "@/lib/practice-types";
 import { formatEstimatedHours, type LevelEstimate } from "./onboarding-steps";
@@ -35,51 +36,53 @@ export function ComingUpScreen({
         Here&apos;s what&apos;s coming up for <strong>{companyName.trim()}</strong>.
       </SpeechBubble>
 
-      <div className="lip rounded-card border-2 border-border bg-surface p-4 [--lip-color:var(--color-border)]">
-        <p className="caption text-primary">Your path</p>
-        <p className="mt-1 text-[24px] font-black leading-tight text-ink">CMMC Level {targetLevel}</p>
-        <p className="mt-0.5 text-sm font-medium text-muted">
-          {targetLevel === 1 ? "Self-assessment (FCI only)" : "Self-assessment preview (CUI)"}
-        </p>
-        <dl className="mt-4 grid grid-cols-2 gap-3">
-          <div className="rounded-xl bg-canvas px-3 py-3">
-            <dt className="caption text-muted">Requirements</dt>
-            <dd className="tabular-nums text-[32px] font-black leading-none text-ink">{levelEstimate.count}</dd>
-          </div>
-          <div className="rounded-xl bg-canvas px-3 py-3">
-            <dt className="caption text-muted">Estimated time</dt>
-            <dd className="text-[18px] font-black leading-tight text-ink">{formatEstimatedHours(levelEstimate.minutes)}</dd>
-          </div>
-        </dl>
-      </div>
+      <GlareHover glareOpacity={0.3} playOnce className="rounded-card">
+        <div className="rounded-card border border-border bg-surface p-4">
+          <p className="caption text-primary-text">Your path</p>
+          <p className="display mt-1 text-[32px] text-ink">CMMC Level {targetLevel}</p>
+          <p className="mt-1 text-sm text-text-secondary">
+            {targetLevel === 1 ? "Self-assessment (FCI only)" : "Self-assessment preview (CUI)"}
+          </p>
+          <dl className="mt-4 grid grid-cols-2 gap-3">
+            <div className="rounded-[10px] border border-border-subtle bg-canvas px-3 py-3">
+              <dt className="caption text-muted">Requirements</dt>
+              <dd className="tabular-nums mt-1 text-[32px] font-medium leading-none tracking-[-0.02em] text-primary-text">{levelEstimate.count}</dd>
+            </div>
+            <div className="rounded-[10px] border border-border-subtle bg-canvas px-3 py-3">
+              <dt className="caption text-muted">Estimated time</dt>
+              <dd className="mt-1 text-[18px] font-medium leading-tight text-ink">{formatEstimatedHours(levelEstimate.minutes)}</dd>
+            </div>
+          </dl>
+        </div>
+      </GlareHover>
 
       <div className="flex flex-col gap-3">
         <h2 className="text-lg">How it works</h2>
         <ol className="flex flex-col gap-3">
           {HOW_IT_WORKS_STEPS.map((step, stepIndex) => (
-            <li key={step.title} className="flex items-start gap-3 rounded-card border-2 border-border bg-surface px-4 py-3">
+            <li key={step.title} className="flex items-start gap-3 rounded-card border border-border bg-surface px-4 py-3">
               <span
-                className="relative flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-pale text-primary [&>svg]:size-6"
+                className="relative flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-primary-pale text-primary-text [&>svg]:size-6"
                 aria-hidden
               >
                 {step.icon}
-                <span className="absolute -left-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-[11px] font-black text-white">
+                <span className="tabular-nums absolute -left-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-white">
                   {stepIndex + 1}
                 </span>
               </span>
               <span className="flex flex-col">
-                <span className="text-base font-bold text-ink">{step.title}</span>
-                <span className="text-sm font-medium text-muted">{step.detail}</span>
+                <span className="text-base font-medium text-ink">{step.title}</span>
+                <span className="text-sm text-text-secondary">{step.detail}</span>
               </span>
             </li>
           ))}
         </ol>
       </div>
 
-      <p className="text-[13px] font-medium leading-snug text-muted">{READINESS_DISCLAIMER}</p>
+      <p className="text-[13px] leading-snug text-muted">{READINESS_DISCLAIMER}</p>
 
       <BottomActionBar>
-        <BigButton fullWidth variant="success" icon={<Rocket />} loading={savingOrganization} onClick={onStartPath}>
+        <BigButton fullWidth icon={<Rocket />} loading={savingOrganization} onClick={onStartPath}>
           Start my path
         </BigButton>
       </BottomActionBar>

@@ -20,12 +20,12 @@ export function HalfwayScreen({ onContinue }: HalfwayScreenProps) {
         >
           <Sparkles className="size-10" strokeWidth={2.25} />
         </span>
-        <p className="max-w-xs text-base font-medium text-muted">
+        <p className="max-w-xs text-base text-text-secondary">
           Two more questions about your IT setup, then we&apos;ll show you exactly what&apos;s coming up.
         </p>
       </div>
       <BottomActionBar>
-        <BigButton fullWidth variant="success" onClick={onContinue}>
+        <BigButton fullWidth onClick={onContinue}>
           Keep going
         </BigButton>
       </BottomActionBar>

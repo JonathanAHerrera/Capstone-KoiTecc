@@ -57,38 +57,38 @@ export default async function SummaryPage() {
       <header className="flex flex-col gap-3">
         <Link
           href="/path"
-          className="-ml-2 inline-flex h-11 w-fit items-center gap-1 rounded-full pr-3 text-[15px] font-extrabold text-primary hover:bg-surface"
+          className="focus-outline -ml-2 inline-flex h-11 w-fit items-center gap-1 rounded-full pr-3 text-[15px] font-medium text-primary-text hover:bg-surface-alt"
         >
-          <ChevronLeft className="size-6" strokeWidth={2.5} aria-hidden />
+          <ChevronLeft className="size-6" strokeWidth={2} aria-hidden />
           Back to path
         </Link>
         <div>
           <p className="caption text-muted">{organization.name}</p>
-          <h1 className="text-[26px]">Your Level {level} readiness</h1>
+          <h1 className="display text-[36px]">Your Level {level} readiness</h1>
         </div>
       </header>
 
       <ReadinessOverview progress={progress} />
 
       {level === 1 ? (
-        <p className="flex items-start gap-3 rounded-card border-2 border-info/30 bg-info-pale px-4 py-3 text-sm font-medium text-info-ink">
-          <Info className="mt-0.5 size-5 shrink-0" aria-hidden />
+        <p className="flex items-start gap-3 rounded-card border border-border bg-surface px-4 py-3 text-sm text-text-secondary">
+          <Info className="mt-0.5 size-5 shrink-0 text-primary-text" aria-hidden />
           <span>
-            <strong>Level 1 has no score:</strong> all {progress.total} requirements must be MET before you can affirm in
+            <strong className="text-ink">Level 1 has no score:</strong> all {progress.total} requirements must be MET before you can affirm in
             SPRS.
           </span>
         </p>
       ) : (
-        <div className="flex flex-col gap-2 rounded-card border-2 border-info/30 bg-info-pale px-4 py-3 text-sm font-medium text-info-ink">
-          <p className="flex items-start gap-3">
-            <Info className="mt-0.5 size-5 shrink-0" aria-hidden />
-            <span>
-              This preview covers <strong>{progress.total} of {LEVEL2_TOTAL_REQUIREMENT_COUNT}</strong> Level 2
-              requirements.
-            </span>
+        <div className="rounded-card bg-dark-surface px-4 py-4 text-white">
+          <p className="caption flex items-center gap-1.5 text-dark-eyebrow">
+            <Info className="size-4 shrink-0" aria-hidden />
+            Level 2 preview
           </p>
-          <p className="pl-8">
-            Points at risk among covered requirements: <strong className="tabular-nums">{pointsAtRisk}</strong>
+          <p className="display mt-1 text-[28px] leading-none">
+            {progress.total} of {LEVEL2_TOTAL_REQUIREMENT_COUNT} requirements
+          </p>
+          <p className="mt-2 text-sm text-white/80">
+            Points at risk among covered requirements: <strong className="tabular-nums text-white">{pointsAtRisk}</strong>
           </p>
         </div>
       )}
@@ -97,7 +97,7 @@ export default async function SummaryPage() {
 
       <NeedsAttentionList level={level} items={needsAttentionItems} />
 
-      <p className="text-[13px] font-medium leading-snug text-muted">{READINESS_DISCLAIMER}</p>
+      <p className="text-[13px] leading-snug text-muted">{READINESS_DISCLAIMER}</p>
 
       <BottomActionBar>
         <BigButton href="/api/export" prefetch={false} download fullWidth icon={<Download />}>

@@ -20,14 +20,14 @@ const EVIDENCE_KIND_WORD_PATTERN: Record<EvidenceKind, RegExp> = {
 };
 
 const AI_VERIFIABILITY_BADGE: Record<AiVerifiability, { label: string; className: string }> = {
-  full: { label: "AI can fully check this", className: "border-success/40 bg-success-pale text-success-ink" },
+  full: { label: "AI can fully check this", className: "border-success-edge bg-success-pale text-success-ink" },
   partial: {
     label: "AI can pre-check this — an assessor may still interview or test",
-    className: "border-info/30 bg-info-pale text-info-ink",
+    className: "border-info-edge bg-info-pale text-info-ink",
   },
   none: {
     label: "AI can only give guidance here — an assessor will interview or test",
-    className: "border-border bg-canvas text-muted",
+    className: "border-border bg-surface-alt text-text-secondary",
   },
 };
 
@@ -51,20 +51,20 @@ export function PracticeBrief({ practice }: { practice: Practice }) {
     <div className="flex flex-col gap-5">
       <SpeechBubble>{practice.plainEnglish}</SpeechBubble>
 
-      <p className="text-[15px] font-medium leading-relaxed text-text">
-        <span className="font-extrabold text-ink">Why it matters: </span>
+      <p className="text-[15px] leading-relaxed text-text">
+        <span className="font-semibold text-ink">Why it matters: </span>
         {practice.whyItMatters}
       </p>
 
       <p
-        className={`inline-flex items-start gap-2 self-start rounded-card border-2 px-3 py-2 text-[13px] font-bold leading-snug ${aiBadge.className}`}
+        className={`inline-flex items-start gap-2 self-start rounded-[10px] border px-3 py-2 text-[13px] font-medium leading-snug ${aiBadge.className}`}
       >
         <Bot className="mt-0.5 size-4 shrink-0" aria-hidden />
         <span>{aiBadge.label}</span>
       </p>
 
       <CollapsibleSection title="Official requirement" icon={<BookOpenText />}>
-        <blockquote className="border-l-4 border-primary/30 pl-3 text-[15px] font-medium italic leading-relaxed text-text">
+        <blockquote className="border-l-2 border-primary-text pl-3 text-[15px] italic leading-relaxed text-text">
           {practice.officialText}
         </blockquote>
         <p className="caption mt-4 mb-2 text-muted">What an assessor checks · NIST SP 800-171 {practice.nist171Ref}</p>
@@ -72,10 +72,10 @@ export function PracticeBrief({ practice }: { practice: Practice }) {
           {practice.assessmentObjectives.map((objective) => {
             const { letter, text } = splitObjectiveLetter(objective);
             return (
-              <li key={objective} className="flex gap-2.5 text-[15px] font-medium leading-snug text-text">
+              <li key={objective} className="flex gap-2.5 text-[15px] leading-snug text-text">
                 {letter ? (
                   <span
-                    className="mt-px flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-pale text-[12px] font-black text-primary"
+                    className="mt-px flex size-6 shrink-0 items-center justify-center rounded-full bg-primary-pale text-[12px] font-semibold text-primary-text"
                     aria-label={`Objective ${letter}`}
                   >
                     {letter}
@@ -92,17 +92,17 @@ export function PracticeBrief({ practice }: { practice: Practice }) {
         <h2 id="what-to-upload-heading" className="text-lg">
           What to upload
         </h2>
-        <p className="mt-0.5 text-sm font-medium text-muted">Any one of these is a good start. More is better.</p>
+        <p className="mt-0.5 text-sm text-text-secondary">Any one of these is a good start. More is better.</p>
         <ul className="mt-3 flex flex-col gap-2">
           {practice.evidenceExamples.map((example) => {
             const ExampleIcon = pickEvidenceExampleIcon(example, practice.evidenceTypes);
             return (
               <li
                 key={example}
-                className="flex min-h-14 items-center gap-3 rounded-card border-2 border-border bg-surface px-3 py-2.5 text-[15px] font-medium leading-snug text-text"
+                className="flex min-h-14 items-center gap-3 rounded-card border border-border bg-surface px-3 py-2.5 text-[15px] leading-snug text-text"
               >
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-pale text-primary" aria-hidden>
-                  <ExampleIcon className="size-5" strokeWidth={2.25} />
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-primary-pale text-primary-text" aria-hidden>
+                  <ExampleIcon className="size-5" strokeWidth={2} />
                 </span>
                 <span className="min-w-0 break-words">{example}</span>
               </li>
@@ -115,8 +115,8 @@ export function PracticeBrief({ practice }: { practice: Practice }) {
         <CollapsibleSection title="Common mistakes" icon={<TriangleAlert />}>
           <ul className="flex flex-col gap-2">
             {practice.commonFailures.map((failure) => (
-              <li key={failure} className="flex gap-2.5 text-[15px] font-medium leading-snug text-text">
-                <TriangleAlert className="mt-0.5 size-4 shrink-0 text-warning" aria-hidden />
+              <li key={failure} className="flex gap-2.5 text-[15px] leading-snug text-text">
+                <TriangleAlert className="mt-0.5 size-4 shrink-0 text-warning-ink" aria-hidden />
                 <span className="min-w-0 break-words">{failure}</span>
               </li>
             ))}

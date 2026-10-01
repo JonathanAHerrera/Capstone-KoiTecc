@@ -49,7 +49,7 @@ const ONBOARDING_ANSWERS = [
 function ShowcaseSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="caption border-b-2 border-border pb-2 text-muted">{title}</h2>
+      <h2 className="caption border-b border-border-subtle pb-2 text-muted">{title}</h2>
       {children}
     </section>
   );
@@ -72,8 +72,8 @@ export default function DesignShowcasePage() {
   return (
     <div className="flex flex-col gap-10 px-4 pb-[calc(112px+env(safe-area-inset-bottom))] pt-[calc(16px+env(safe-area-inset-top))]">
       <header>
-        <p className="caption text-primary">Design system</p>
-        <h1 className="text-2xl">CMMC Ready primitives</h1>
+        <p className="caption text-primary-text">Design system</p>
+        <h1 className="display text-[36px]">CMMC Ready primitives</h1>
         <p className="mt-1 text-muted">Every component in every state. Dev-only QA page.</p>
       </header>
 
@@ -109,15 +109,15 @@ export default function DesignShowcasePage() {
 
       <ShowcaseSection title="ProgressBar + ProgressRing">
         <ProgressBar completed={progressCompleted} total={110} showCountLabel label="Level 2 progress" />
-        <ProgressBar completed={3} total={3} heightPx={8} fillColor="var(--color-success)" label="Family progress" />
+        <ProgressBar completed={3} total={3} heightPx={8} label="Family progress (complete, rainbow fill)" />
         <div className="flex flex-wrap items-center gap-6">
           <ProgressRing fraction={progressCompleted / 110} label="Met">
-            <span className="tabular-nums text-xl font-black text-ink">{Math.round((progressCompleted / 110) * 100)}%</span>
+            <span className="tabular-nums text-xl font-medium text-ink">{Math.round((progressCompleted / 110) * 100)}%</span>
           </ProgressRing>
           <ProgressRing fraction={0.13} sizePx={72} strokeWidthPx={8} fillColor="var(--color-warning)" label="Needs work">
             <CircleAlert className="size-6 text-warning-ink" aria-hidden />
           </ProgressRing>
-          <ProgressRing fraction={1} sizePx={56} strokeWidthPx={6} fillColor="var(--color-success)" label="Done">
+          <ProgressRing fraction={1} sizePx={56} strokeWidthPx={6} label="Done">
             <CircleCheck className="size-5 text-success-ink" aria-hidden />
           </ProgressRing>
           <BigButton size="compact" variant="secondary" onClick={() => setProgressCompleted((current) => (current >= 110 ? 12 : current + 17))}>

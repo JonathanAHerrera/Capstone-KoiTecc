@@ -18,7 +18,7 @@ export function StatTile({
   value,
   label,
   icon,
-  accentColor = "var(--color-primary)",
+  accentColor = "var(--color-primary-text)",
   prefix = "",
   suffix = "",
   countUpOnMount = true,
@@ -38,14 +38,14 @@ export function StatTile({
 
   return (
     <div
-      className={`lip flex min-w-0 flex-col items-center gap-1 rounded-card border-2 border-border bg-surface px-3 py-4 text-center [--lip-color:var(--color-border)] ${className}`}
+      className={`card-ring flex min-w-0 flex-col items-center gap-1 rounded-card border border-border bg-surface px-3 py-4 text-center ${className}`}
     >
       {icon ? (
-        <span className="flex items-center [&>svg]:size-7" style={{ color: accentColor }} aria-hidden>
+        <span className="flex items-center [&>svg]:size-6" style={{ color: accentColor }} aria-hidden>
           {icon}
         </span>
       ) : null}
-      <span className="tabular-nums text-[40px] font-black leading-none sm:text-[48px]" style={{ color: accentColor }}>
+      <span className="tabular-nums text-[36px] font-medium leading-none tracking-[-0.02em] sm:text-[42px]" style={{ color: accentColor }}>
         {prefix}
         <motion.span>{roundedTickerValue}</motion.span>
         {suffix}

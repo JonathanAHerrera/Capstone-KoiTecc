@@ -12,6 +12,7 @@ import { ReviewProgressCard } from "@/components/practice/review-progress-card";
 import { EvidenceUploadError, uploadEvidenceFile, type UploadedEvidenceFileResponse } from "@/components/practice/upload-evidence-file";
 import { BigButton } from "@/components/ui/big-button";
 import { BottomActionBar } from "@/components/ui/bottom-action-bar";
+import { ClickSpark, type ClickSparkHandle } from "@/components/ui/click-spark";
 import { ReviewVerdictCard } from "@/components/ui/review-verdict-card";
 import { StatusChip, type PracticeStatus } from "@/components/ui/status-chip";
 import { useToast } from "@/components/ui/use-toast";
@@ -114,6 +115,7 @@ export function PracticeWorkspace({
   const nextOptimisticFileIdRef = useRef(1);
   const verdictCardRef = useRef<HTMLDivElement>(null);
   const navigateAfterPopTimeoutRef = useRef<number | null>(null);
+  const chipSparkRef = useRef<ClickSparkHandle>(null);
 
   const allowedUploadKinds = practice.evidenceTypes.filter((kind) => kind !== "text");
   const uploadedFileCount = evidenceItems.filter((item) => item.status === "uploaded").length;
@@ -296,6 +298,7 @@ export function PracticeWorkspace({
 
       if (review.verdict === "accepted") {
         setChipPopCount((currentCount) => currentCount + 1);
+        if (!reduceMotion) chipSparkRef.current?.fireSparkBurst();
         if (allOtherPracticesAccepted) navigateToPathAfterChipPop("complete");
         else if (allOtherFamilyPracticesAccepted) navigateToPathAfterChipPop("family");
         else setReviewIdToScrollTo(review.id);
@@ -312,28 +315,30 @@ export function PracticeWorkspace({
 
   return (
     <div className="flex flex-1 flex-col pb-[calc(140px+env(safe-area-inset-bottom))] pt-[env(safe-area-inset-top)]">
-      <header className="sticky top-0 z-20 border-b-2 border-border bg-canvas/95 backdrop-blur-sm">
+      <header className="sticky top-0 z-20 border-b border-border-subtle bg-canvas/95 backdrop-blur-sm">
         <div className="flex min-h-14 items-center gap-2 px-2">
           <Link
             href="/path"
             aria-label="Back to path"
-            className="flex size-11 shrink-0 items-center justify-center rounded-full text-primary hover:bg-primary-pale/60"
+            className="focus-outline flex size-11 shrink-0 items-center justify-center rounded-full text-primary-text hover:bg-surface-alt"
           >
-            <ChevronLeft className="size-7" strokeWidth={2.5} aria-hidden />
+            <ChevronLeft className="size-7" strokeWidth={2} aria-hidden />
           </Link>
-          <p className="min-w-0 flex-1 truncate text-[15px] font-extrabold text-ink">
-            <span className="caption mr-2 text-primary">{practice.family}</span>{" "}
+          <p className="min-w-0 flex-1 truncate text-[15px] font-medium text-ink">
+            <span className="caption mr-2 text-primary-text">{practice.family}</span>{" "}
             {practice.id}
           </p>
-          <motion.span
-            key={chipPopCount}
-            className="inline-flex origin-center pr-2"
-            initial={{ scale: 1 }}
-            animate={{ scale: chipPopCount > 0 && !reduceMotion ? [1, 1.3, 1] : 1 }}
-            transition={{ duration: 0.45, ease: CHIP_POP_EASE }}
-          >
-            <StatusChip status={practiceStatus} />
-          </motion.span>
+          <ClickSpark ref={chipSparkRef} sparkColor="#ff8316" sparkCount={10} sparkRadius={22} duration={450} sparkOnClick={false} className="-my-3 -ml-3 py-3 pl-3 pr-2">
+            <motion.span
+              key={chipPopCount}
+              className="inline-flex origin-center"
+              initial={{ scale: 1 }}
+              animate={{ scale: chipPopCount > 0 && !reduceMotion ? [1, 1.3, 1] : 1 }}
+              transition={{ duration: 0.45, ease: CHIP_POP_EASE }}
+            >
+              <StatusChip status={practiceStatus} />
+            </motion.span>
+          </ClickSpark>
         </div>
       </header>
 
@@ -342,7 +347,7 @@ export function PracticeWorkspace({
           <p className="caption text-muted">
             {practice.familyName} · Level {practice.level}
           </p>
-          <h1 className="mt-1 text-[26px] leading-tight break-words">{practice.title}</h1>
+          <h1 className="display mt-1 text-[32px] break-words">{practice.title}</h1>
         </div>
 
         <PracticeBrief practice={practice} />
@@ -352,7 +357,7 @@ export function PracticeWorkspace({
             <h2 id="your-evidence-heading" className="text-lg">
               Your evidence
             </h2>
-            <p className="mt-0.5 text-sm font-medium text-muted">
+            <p className="mt-0.5 text-sm text-text-secondary">
               {uploadedFileCount === 0 ? "Nothing uploaded yet." : `${uploadedFileCount} file${uploadedFileCount === 1 ? "" : "s"} uploaded.`}
             </p>
           </div>
@@ -378,7 +383,7 @@ export function PracticeWorkspace({
         </section>
 
         <section className="flex flex-col gap-2">
-          <label htmlFor="submission-note" className="text-lg font-extrabold text-ink">
+          <label htmlFor="submission-note" className="text-lg font-semibold text-ink">
             Describe what this shows
           </label>
           <textarea
@@ -393,9 +398,9 @@ export function PracticeWorkspace({
               if (noteSaveState !== "idle") setNoteSaveState("idle");
             }}
             onBlur={() => void saveNoteIfChanged()}
-            className="w-full resize-y rounded-card border-2 border-border bg-surface px-4 py-3 text-base font-medium leading-relaxed text-ink outline-none placeholder:text-muted/80 focus:border-primary focus:ring-4 focus:ring-primary/20 disabled:opacity-60"
+            className="w-full resize-y rounded-card border border-border bg-surface px-4 py-3 text-base leading-relaxed text-ink outline-none placeholder:text-muted focus:border-primary-text focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-text disabled:opacity-60"
           />
-          <p className="flex min-h-5 items-center justify-between text-[13px] font-bold text-muted" aria-live="polite">
+          <p className="flex min-h-5 items-center justify-between text-[13px] font-medium text-muted" aria-live="polite">
             <span>
               {noteLongEnoughForReview
                 ? "Thanks — that helps the reviewer."
@@ -420,7 +425,7 @@ export function PracticeWorkspace({
               nextSteps={latestReview.nextSteps}
               isMock={latestReview.isMock}
             />
-            <p className="mt-2 text-[13px] font-medium text-muted">
+            <p className="mt-2 text-[13px] text-muted">
               Reviewed {new Date(latestReview.createdAt).toLocaleString()} · confidence {Math.round(latestReview.confidence * 100)}%
             </p>
           </div>
@@ -430,13 +435,13 @@ export function PracticeWorkspace({
       <BottomActionBar>
         {showAcceptedActions ? (
           <>
-            <BigButton variant="success" fullWidth href="/path" icon={<ChevronLeft />}>
+            <BigButton fullWidth href="/path" icon={<ChevronLeft />}>
               Back to path
             </BigButton>
             {nextPracticeId ? (
               <Link
                 href={`/practice/${encodeURIComponent(nextPracticeId)}`}
-                className="flex min-h-11 items-center justify-center gap-1.5 rounded-btn text-[15px] font-extrabold text-primary hover:bg-primary-pale/60"
+                className="focus-outline flex min-h-11 items-center justify-center gap-1.5 rounded-btn text-[15px] font-medium text-primary-text hover:bg-primary-pale"
               >
                 Next requirement{nextPracticeTitle ? `: ${nextPracticeTitle}` : ""}
                 <ArrowRight className="size-4 shrink-0" aria-hidden />
@@ -456,7 +461,7 @@ export function PracticeWorkspace({
               {loadingReviewResult ? "Reviewing…" : submitButtonLabel}
             </BigButton>
             {!canSubmitForReview && !loadingReviewResult && !anyUploadInProgress ? (
-              <p className="text-center text-[13px] font-bold text-muted">Upload a file or write a short note to submit.</p>
+              <p className="text-center text-[13px] text-muted">Upload a file or write a short note to submit.</p>
             ) : null}
           </>
         )}

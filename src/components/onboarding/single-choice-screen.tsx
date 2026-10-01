@@ -56,7 +56,7 @@ export function SingleChoiceScreen<Value extends string>({
           />
         ))}
       </div>
-      {note ? <div className="rounded-card bg-info-pale px-4 py-3 text-sm font-medium text-info-ink">{note}</div> : null}
+      {note ? <div className="rounded-card border border-border bg-surface px-4 py-3 text-sm text-text-secondary">{note}</div> : null}
       <BottomActionBar>
         <BigButton fullWidth disabled={selectedValue === null} onClick={onContinue}>
           Continue

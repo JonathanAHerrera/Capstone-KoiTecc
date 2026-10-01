@@ -52,7 +52,7 @@ export function BottomSheet({ open, onClose, title, children, dragToDismiss = tr
             role="dialog"
             aria-modal="true"
             aria-label={title}
-            className={`relative flex w-full max-w-[640px] flex-col rounded-t-[24px] bg-surface shadow-2xl ${className}`}
+            className={`relative flex w-full max-w-[640px] flex-col rounded-t-[20px] bg-surface shadow-sheet ${className}`}
             style={{ maxHeight: "90dvh", paddingBottom: "calc(16px + env(safe-area-inset-bottom))" }}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
@@ -64,15 +64,15 @@ export function BottomSheet({ open, onClose, title, children, dragToDismiss = tr
             onDragEnd={handleDragEnd}
           >
             <div className="flex items-center justify-center pb-1 pt-3" aria-hidden>
-              <span className="h-1 w-9 rounded-chip bg-border-strong" />
+              <span className="h-1 w-9 rounded-chip bg-border" />
             </div>
             <div className="flex items-center justify-between gap-3 px-4 pb-2">
-              {title ? <h2 className="text-lg font-extrabold text-ink">{title}</h2> : <span />}
+              {title ? <h2 className="text-lg font-semibold text-ink">{title}</h2> : <span />}
               <button
                 type="button"
                 aria-label="Close"
                 onClick={onClose}
-                className="flex size-11 items-center justify-center rounded-full text-muted hover:bg-canvas"
+                className="focus-outline flex size-11 items-center justify-center rounded-full text-muted hover:bg-surface-alt"
               >
                 <X className="size-5" aria-hidden />
               </button>

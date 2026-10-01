@@ -21,10 +21,10 @@ export function ReviewProgressCard({ practiceId }: { practiceId: string }) {
       role="status"
       aria-live="polite"
       aria-label={`Reviewing ${practiceId}`}
-      className="lip rounded-card border-2 border-info/40 bg-surface px-4 py-4 [--lip-color:var(--color-info-lip)]"
+      className="rounded-card border border-info-edge bg-surface px-4 py-4"
     >
-      <p className="text-[20px] font-black leading-tight text-ink">Reviewing your submission</p>
-      <p className="mt-1 text-sm font-medium text-muted">This usually takes 10–40 seconds. You can keep this page open.</p>
+      <p className="text-[20px] font-semibold leading-tight text-ink">Reviewing your submission</p>
+      <p className="mt-1 text-sm text-text-secondary">This usually takes 10–40 seconds. You can keep this page open.</p>
       <ol className="mt-4 flex flex-col gap-2.5">
         {REVIEW_PROGRESS_STEPS.map((stepLabel, stepIndex) => {
           const stepFinished = stepIndex < activeStepIndex;
@@ -32,16 +32,16 @@ export function ReviewProgressCard({ practiceId }: { practiceId: string }) {
           return (
             <li
               key={stepLabel}
-              className={`flex items-center gap-3 text-[15px] font-bold ${
+              className={`flex items-center gap-3 text-[15px] font-medium ${
                 stepFinished ? "text-success-ink" : stepActive ? "text-ink" : "text-disabled"
               }`}
             >
               {stepFinished ? (
-                <CircleCheck className="size-5 shrink-0" strokeWidth={2.5} aria-hidden />
+                <CircleCheck className="size-5 shrink-0" strokeWidth={2.25} aria-hidden />
               ) : stepActive ? (
                 <LoaderCircle className="size-5 shrink-0 animate-spin text-info" aria-hidden />
               ) : (
-                <span className="size-5 shrink-0 rounded-full border-2 border-border" aria-hidden />
+                <span className="size-5 shrink-0 rounded-full border border-border" aria-hidden />
               )}
               {stepLabel}
             </li>

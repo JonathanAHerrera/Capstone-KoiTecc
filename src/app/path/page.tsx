@@ -46,13 +46,16 @@ export default async function PathHomePage({ searchParams }: PathHomePageProps) 
       <NeedsAttentionList rows={needsAttention.rows} totalCount={needsAttention.totalCount} />
 
       {targetLevel === 2 ? (
-        <p
-          role="note"
-          className="flex items-start gap-2 rounded-card border-2 border-info/30 bg-info-pale px-4 py-3 text-sm font-bold text-info-ink"
-        >
-          <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
-          This preview covers {getPracticeCountForLevel(2)} of the {LEVEL_TWO_TOTAL_REQUIREMENT_COUNT} Level 2 requirements.
-        </p>
+        <div role="note" className="rounded-card bg-dark-surface px-4 py-4 text-white">
+          <p className="caption flex items-center gap-1.5 text-dark-eyebrow">
+            <Info className="size-4 shrink-0" aria-hidden />
+            Level 2 preview
+          </p>
+          <p className="display mt-1 text-[28px] leading-none">
+            {getPracticeCountForLevel(2)} of {LEVEL_TWO_TOTAL_REQUIREMENT_COUNT} requirements
+          </p>
+          <p className="mt-1.5 text-sm text-white/80">This preview covers a subset of the Level 2 requirements.</p>
+        </div>
       ) : null}
 
       <PathFamilies families={pathViewModel.families} currentPracticeId={pathViewModel.currentPracticeId} />

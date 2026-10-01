@@ -48,27 +48,27 @@ export function EvidenceCard({
 
   return (
     <div
-      className={`lip flex items-center gap-3 rounded-card border-2 border-border bg-surface p-3 [--lip-color:var(--color-border)] ${className}`}
+      className={`card-ring flex items-center gap-3 rounded-card border border-border bg-surface p-3 ${className}`}
     >
-      <div className="relative flex size-[72px] shrink-0 items-center justify-center overflow-hidden rounded-xl bg-canvas">
+      <div className="relative flex size-[72px] shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-surface-alt">
         {showImagePreview ? (
           // Blob/object URLs from the picker and API-served files are not static assets, so next/image is not applicable here.
           // eslint-disable-next-line @next/next/no-img-element
           <img src={file.previewUrl} alt="" className="size-full object-cover" />
         ) : showVideoIcon ? (
-          <Film className="size-8 text-primary" strokeWidth={2} aria-hidden />
+          <Film className="size-8 text-primary-text" strokeWidth={1.75} aria-hidden />
         ) : (
-          <FileText className="size-8 text-primary" strokeWidth={2} aria-hidden />
+          <FileText className="size-8 text-primary-text" strokeWidth={1.75} aria-hidden />
         )}
         {status === "uploading" ? (
           <span className="absolute inset-0 flex items-center justify-center bg-white/70">
-            <LoaderCircle className="size-6 animate-spin text-primary" aria-hidden />
+            <LoaderCircle className="size-6 animate-spin text-primary-text" aria-hidden />
           </span>
         ) : null}
       </div>
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[15px] font-bold text-ink" title={file.name}>
+        <p className="truncate text-[15px] font-medium text-ink" title={file.name}>
           {file.name}
         </p>
         <p className="caption mt-0.5 text-muted">
@@ -78,7 +78,7 @@ export function EvidenceCard({
           <ProgressBar completed={uploadPercent} total={100} heightPx={8} className="mt-2" label={`Uploading ${file.name}`} />
         ) : null}
         {status === "error" ? (
-          <p className="mt-1 flex items-center gap-1 text-sm font-bold text-danger-ink">
+          <p className="mt-1 flex items-center gap-1 text-sm font-medium text-danger-ink">
             <TriangleAlert className="size-4 shrink-0" aria-hidden />
             {errorMessage ?? "Upload failed"}
           </p>
@@ -91,7 +91,7 @@ export function EvidenceCard({
           aria-label={`Remove ${file.name}`}
           disabled={deleting || status === "uploading"}
           onClick={() => onDelete(file.id)}
-          className="flex size-11 shrink-0 items-center justify-center rounded-full text-muted hover:bg-danger-pale hover:text-danger-ink disabled:opacity-40"
+          className="focus-outline flex size-11 shrink-0 items-center justify-center rounded-full text-muted hover:bg-danger-pale hover:text-danger-ink disabled:opacity-40"
         >
           {deleting ? <LoaderCircle className="size-5 animate-spin" aria-hidden /> : <Trash2 className="size-5" aria-hidden />}
         </button>

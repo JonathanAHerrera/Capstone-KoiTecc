@@ -220,25 +220,25 @@ export function EvidencePicker({ onFilesReady, allowedKinds = ALL_EVIDENCE_KINDS
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, height: 0, marginTop: -12 }}
-            className={`flex items-center gap-3 rounded-xl border-2 px-3 py-2.5 ${
+            className={`flex items-center gap-3 rounded-[10px] border px-3 py-2.5 ${
               pendingFile.status === "rejected"
-                ? "border-warning/40 bg-warning-pale"
+                ? "border-warning-edge bg-warning-pale"
                 : pendingFile.status === "ready"
-                  ? "border-success/40 bg-success-pale/60"
+                  ? "border-success-edge bg-success-pale"
                   : "border-border bg-surface"
             }`}
             role="status"
           >
             {pendingFile.status === "compressing" ? (
-              <LoaderCircle className="size-5 shrink-0 animate-spin text-primary" aria-hidden />
+              <LoaderCircle className="size-5 shrink-0 animate-spin text-primary-text" aria-hidden />
             ) : pendingFile.status === "ready" ? (
               <CircleCheck className="size-5 shrink-0 text-success-ink" aria-hidden />
             ) : (
               <TriangleAlert className="size-5 shrink-0 text-warning-ink" aria-hidden />
             )}
             <div className="min-w-0 flex-1">
-              <p className="truncate text-sm font-bold text-ink">{pendingFile.name}</p>
-              <p className="text-[13px] font-medium text-muted">
+              <p className="truncate text-sm font-medium text-ink">{pendingFile.name}</p>
+              <p className="text-[13px] text-text-secondary">
                 {pendingFile.status === "compressing"
                   ? `Preparing… ${Math.round(pendingFile.percent)}%`
                   : pendingFile.status === "ready"

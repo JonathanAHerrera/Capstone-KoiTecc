@@ -14,6 +14,9 @@ export type QuestionCardProps = {
   className?: string;
 };
 
+export const CARD_PRESS_TRANSITION = { type: "spring", visualDuration: 0.18, bounce: 0.4 } as const;
+export const CARD_PRESS_TRANSITION_REDUCED = { type: "spring", visualDuration: 0.18, bounce: 0 } as const;
+
 export function QuestionCard({
   label,
   description,
@@ -33,22 +36,19 @@ export function QuestionCard({
       aria-checked={selected}
       disabled={disabled}
       onClick={onSelect}
-      animate={selected && !reduceMotion ? { scale: [1, 0.98, 1.02, 1] } : { scale: 1 }}
-      transition={{ duration: 0.22, ease: "easeInOut" }}
+      whileTap={disabled ? undefined : { scale: 0.98 }}
+      transition={reduceMotion ? CARD_PRESS_TRANSITION_REDUCED : CARD_PRESS_TRANSITION}
       className={[
-        "lip lip-press flex w-full min-h-14 items-center gap-3 rounded-card border-2 px-4 py-3 text-left",
-        "outline-none focus-visible:ring-4 focus-visible:ring-primary/30",
-        selected
-          ? "border-primary bg-primary-pale text-ink [--lip-color:var(--color-primary)]"
-          : "border-border bg-surface text-text [--lip-color:var(--color-border)] hover:bg-canvas",
+        "card-ring focus-outline flex w-full min-h-14 items-center gap-3 rounded-card border px-4 py-3 text-left transition-colors duration-150",
+        selected ? "border-primary-text bg-selected text-ink" : "border-border bg-surface text-text",
         disabled ? "opacity-60" : "",
         className,
       ].join(" ")}
     >
       {icon ? (
         <span
-          className={`flex size-10 shrink-0 items-center justify-center rounded-xl [&>svg]:size-6 ${
-            selected ? "bg-primary text-white" : "bg-canvas text-primary"
+          className={`flex size-10 shrink-0 items-center justify-center rounded-[10px] [&>svg]:size-6 ${
+            selected ? "bg-primary text-white" : "bg-surface-alt text-primary-text"
           }`}
           aria-hidden
         >
@@ -56,13 +56,13 @@ export function QuestionCard({
         </span>
       ) : null}
       <span className="flex min-w-0 flex-1 flex-col">
-        <span className="text-base font-bold leading-snug">{label}</span>
-        {description ? <span className="text-sm font-medium text-muted">{description}</span> : null}
+        <span className="text-base font-medium leading-snug">{label}</span>
+        {description ? <span className="text-sm text-text-secondary">{description}</span> : null}
       </span>
       {letterKey ? (
         <span
-          className={`hidden size-8 shrink-0 items-center justify-center rounded-lg border-2 text-[13px] font-extrabold sm:flex ${
-            selected ? "border-primary text-primary" : "border-border text-muted"
+          className={`hidden size-8 shrink-0 items-center justify-center rounded-lg border text-[13px] font-semibold sm:flex ${
+            selected ? "border-primary-text text-primary-text" : "border-border text-muted"
           }`}
           aria-hidden
         >

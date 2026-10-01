@@ -1,12 +1,20 @@
 import type { Metadata, Viewport } from "next";
-import { Nunito } from "next/font/google";
+import { Figtree, Instrument_Serif } from "next/font/google";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
 
-const nunito = Nunito({
-  variable: "--font-nunito",
+const figtree = Figtree({
+  variable: "--font-figtree",
   subsets: ["latin"],
-  weight: ["500", "700", "800", "900"],
+  weight: ["400", "500", "600", "700"],
+  display: "swap",
+});
+
+const instrumentSerif = Instrument_Serif({
+  variable: "--font-instrument-serif",
+  subsets: ["latin"],
+  weight: ["400"],
+  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -27,13 +35,13 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#1e40af",
+  themeColor: "#fdfcfb",
   colorScheme: "light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${nunito.variable} h-full antialiased`}>
+    <html lang="en" className={`${figtree.variable} ${instrumentSerif.variable} h-full antialiased`}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
       </head>

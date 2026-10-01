@@ -8,10 +8,10 @@ import { ToastContext, type ToastOptions, type ToastTone } from "./toast-context
 type ActiveToast = ToastOptions & { id: number };
 
 const TONE_STYLES: Record<ToastTone, { icon: typeof Info; className: string }> = {
-  info: { icon: Info, className: "bg-ink text-white" },
+  info: { icon: Info, className: "bg-dark-surface text-white" },
   success: { icon: CircleCheck, className: "bg-success-ink text-white" },
   warning: { icon: TriangleAlert, className: "bg-warning-ink text-white" },
-  danger: { icon: CircleAlert, className: "bg-danger-lip text-white" },
+  danger: { icon: CircleAlert, className: "bg-danger-ink text-white" },
 };
 
 const DEFAULT_TOAST_DURATION_MS = 3000;
@@ -54,7 +54,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -12, scale: 0.96 }}
                 transition={{ type: "spring", stiffness: 420, damping: 30 }}
-                className={`pointer-events-auto flex w-full max-w-[608px] items-center gap-3 rounded-card px-4 py-3 text-[15px] font-bold shadow-lg ${tone.className}`}
+                className={`pointer-events-auto flex w-full max-w-[608px] items-center gap-3 rounded-card px-4 py-3 text-[15px] font-medium shadow-float ${tone.className}`}
               >
                 <ToneIcon className="size-5 shrink-0" aria-hidden />
                 <span className="flex-1">{toast.message}</span>
@@ -65,7 +65,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                       toast.onAction?.();
                       dismissToast(toast.id);
                     }}
-                    className="caption rounded-chip bg-white/15 px-3 py-2 hover:bg-white/25"
+                    className="rounded-chip bg-white/15 px-3 py-2 text-sm font-medium hover:bg-white/25"
                   >
                     {toast.actionLabel}
                   </button>

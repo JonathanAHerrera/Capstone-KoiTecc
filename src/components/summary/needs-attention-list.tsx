@@ -38,7 +38,7 @@ export function NeedsAttentionList({ level, items }: NeedsAttentionListProps) {
         <span className="caption text-muted">POA&amp;M · {items.length}</span>
       </div>
       {items.length === 0 ? (
-        <p className="rounded-card border-2 border-success/40 bg-success-pale/60 px-4 py-4 text-[15px] font-bold text-success-ink">
+        <p className="rounded-card border border-success-edge bg-success-pale px-4 py-4 text-[15px] font-medium text-success-ink">
           Nothing open. Every requirement has been submitted or accepted.
         </p>
       ) : (
@@ -49,18 +49,18 @@ export function NeedsAttentionList({ level, items }: NeedsAttentionListProps) {
               <li key={practice.id}>
                 <Link
                   href={`/practice/${practice.id}`}
-                  className="lip lip-press flex items-center gap-3 rounded-card border-2 border-border bg-surface px-4 py-3 outline-none [--lip-color:var(--color-border)] hover:bg-canvas focus-visible:ring-4 focus-visible:ring-primary/30"
+                  className="card-ring focus-outline flex items-center gap-3 rounded-card border border-border bg-surface px-4 py-3 transition-colors hover:bg-canvas"
                 >
                   <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                     <span className="caption text-muted">{practice.id}</span>
-                    <span className="text-[15px] font-bold leading-snug text-ink">{practice.title}</span>
+                    <span className="text-[15px] font-medium leading-snug text-ink">{practice.title}</span>
                     <div className="flex flex-wrap items-center gap-2">
                       <StatusChip status={status} size="small" />
                       <span
-                        className={`inline-flex h-7 items-center rounded-chip border-2 px-2.5 text-[12px] font-extrabold uppercase tracking-[0.04em] ${
+                        className={`inline-flex h-7 items-center rounded-chip border px-2.5 text-[12px] font-semibold ${
                           eligibilityTag.eligible
-                            ? "border-info/30 bg-info-pale text-info-ink"
-                            : "border-danger/30 bg-danger-pale text-danger-ink"
+                            ? "border-info-edge bg-info-pale text-info-ink"
+                            : "border-danger-edge bg-danger-pale text-danger-ink"
                         }`}
                       >
                         {eligibilityTag.label}

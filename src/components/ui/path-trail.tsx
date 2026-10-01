@@ -65,10 +65,10 @@ export function PathTrail({
               y1={centerYForRow(index)}
               x2={centerX + nodeXOffset(index + 1)}
               y2={centerYForRow(index + 1)}
-              stroke={segmentLit ? "var(--color-primary)" : "var(--color-border-strong)"}
-              strokeWidth={4}
+              stroke={segmentLit ? "var(--color-primary-text)" : "var(--color-border)"}
+              strokeWidth={segmentLit ? 3 : 2}
               strokeLinecap="round"
-              strokeDasharray={segmentLit ? undefined : "2 10"}
+              strokeDasharray={segmentLit ? undefined : "2 8"}
             />
           );
         })}
@@ -98,8 +98,8 @@ export function PathTrail({
             />
             <span
               aria-hidden
-              className={`pointer-events-none absolute left-1/2 line-clamp-2 -translate-x-1/2 rounded-md bg-canvas px-1 text-center text-[12px] font-bold leading-[14px] ${
-                node.state === "locked" ? "text-disabled" : "text-muted"
+              className={`pointer-events-none absolute left-1/2 line-clamp-2 -translate-x-1/2 rounded-md bg-canvas px-1 text-center text-[12px] font-medium leading-[14px] ${
+                node.state === "locked" ? "text-disabled" : "text-text-secondary"
               }`}
               style={{ top: NODE_SIZE_PX + LABEL_GAP_PX, width: "max-content", maxWidth: LABEL_WIDTH_PX }}
             >

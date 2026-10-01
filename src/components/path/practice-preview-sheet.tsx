@@ -36,8 +36,8 @@ export function PracticePreviewSheet({ node, open, onClose }: PracticePreviewShe
               {node.id} · {node.familyName}
             </span>
           </div>
-          <p className="text-[17px] font-medium leading-snug text-ink">{node.plainEnglish}</p>
-          <p className="flex items-center gap-1.5 text-sm font-bold text-muted">
+          <p className="text-[17px] leading-snug text-ink">{node.plainEnglish}</p>
+          <p className="flex items-center gap-1.5 text-sm font-medium text-muted">
             <Clock className="size-4" aria-hidden />
             About {node.estimatedEffortMinutes} min
           </p>

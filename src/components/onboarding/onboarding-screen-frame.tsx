@@ -30,9 +30,9 @@ export function OnboardingScreenFrame({
             type="button"
             onClick={onBack}
             aria-label="Back"
-            className="-ml-2 flex size-11 shrink-0 items-center justify-center rounded-full text-muted hover:bg-surface"
+            className="focus-outline -ml-2 flex size-11 shrink-0 items-center justify-center rounded-full text-text-secondary hover:bg-surface-alt"
           >
-            <ChevronLeft className="size-7" strokeWidth={2.5} aria-hidden />
+            <ChevronLeft className="size-7" strokeWidth={2} aria-hidden />
           </button>
         ) : (
           <span className="size-11 shrink-0" aria-hidden />
@@ -42,7 +42,7 @@ export function OnboardingScreenFrame({
           total={totalSteps}
           label="Onboarding progress"
           showCountLabel
-          heightPx={14}
+          heightPx={10}
           className="flex-1"
         />
       </div>
