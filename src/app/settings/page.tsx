@@ -1,0 +1,30 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ChevronLeft, MonitorCog } from "lucide-react";
+import { ThemeSetting } from "@/components/settings/theme-setting";
+
+export const metadata: Metadata = { title: "Settings — CMMC Ready" };
+
+export default function SettingsPage() {
+  return (
+    <div className="flex min-h-dvh flex-col px-4 pb-[calc(32px+env(safe-area-inset-bottom))] pt-[calc(8px+env(safe-area-inset-top))]">
+      <header className="border-b border-border-subtle pb-5">
+        <Link href="/path" className="focus-outline -ml-2 inline-flex h-11 items-center gap-1 rounded-lg px-2 text-sm font-medium text-text-secondary hover:bg-surface-alt hover:text-ink">
+          <ChevronLeft className="size-5" aria-hidden />
+          Path
+        </Link>
+        <div className="mt-4 flex items-center gap-3">
+          <span className="flex size-10 items-center justify-center rounded-[10px] border border-border bg-surface text-primary-text"><MonitorCog className="size-5" aria-hidden /></span>
+          <div>
+            <h1 className="text-[24px] font-semibold tracking-[-0.025em] text-ink">Settings</h1>
+            <p className="mt-0.5 text-sm text-text-secondary">Preferences for this device</p>
+          </div>
+        </div>
+      </header>
+      <section aria-labelledby="appearance-heading" className="py-6">
+        <p id="appearance-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">Appearance</p>
+        <div className="mt-3 rounded-card border border-border bg-surface p-4 shadow-float"><ThemeSetting /></div>
+      </section>
+    </div>
+  );
+}
