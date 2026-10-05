@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ClipboardList, Settings, ShieldCheck } from "lucide-react";
+import { ClipboardList, Settings } from "lucide-react";
 import type { CmmcLevel } from "@/lib/practice-types";
 
 export type PathTopBarProps = {
@@ -11,12 +11,8 @@ export function PathTopBar({ organizationName, targetLevel }: PathTopBarProps) {
   return (
     <header className="border-b border-border-subtle pb-4">
       <div className="flex items-center gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-[10px] border border-primary-edge bg-primary-pale text-primary-text">
-          <ShieldCheck className="size-5" strokeWidth={2} aria-hidden />
-        </span>
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-[18px] font-semibold tracking-[-0.015em] text-ink">{organizationName}</h1>
-          <p className="mt-0.5 text-[13px] text-text-secondary">CMMC Ready workspace</p>
+          <h1 className="truncate text-[20px] font-semibold tracking-[-0.02em] text-ink">{organizationName}</h1>
         </div>
         <nav aria-label="Workspace tools" className="flex shrink-0 items-center gap-1.5">
           <Link href="/summary" aria-label="Open readiness summary" className="focus-outline flex size-10 items-center justify-center rounded-[10px] border border-border bg-surface text-text-secondary transition-colors hover:bg-surface-alt hover:text-ink">
