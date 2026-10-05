@@ -1,20 +1,17 @@
 import type { Metadata, Viewport } from "next";
-import { Figtree, Instrument_Serif } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
 
-const figtree = Figtree({
-  variable: "--font-figtree",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-instrument-serif",
+const jetBrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
   subsets: ["latin"],
-  weight: ["400"],
-  style: ["normal", "italic"],
   display: "swap",
 });
 
@@ -35,15 +32,27 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#fdfcfb",
-  colorScheme: "light",
+  themeColor: "#0B0F19",
+  colorScheme: "dark",
 };
+
+const themeBootstrapScript = `
+  try {
+    var savedTheme = localStorage.getItem("cmmc-ready-theme");
+    var theme = savedTheme === "light" ? "light" : "dark";
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+    var themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) themeMeta.setAttribute("content", theme === "light" ? "#F8FAFC" : "#0B0F19");
+  } catch (_) {}
+`;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${figtree.variable} ${instrumentSerif.variable} h-full antialiased`}>
+    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
+        <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <ToastProvider>

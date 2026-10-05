@@ -1,93 +1,96 @@
 @import "tailwindcss";
 
 @theme static {
-  --font-sans: var(--font-figtree), "Figtree", system-ui, -apple-system, sans-serif;
-  --font-display: var(--font-instrument-serif), "Instrument Serif", Georgia, "Times New Roman", serif;
+  --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+  --font-display: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
 
-  --color-canvas: #fdfcfb;
-  --color-surface: #ffffff;
-  --color-surface-alt: #f7f4f2;
-  --color-border: #d1cecc;
-  --color-border-subtle: #e7e4e2;
+  --color-canvas: #0b0f19;
+  --color-surface: #161c2a;
+  --color-surface-alt: #202839;
+  --color-border: #354156;
+  --color-border-subtle: #273247;
 
-  --color-ink: #1c1b1a;
-  --color-text: #1c1b1a;
-  --color-text-secondary: #56514e;
-  --color-muted: #6f6965;
-  --color-disabled: #afaaa6;
+  --color-ink: #ffffff;
+  --color-text: #f8fafc;
+  --color-text-secondary: #b4bfd1;
+  --color-muted: #8e9bb0;
+  --color-disabled: #5b687c;
 
-  --color-primary: #0f6469;
-  --color-primary-text: #1e7676;
-  --color-primary-deep: #00535c;
-  --color-primary-lip: color-mix(in srgb, #000 16%, #0f6469);
-  --color-primary-hover: color-mix(in srgb, #fff 16%, #0f6469);
-  --color-primary-pressed: color-mix(in srgb, #000 16%, #0f6469);
-  --color-primary-pale: #e9f7f3;
-  --color-primary-edge: color-mix(in srgb, #1e7676 28%, #e9f7f3);
-  --color-selected: #e9f7f3;
+  --color-primary: #00e676;
+  --color-primary-text: #39f28e;
+  --color-primary-deep: #00b85c;
+  --color-primary-lip: #008f48;
+  --color-primary-hover: #24ee89;
+  --color-primary-pressed: #00c867;
+  --color-primary-pale: #102b22;
+  --color-primary-edge: #167d51;
+  --color-selected: #123126;
+  --color-primary-contrast: #06140d;
+  --shadow-primary-glow: 0 0 24px rgba(0, 230, 118, 0.18);
 
-  --color-success: #39c64c;
-  --color-success-lip: #1c832a;
-  --color-success-pale: #e4fbe7;
-  --color-success-ink: #1c7327;
-  --color-success-edge: color-mix(in srgb, #1c7327 24%, #e4fbe7);
+  --color-success: #00e676;
+  --color-success-lip: #00b85c;
+  --color-success-pale: #102b22;
+  --color-success-ink: #39f28e;
+  --color-success-edge: #167d51;
 
-  --color-warning: #fac13d;
-  --color-warning-lip: #c8951c;
-  --color-warning-pale: #fff2d4;
-  --color-warning-ink: #876413;
-  --color-warning-edge: color-mix(in srgb, #876413 24%, #fff2d4);
+  --color-warning: #ff9100;
+  --color-warning-lip: #d97900;
+  --color-warning-pale: #322313;
+  --color-warning-ink: #ffad3d;
+  --color-warning-edge: #8f5b19;
 
-  --color-danger: #eb4863;
-  --color-danger-lip: #c72e48;
-  --color-danger-pale: #ffe6ea;
-  --color-danger-ink: #a9283e;
-  --color-danger-edge: color-mix(in srgb, #a9283e 24%, #ffe6ea);
+  --color-danger: #ff1744;
+  --color-danger-lip: #cc1236;
+  --color-danger-pale: #35151f;
+  --color-danger-ink: #ff5c7c;
+  --color-danger-edge: #8e2a3e;
 
-  --color-info: #4673e3;
-  --color-info-lip: #3864d6;
-  --color-info-pale: #e0e9ff;
-  --color-info-ink: #2352c7;
-  --color-info-edge: color-mix(in srgb, #2352c7 24%, #e0e9ff);
+  --color-info: #4d8dff;
+  --color-info-lip: #2868d8;
+  --color-info-pale: #172746;
+  --color-info-ink: #7aaaff;
+  --color-info-edge: #315b9d;
 
-  --color-purple: #ce63de;
-  --color-purple-pale: #fbe0ff;
-  --color-purple-ink: #9b3ab6;
+  --color-purple: #df85ed;
+  --color-purple-pale: #2d1c35;
+  --color-purple-ink: #df85ed;
 
-  --color-orange: #ff8316;
-  --color-orange-lip: color-mix(in srgb, #000 16%, #ff8316);
+  --color-orange: #ff9100;
+  --color-orange-lip: #d97900;
 
-  --color-dark-surface: #03393d;
-  --color-dark-eyebrow: #78dec5;
+  --color-dark-surface: #101725;
+  --color-dark-eyebrow: #39f28e;
 
-  --color-family-1: #1e7676;
-  --color-family-2: #ff5765;
-  --color-family-3: #ce63de;
-  --color-family-4: #ff8316;
-  --color-family-5: #4673e3;
-  --color-family-6: #39c64c;
-  --color-family-1-pale: #c6f0e5;
-  --color-family-2-pale: #ffd3da;
-  --color-family-3-pale: #fbe0ff;
-  --color-family-4-pale: #ffe8b4;
-  --color-family-5-pale: #c7d7fe;
-  --color-family-6-pale: #e4fbe7;
+  --color-family-1: #00e676;
+  --color-family-2: #ff5c7c;
+  --color-family-3: #df85ed;
+  --color-family-4: #ffad3d;
+  --color-family-5: #7aaaff;
+  --color-family-6: #35d7ff;
+  --color-family-1-pale: #102b22;
+  --color-family-2-pale: #35151f;
+  --color-family-3-pale: #2d1c35;
+  --color-family-4-pale: #322313;
+  --color-family-5-pale: #172746;
+  --color-family-6-pale: #102a33;
 
   --radius-card: 14px;
   --radius-btn: 12px;
   --radius-plate: 14px;
   --radius-chip: 9999px;
 
-  --shadow-float: 0 4px 12px rgba(28, 28, 28, 0.08), 0 2px 8px rgba(28, 28, 28, 0.04);
-  --shadow-sheet: 0 -2px 16px rgba(28, 28, 28, 0.08), 0 12px 24px rgba(28, 28, 28, 0.12), 0 8px 16px rgba(28, 28, 28, 0.08);
+  --shadow-float: 0 12px 32px rgba(0, 0, 0, 0.28), 0 0 0 1px rgba(255, 255, 255, 0.02);
+  --shadow-sheet: 0 -12px 40px rgba(0, 0, 0, 0.42), 0 -1px 0 rgba(255, 255, 255, 0.04);
 
   --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  --gradient-rainbow: linear-gradient(90deg, #3fa199 17.16%, #ce63de 42.41%, #ff5765 70.48%, #ff8316 97.63%);
-  --gradient-ring: linear-gradient(51.22deg, #ee3f50 36.62%, #b44bce 73.23%, #3f6bdd 122.06%);
-  --gradient-card-ring: linear-gradient(to top right, #eca4f7, #ff8316);
-  --gradient-progress: linear-gradient(90deg, #fbe0ff, #eba8f5 14%, #fb8d90 32%, #ff5765 50%, #ff5765 66%, #ff8316 84%, #faab3d);
-  --gradient-text: linear-gradient(89.5deg, #ed7ffe -12.58%, #ff4833 16.18%, #ff4833 80.64%, #ff8316 110.05%, #ff8316 131.44%, #faab3d 156.45%);
+  --gradient-rainbow: linear-gradient(90deg, #00e676, #35d7ff, #7aaaff);
+  --gradient-ring: linear-gradient(135deg, #00e676, #35d7ff);
+  --gradient-card-ring: linear-gradient(135deg, #00e676, #35d7ff 55%, #7aaaff);
+  --gradient-progress: linear-gradient(90deg, #00b85c, #00e676, #39f28e);
+  --gradient-text: linear-gradient(90deg, #ffffff, #87fbb9 55%, #00e676);
 
   --animate-shine: shine var(--duration) infinite linear;
   @keyframes shine {
@@ -104,8 +107,85 @@
 }
 
 :root {
-  color-scheme: light;
+  color-scheme: dark;
   --btn-lip: 2px;
+}
+
+html[data-theme="light"] {
+  color-scheme: light;
+
+  --color-canvas: #f8fafc;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f1f5f9;
+  --color-border: #cbd5e1;
+  --color-border-subtle: #e2e8f0;
+  --color-ink: #0f172a;
+  --color-text: #0f172a;
+  --color-text-secondary: #475569;
+  --color-muted: #64748b;
+  --color-disabled: #94a3b8;
+
+  --color-primary: #0f62fe;
+  --color-primary-text: #0b55df;
+  --color-primary-deep: #0043ce;
+  --color-primary-lip: #0043ce;
+  --color-primary-hover: #0353e9;
+  --color-primary-pressed: #002d9c;
+  --color-primary-pale: #e8f0ff;
+  --color-primary-edge: #9dbdff;
+  --color-selected: #edf3ff;
+  --color-primary-contrast: #ffffff;
+  --shadow-primary-glow: 0 8px 20px rgba(15, 98, 254, 0.14);
+
+  --color-success: #16803c;
+  --color-success-lip: #11662f;
+  --color-success-pale: #e9f7ee;
+  --color-success-ink: #116b33;
+  --color-success-edge: #a6d9b8;
+  --color-warning: #f57c00;
+  --color-warning-lip: #c86200;
+  --color-warning-pale: #fff4e5;
+  --color-warning-ink: #a84f00;
+  --color-warning-edge: #f4c17d;
+  --color-danger: #d32f2f;
+  --color-danger-lip: #a92222;
+  --color-danger-pale: #fdecec;
+  --color-danger-ink: #b32626;
+  --color-danger-edge: #efaaaa;
+  --color-info: #0f62fe;
+  --color-info-lip: #0043ce;
+  --color-info-pale: #e8f0ff;
+  --color-info-ink: #0b55df;
+  --color-info-edge: #9dbdff;
+
+  --color-purple: #8b5cf6;
+  --color-purple-pale: #f1edff;
+  --color-purple-ink: #6d3ed5;
+  --color-orange: #f57c00;
+  --color-orange-lip: #c86200;
+  --color-dark-surface: #172033;
+  --color-dark-eyebrow: #85a9ff;
+
+  --color-family-1: #0f62fe;
+  --color-family-2: #d32f2f;
+  --color-family-3: #7c3aed;
+  --color-family-4: #c86200;
+  --color-family-5: #2563eb;
+  --color-family-6: #087d8f;
+  --color-family-1-pale: #e8f0ff;
+  --color-family-2-pale: #fdecec;
+  --color-family-3-pale: #f1edff;
+  --color-family-4-pale: #fff4e5;
+  --color-family-5-pale: #eaf0ff;
+  --color-family-6-pale: #e4f6f8;
+
+  --shadow-float: 0 12px 28px rgba(15, 23, 42, 0.09), 0 1px 3px rgba(15, 23, 42, 0.05);
+  --shadow-sheet: 0 -12px 36px rgba(15, 23, 42, 0.12), 0 -1px 0 rgba(15, 23, 42, 0.05);
+  --gradient-rainbow: linear-gradient(90deg, #0f62fe, #087d8f, #16803c);
+  --gradient-ring: linear-gradient(135deg, #0f62fe, #087d8f);
+  --gradient-card-ring: linear-gradient(135deg, #0f62fe, #087d8f 55%, #16803c);
+  --gradient-progress: linear-gradient(90deg, #0043ce, #0f62fe, #5d8cff);
+  --gradient-text: linear-gradient(90deg, #0f172a, #0f62fe);
 }
 
 html,
@@ -113,8 +193,21 @@ body {
   overscroll-behavior-y: none;
 }
 
+html[data-theme="light"] body {
+  background-image:
+    radial-gradient(circle at 50% -10%, rgba(15, 98, 254, 0.08), transparent 34rem),
+    linear-gradient(rgba(15, 98, 254, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 98, 254, 0.025) 1px, transparent 1px);
+}
+
 body {
-  background: var(--color-canvas);
+  background-color: var(--color-canvas);
+  background-image:
+    radial-gradient(circle at 50% -10%, rgba(0, 230, 118, 0.09), transparent 34rem),
+    linear-gradient(rgba(77, 141, 255, 0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77, 141, 255, 0.025) 1px, transparent 1px);
+  background-size: auto, 32px 32px, 32px 32px;
+  background-attachment: fixed;
   color: var(--color-text);
   font-family: var(--font-sans);
   font-weight: 400;
@@ -151,7 +244,7 @@ h3 {
   color: var(--color-ink);
   font-weight: 600;
   line-height: 1.25;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.025em;
 }
 
 strong {
@@ -300,15 +393,15 @@ strong {
 }
 
 .focus-outline:focus-visible {
-  outline: 2px solid var(--color-primary-text);
-  outline-offset: 2px;
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
 }
 
 @utility display {
   font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 1.05;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
 }
 
 @utility gradient-text {
@@ -319,6 +412,7 @@ strong {
 }
 
 @utility tabular-nums {
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
@@ -327,10 +421,11 @@ strong {
 }
 
 @utility caption {
+  font-family: var(--font-mono);
   font-size: 12px;
   font-weight: 600;
   line-height: 1.4;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 

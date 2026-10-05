@@ -61,7 +61,7 @@ export function EvidenceCard({
           <FileText className="size-8 text-primary-text" strokeWidth={1.75} aria-hidden />
         )}
         {status === "uploading" ? (
-          <span className="absolute inset-0 flex items-center justify-center bg-white/70">
+          <span className="absolute inset-0 flex items-center justify-center bg-surface/80">
             <LoaderCircle className="size-6 animate-spin text-primary-text" aria-hidden />
           </span>
         ) : null}

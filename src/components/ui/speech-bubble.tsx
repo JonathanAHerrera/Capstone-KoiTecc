@@ -12,7 +12,7 @@ export function SpeechBubble({ children, guideName = "Your guide", avatar, class
   return (
     <div className={`flex items-start gap-3 ${className}`}>
       <div
-        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-white"
+        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary text-canvas"
         aria-label={guideName}
         role="img"
       >

@@ -60,7 +60,7 @@ export function JumpToCurrentButton({
           animate={{ opacity: 1, y: 0, scale: 1 }}
           exit={{ opacity: 0, y: 16, scale: 0.9 }}
           transition={{ type: "spring", stiffness: 380, damping: 28 }}
-          className={`btn-plate focus-outline fixed z-30 [--btn-surface:var(--color-primary)] [--btn-surface-hover:var(--color-primary-hover)] [--btn-surface-pressed:var(--color-primary-pressed)] [--btn-text:#ffffff] [--radius-plate:9999px] [--radius-btn:9999px] ${className}`}
+          className={`btn-plate focus-outline fixed z-30 [--btn-plate-color:var(--color-primary-lip)] [--btn-surface:var(--color-primary)] [--btn-surface-hover:var(--color-primary-hover)] [--btn-surface-pressed:var(--color-primary-pressed)] [--btn-text:var(--color-primary-contrast)] [--radius-plate:9999px] [--radius-btn:9999px] ${className}`}
           style={{
             bottom: `calc(${bottomOffsetPx}px + env(safe-area-inset-bottom))`,
             // Anchors to the 640px content column on wide screens instead of the viewport edge.

@@ -21,7 +21,7 @@ export function WelcomeScreen({ hasExistingPath, onStart }: WelcomeScreenProps) 
     >
       <div className="flex flex-1 flex-col items-center justify-center gap-8 text-center">
         <span
-          className="flex size-20 items-center justify-center rounded-full bg-primary text-white"
+          className="flex size-20 items-center justify-center rounded-full bg-primary text-canvas shadow-[var(--shadow-primary-glow)]"
           role="img"
           aria-label="CMMC Ready shield"
         >

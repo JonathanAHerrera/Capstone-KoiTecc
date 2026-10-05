@@ -36,7 +36,7 @@ const STATE_PRESENTATION: Record<
   in_progress: {
     icon: SquarePen,
     stateWord: "in progress",
-    className: "bg-primary text-white",
+    className: "bg-primary text-canvas shadow-[var(--shadow-primary-glow)]",
   },
   under_review: {
     icon: Clock,
@@ -50,7 +50,7 @@ const STATE_PRESENTATION: Record<
   },
 };
 
-const SHINE_RAINBOW = ["#3fa199", "#ce63de", "#ff5765", "#ff8316"];
+const SHINE_RAINBOW = ["#00e676", "#35d7ff", "#7aaaff"];
 const CURRENT_RING_INSET_PX = -6;
 const POP_EASE: [number, number, number, number] = [0.34, 1.56, 0.64, 1];
 
@@ -122,7 +122,7 @@ export function PathNode({
         onAnimationComplete={() => setPoppingToAccepted(false)}
         className={[
           "focus-outline flex items-center justify-center rounded-full transition-colors duration-200",
-          accepted ? "bg-success text-white" : presentation?.className,
+          accepted ? "bg-success text-canvas shadow-[var(--shadow-primary-glow)]" : presentation?.className,
         ].join(" ")}
         style={{ width: sizePx, height: sizePx }}
       >

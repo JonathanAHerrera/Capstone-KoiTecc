@@ -66,7 +66,7 @@ export function ComingUpScreen({
                 aria-hidden
               >
                 {step.icon}
-                <span className="tabular-nums absolute -left-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-white">
+                <span className="tabular-nums absolute -left-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full bg-primary text-[11px] font-semibold text-canvas">
                   {stepIndex + 1}
                 </span>
               </span>

@@ -9,8 +9,8 @@ type ActiveToast = ToastOptions & { id: number };
 
 const TONE_STYLES: Record<ToastTone, { icon: typeof Info; className: string }> = {
   info: { icon: Info, className: "bg-dark-surface text-white" },
-  success: { icon: CircleCheck, className: "bg-success-ink text-white" },
-  warning: { icon: TriangleAlert, className: "bg-warning-ink text-white" },
+  success: { icon: CircleCheck, className: "bg-success text-canvas" },
+  warning: { icon: TriangleAlert, className: "bg-warning text-canvas" },
   danger: { icon: CircleAlert, className: "bg-danger-ink text-white" },
 };
 

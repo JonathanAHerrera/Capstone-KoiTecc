@@ -48,7 +48,7 @@ export function QuestionCard({
       {icon ? (
         <span
           className={`flex size-10 shrink-0 items-center justify-center rounded-[10px] [&>svg]:size-6 ${
-            selected ? "bg-primary text-white" : "bg-surface-alt text-primary-text"
+            selected ? "bg-primary text-canvas" : "bg-surface-alt text-primary-text"
           }`}
           aria-hidden
         >

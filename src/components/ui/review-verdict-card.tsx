@@ -40,13 +40,13 @@ export function ReviewVerdictCard({
         }`}
       >
         <span
-          className={`flex size-11 shrink-0 items-center justify-center rounded-full text-white ${accepted ? "bg-success-lip" : "bg-warning"}`}
+          className={`flex size-11 shrink-0 items-center justify-center rounded-full ${accepted ? "bg-success text-canvas" : "bg-warning text-canvas"}`}
           aria-hidden
         >
           {accepted ? (
             <CircleCheck className="size-7" strokeWidth={2.25} />
           ) : (
-            <CircleAlert className="size-7 text-ink" strokeWidth={2.25} />
+            <CircleAlert className="size-7" strokeWidth={2.25} />
           )}
         </span>
         <div className="min-w-0 flex-1">

@@ -328,7 +328,7 @@ export function PracticeWorkspace({
             <span className="caption mr-2 text-primary-text">{practice.family}</span>{" "}
             {practice.id}
           </p>
-          <ClickSpark ref={chipSparkRef} sparkColor="#ff8316" sparkCount={10} sparkRadius={22} duration={450} sparkOnClick={false} className="-my-3 -ml-3 py-3 pl-3 pr-2">
+          <ClickSpark ref={chipSparkRef} sparkColor="#00e676" sparkCount={10} sparkRadius={22} duration={450} sparkOnClick={false} className="-my-3 -ml-3 py-3 pl-3 pr-2">
             <motion.span
               key={chipPopCount}
               className="inline-flex origin-center"

@@ -37,13 +37,13 @@ const MotionLink = motion.create(Link);
 
 const VARIANT_WRAPPER_CLASSES: Record<BigButtonVariant, string> = {
   primary:
-    "btn-plate [--btn-surface:var(--color-primary)] [--btn-surface-hover:var(--color-primary-hover)] [--btn-surface-pressed:var(--color-primary-pressed)] [--btn-text:#ffffff]",
+    "btn-plate [--btn-plate-color:var(--color-primary-lip)] [--btn-surface:var(--color-primary)] [--btn-surface-hover:var(--color-primary-hover)] [--btn-surface-pressed:var(--color-primary-pressed)] [--btn-text:var(--color-primary-contrast)]",
   success:
-    "btn-plate [--btn-plate-color:color-mix(in_srgb,#000_22%,var(--color-success-lip))] [--btn-surface:var(--color-success-lip)] [--btn-surface-hover:color-mix(in_srgb,#fff_14%,var(--color-success-lip))] [--btn-surface-pressed:color-mix(in_srgb,#000_16%,var(--color-success-lip))] [--btn-text:#ffffff]",
+    "btn-plate [--btn-plate-color:color-mix(in_srgb,#000_22%,var(--color-success-lip))] [--btn-surface:var(--color-success)] [--btn-surface-hover:color-mix(in_srgb,#fff_14%,var(--color-success))] [--btn-surface-pressed:var(--color-success-lip)] [--btn-text:#06140d]",
   danger:
     "btn-plate [--btn-plate-color:color-mix(in_srgb,#000_22%,var(--color-danger-lip))] [--btn-surface:var(--color-danger-lip)] [--btn-surface-hover:color-mix(in_srgb,#fff_14%,var(--color-danger-lip))] [--btn-surface-pressed:color-mix(in_srgb,#000_16%,var(--color-danger-lip))] [--btn-text:#ffffff]",
   secondary:
-    "btn-plate btn-outline [--btn-surface:var(--color-surface)] [--btn-surface-hover:color-mix(in_srgb,#000_6%,#fff)] [--btn-surface-pressed:color-mix(in_srgb,#000_14%,#fff)] [--btn-text:var(--color-dark-surface)] [--btn-text-hover:var(--color-ink)]",
+    "btn-plate btn-outline [--btn-surface:var(--color-surface)] [--btn-surface-hover:var(--color-surface-alt)] [--btn-surface-pressed:var(--color-canvas)] [--btn-text:var(--color-text)] [--btn-text-hover:var(--color-ink)]",
   ghost:
     "btn-plate btn-outline [--btn-surface:transparent] [--btn-surface-hover:var(--color-primary-pale)] [--btn-surface-pressed:color-mix(in_srgb,#000_6%,var(--color-primary-pale))] [--btn-text:var(--color-primary-text)]",
 };
