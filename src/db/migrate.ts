@@ -76,6 +76,30 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
   )`,
   `CREATE INDEX IF NOT EXISTS reviews_submission_created_idx
     ON reviews (submission_id, created_at)`,
+  `CREATE TABLE IF NOT EXISTS radar_profiles (
+    org_id TEXT PRIMARY KEY REFERENCES organizations(id) ON DELETE CASCADE,
+    industries TEXT NOT NULL,
+    naics_codes TEXT NOT NULL,
+    keywords TEXT NOT NULL,
+    technologies TEXT NOT NULL,
+    government_contractor INTEGER NOT NULL,
+    handles_sensitive_data INTEGER NOT NULL,
+    texas_operations INTEGER NOT NULL,
+    updated_at TEXT NOT NULL
+  )`,
+  `CREATE TABLE IF NOT EXISTS radar_decisions (
+    id TEXT PRIMARY KEY,
+    org_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    item_id TEXT NOT NULL,
+    decision TEXT NOT NULL,
+    rationale TEXT NOT NULL,
+    reviewer TEXT NOT NULL,
+    source_title TEXT NOT NULL,
+    source_url TEXT NOT NULL,
+    decided_at TEXT NOT NULL
+  )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS radar_decisions_org_item_unique
+    ON radar_decisions (org_id, item_id)`,
 ];
 
 // Columns added after the first release; CREATE TABLE IF NOT EXISTS skips existing

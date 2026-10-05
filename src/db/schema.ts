@@ -62,6 +62,40 @@ export const reviews = sqliteTable("reviews", {
   createdAt: text("created_at").notNull(),
 });
 
+export const radarProfiles = sqliteTable("radar_profiles", {
+  orgId: text("org_id")
+    .primaryKey()
+    .references(() => organizations.id, { onDelete: "cascade" }),
+  industries: text("industries").notNull(),
+  naicsCodes: text("naics_codes").notNull(),
+  keywords: text("keywords").notNull(),
+  technologies: text("technologies").notNull(),
+  governmentContractor: integer("government_contractor", { mode: "boolean" }).notNull(),
+  handlesSensitiveData: integer("handles_sensitive_data", { mode: "boolean" }).notNull(),
+  texasOperations: integer("texas_operations", { mode: "boolean" }).notNull(),
+  updatedAt: text("updated_at").notNull(),
+});
+
+export const radarDecisions = sqliteTable(
+  "radar_decisions",
+  {
+    id: text("id").primaryKey(),
+    orgId: text("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    itemId: text("item_id").notNull(),
+    decision: text("decision")
+      .notNull()
+      .$type<"applies" | "does_not_apply" | "expert_review" | "track" | "accepted_risk">(),
+    rationale: text("rationale").notNull(),
+    reviewer: text("reviewer").notNull(),
+    sourceTitle: text("source_title").notNull(),
+    sourceUrl: text("source_url").notNull(),
+    decidedAt: text("decided_at").notNull(),
+  },
+  (table) => [uniqueIndex("radar_decisions_org_item_unique").on(table.orgId, table.itemId)],
+);
+
 export type OrganizationRow = typeof organizations.$inferSelect;
 export type NewOrganizationRow = typeof organizations.$inferInsert;
 export type SubmissionRow = typeof submissions.$inferSelect;
@@ -70,6 +104,10 @@ export type EvidenceFileRow = typeof evidenceFiles.$inferSelect;
 export type NewEvidenceFileRow = typeof evidenceFiles.$inferInsert;
 export type ReviewRow = typeof reviews.$inferSelect;
 export type NewReviewRow = typeof reviews.$inferInsert;
+export type RadarProfileRow = typeof radarProfiles.$inferSelect;
+export type NewRadarProfileRow = typeof radarProfiles.$inferInsert;
+export type RadarDecisionRow = typeof radarDecisions.$inferSelect;
+export type NewRadarDecisionRow = typeof radarDecisions.$inferInsert;
 
 export type SubmissionStatus = SubmissionRow["status"];
 export type ReviewVerdictValue = ReviewRow["verdict"];
