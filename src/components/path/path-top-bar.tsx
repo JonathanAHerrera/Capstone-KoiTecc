@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ClipboardList, Settings } from "lucide-react";
+import { ClipboardList, RadioTower, Settings } from "lucide-react";
 import type { CmmcLevel } from "@/lib/practice-types";
 
 export type PathTopBarProps = {
@@ -15,6 +15,9 @@ export function PathTopBar({ organizationName, targetLevel }: PathTopBarProps) {
           <h1 className="truncate text-[20px] font-semibold tracking-[-0.02em] text-ink">{organizationName}</h1>
         </div>
         <nav aria-label="Workspace tools" className="flex shrink-0 items-center gap-1.5">
+          <Link href="/radar" aria-label="Open standards and policy radar" className="focus-outline flex size-10 items-center justify-center rounded-[10px] border border-border bg-surface text-text-secondary transition-colors hover:bg-surface-alt hover:text-ink">
+            <RadioTower className="size-5" strokeWidth={2} aria-hidden />
+          </Link>
           <Link href="/summary" aria-label="Open readiness summary" className="focus-outline flex size-10 items-center justify-center rounded-[10px] border border-border bg-surface text-text-secondary transition-colors hover:bg-surface-alt hover:text-ink">
             <ClipboardList className="size-5" strokeWidth={2} aria-hidden />
           </Link>
