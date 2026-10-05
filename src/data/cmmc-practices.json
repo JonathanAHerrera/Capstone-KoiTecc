@@ -1,0 +1,1534 @@
+[
+  {
+    "id": "AC.L1-b.1.i",
+    "level": 1,
+    "family": "AC",
+    "familyName": "Access Control",
+    "nist171Ref": "3.1.1",
+    "title": "Authorized Access Control",
+    "officialText": "Limit information system access to authorized users, processes acting on behalf of authorized users, or devices (including other information systems).",
+    "plainEnglish": "Only people, software, and devices you have approved can log in to your company computers and network. Keep a list of who and what is allowed, and turn off accounts that are no longer needed.",
+    "assessmentObjectives": [
+      "[a] authorized users are identified;",
+      "[b] processes acting on behalf of authorized users are identified;",
+      "[c] devices (and other systems) authorized to connect to the system are identified;",
+      "[d] system access is limited to authorized users;",
+      "[e] system access is limited to processes acting on behalf of authorized users; and",
+      "[f] system access is limited to authorized devices (including other systems)."
+    ],
+    "whyItMatters": "Unmanaged or forgotten accounts and unknown devices are the easiest way for an outsider or ex-employee to reach Federal Contract Information.",
+    "evidenceTypes": ["screenshot", "document", "photo", "text"],
+    "evidenceExamples": [
+      "Screenshot of the user list in Microsoft 365 Admin Center, Google Workspace Admin, or Active Directory Users and Computers showing each account tied to a named person",
+      "Spreadsheet or document listing authorized users, their role, and which systems they may access",
+      "Screenshot of a disabled or deleted account for a recently departed employee, with the departure date",
+      "Screenshot of the router, Wi-Fi controller, or MDM console showing the list of approved devices or MAC allow-list",
+      "Photo of the new-hire/termination checklist form showing an 'account created' and 'account disabled' step",
+      "Screenshot of service accounts list with a note of which person owns each one"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for a named list of users (not just a count) and evidence that it matches the live account directory; accounts labelled 'test', 'temp', 'admin2' or generic shared logins with no owner are a red flag. Accept a device inventory or MDM/router screenshot as evidence for objectives [c] and [f]. Reject blurry screenshots where usernames cannot be read, lists with no date, or a policy document alone with no screenshot of the actual accounts. An assessor will still need to interview whoever approves accounts to confirm the process is followed.",
+    "commonFailures": [
+      "Shared or generic accounts (e.g., 'frontdesk', 'scanner') with no accountable owner",
+      "Accounts of former employees or contractors still active",
+      "No list of authorized devices; anyone can join the office Wi-Fi",
+      "Service accounts and automated processes not inventoried"
+    ],
+    "estimatedEffortMinutes": 30,
+    "pointValue": 0
+  },
+  {
+    "id": "AC.L1-b.1.ii",
+    "level": 1,
+    "family": "AC",
+    "familyName": "Access Control",
+    "nist171Ref": "3.1.2",
+    "title": "Transaction & Function Control",
+    "officialText": "Limit information system access to the types of transactions and functions that authorized users are permitted to execute.",
+    "plainEnglish": "People should only be able to do what their job requires. A bookkeeper does not need admin rights, and a technician does not need the contracts folder.",
+    "assessmentObjectives": [
+      "[a] the types of transactions and functions that authorized users are permitted to execute are defined; and",
+      "[b] system access is limited to the defined types of transactions and functions for authorized users."
+    ],
+    "whyItMatters": "If every user is an administrator, one phished password gives an attacker the keys to everything, including FCI.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of the folder or SharePoint permissions dialog for the contracts/FCI folder showing which groups have read vs. edit rights",
+      "Screenshot of a standard employee's Windows or macOS account showing 'Standard user' (not Administrator)",
+      "Role-permission matrix (even a simple spreadsheet) listing roles such as Owner, Project Manager, Accounting, and what each may do",
+      "Screenshot of admin roles in Microsoft 365 or Google Workspace showing only one or two named admins",
+      "Screenshot of QuickBooks, ERP, or contract-management system user roles"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Check that the evidence shows differentiated access: at least two distinct permission levels and a small number of administrators. A screenshot showing every user in the 'Global Administrator' or 'Domain Admins' group is a fail. A matrix with no corresponding screenshot of enforcement only covers objective [a]. An assessor would still test by logging in as a normal user to confirm restrictions actually apply.",
+    "commonFailures": [
+      "All employees run as local administrators on their laptops",
+      "Everyone has edit access to the shared drive containing FCI",
+      "Roles are defined on paper but never configured in the system",
+      "Former roles are never removed when someone changes jobs"
+    ],
+    "estimatedEffortMinutes": 30,
+    "pointValue": 0
+  },
+  {
+    "id": "AC.L1-b.1.iii",
+    "level": 1,
+    "family": "AC",
+    "familyName": "Access Control",
+    "nist171Ref": "3.1.20",
+    "title": "External Connections",
+    "officialText": "Verify and control/limit connections to and use of external information systems.",
+    "plainEnglish": "Know and control which outside systems (personal laptops, home computers, cloud services, partner networks) can connect to your company systems or be used to handle FCI.",
+    "assessmentObjectives": [
+      "[a] connections to external systems are identified;",
+      "[b] the use of external systems is identified;",
+      "[c] connections to external systems are verified;",
+      "[d] the use of external systems is verified;",
+      "[e] connections to external systems are controlled/limited; and",
+      "[f] the use of external systems is controlled/limited."
+    ],
+    "whyItMatters": "FCI that drifts onto an unmanaged personal device or an unapproved cloud app is outside every protection you have built.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Written policy (one page is fine) stating that only company-owned devices may access FCI and listing approved cloud services (e.g., Microsoft 365 GCC, Google Workspace)",
+      "Screenshot of the Conditional Access or device-compliance rule in Microsoft Entra / Google Admin that blocks unmanaged devices",
+      "Screenshot of the VPN or firewall admin page showing allowed remote-access methods",
+      "Screenshot of the MDM/Intune device list showing only company devices enrolled",
+      "Short list (text) of every external system you connect to: cloud email, file sharing, customer portals, partner networks",
+      "Signed acceptable-use acknowledgement form from an employee"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Expect two things: an inventory of external systems and connections (document or text), and at least one technical screenshot showing how the connection is limited (device compliance, VPN, allow-list). Policy alone satisfies only [a], [b] and arguably [f]. Reject if the 'inventory' is clearly incomplete (e.g., company uses cloud email but it is not listed) or if the screenshot shows personal devices enrolled without restriction. Assessors will interview staff about whether personal devices are actually used.",
+    "commonFailures": [
+      "Staff check company email containing FCI on unmanaged personal phones with no controls",
+      "No written list of approved external/cloud services",
+      "Personal Dropbox or Gmail used to move contract files",
+      "Vendor or partner connections never documented"
+    ],
+    "estimatedEffortMinutes": 45,
+    "pointValue": 0
+  },
+  {
+    "id": "AC.L1-b.1.iv",
+    "level": 1,
+    "family": "AC",
+    "familyName": "Access Control",
+    "nist171Ref": "3.1.22",
+    "title": "Control Public Information",
+    "officialText": "Control information posted or processed on publicly accessible information systems.",
+    "plainEnglish": "Decide who is allowed to post to your website and social media, and have someone check that nothing from a government contract ends up there.",
+    "assessmentObjectives": [
+      "[a] individuals authorized to post or process information on publicly accessible systems are identified;",
+      "[b] procedures to ensure [FCI] is not posted or processed on publicly accessible systems are identified;",
+      "[c] a review process is in place prior to posting of any content to publicly accessible systems;",
+      "[d] content on publicly accessible systems is reviewed to ensure that it does not include [FCI]; and",
+      "[e] mechanisms are in place to remove and address improper posting of [FCI]."
+    ],
+    "whyItMatters": "A single contract document or drawing posted in a 'look what we won' announcement is a direct disclosure of FCI.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of the website CMS (WordPress, Squarespace, Wix) user list showing only one or two named editors/admins",
+      "Screenshot of LinkedIn/Facebook page admin roles",
+      "One-paragraph written procedure: who drafts, who reviews for FCI, who approves before posting, and how to remove a post",
+      "Email or ticket thread showing a press release being reviewed and approved before publication",
+      "Screenshot of the company website's news page with a note that it was reviewed on a given date"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for named authorized posters (CMS or social-media admin screenshot) plus a short written review-before-posting procedure that includes a removal step. A CMS screenshot showing many users with Administrator/Editor rights undermines objective [a]. A procedure with no evidence it was ever used (no approval email, no review log) covers [b] and [c] but not [d]. Reject if the only evidence is a statement like 'we never post FCI' with nothing behind it.",
+    "commonFailures": [
+      "No defined approver; anyone in marketing can publish",
+      "Review process exists but no record it was ever performed",
+      "No way to quickly take down improperly posted content",
+      "Contract award announcements include document excerpts or part numbers from the contract"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 0
+  },
+  {
+    "id": "IA.L1-b.1.v",
+    "level": 1,
+    "family": "IA",
+    "familyName": "Identification and Authentication",
+    "nist171Ref": "3.5.1",
+    "title": "Identification",
+    "officialText": "Identify information system users, processes acting on behalf of users, or devices.",
+    "plainEnglish": "Every person gets their own username, every automated process or service account has a name and an owner, and every computer or device has a unique name so you can tell them apart.",
+    "assessmentObjectives": [
+      "[a] system users are identified;",
+      "[b] processes acting on behalf of users are identified; and",
+      "[c] devices accessing the system are identified."
+    ],
+    "whyItMatters": "Without unique identities you cannot tell who did what, so you cannot limit access or investigate a problem.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of the user directory (Microsoft 365, Google Workspace, Active Directory) showing one account per person, named after the person",
+      "Screenshot of the login screen on a shared office PC showing individual user tiles rather than a single shared account",
+      "Device inventory spreadsheet or MDM screenshot listing each computer by asset tag or hostname (e.g., LAPTOP-JSMITH-01)",
+      "Photo of an asset-tag label on a laptop or printer",
+      "List of service accounts (backup job, scanner-to-email) with the responsible person for each"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Confirm that user names map to individual people (first.last, jsmith) and that no generic logins like 'user', 'office', or 'admin' are used for daily work. For devices, accept an inventory or MDM screenshot with unique hostnames or asset tags; a photo of a single asset tag supports but does not prove [c]. Reject screenshots where account names are unreadable or where shared accounts are visible without explanation. Interview is still needed to confirm no account sharing happens in practice.",
+    "commonFailures": [
+      "One shared 'Office' login used by several employees",
+      "Devices identified only as 'DESKTOP-A1B2C3' with no inventory tying them to a person or location",
+      "Service accounts created ad hoc and never documented",
+      "Contractors share a single login"
+    ],
+    "estimatedEffortMinutes": 25,
+    "pointValue": 0
+  },
+  {
+    "id": "IA.L1-b.1.vi",
+    "level": 1,
+    "family": "IA",
+    "familyName": "Identification and Authentication",
+    "nist171Ref": "3.5.2",
+    "title": "Authentication",
+    "officialText": "Authenticate (or verify) the identities of those users, processes, or devices, as a prerequisite to allowing access to organizational information systems.",
+    "plainEnglish": "Nobody and nothing gets in without proving who they are, usually a password (and ideally a second factor). Change every factory-default password on routers, printers, and cameras.",
+    "assessmentObjectives": [
+      "[a] the identity of each user is authenticated or verified as a prerequisite to system access;",
+      "[b] the identity of each process acting on behalf of a user is authenticated or verified as a prerequisite to system access; and",
+      "[c] the identity of each device accessing or connecting to the system is authenticated or verified as a prerequisite to system access."
+    ],
+    "whyItMatters": "Default passwords and password-less logins are the most common way attackers walk straight into small-business networks.",
+    "evidenceTypes": ["screenshot", "photo", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of the password policy settings (minimum length, lockout) in Microsoft 365, Google Admin, Active Directory, or macOS/Windows local policy",
+      "Photo of a laptop at the Windows/macOS login prompt asking for a password (and the user's name)",
+      "Screenshot of the router/firewall admin login showing a custom admin username (not 'admin/admin'), with the password hidden",
+      "Screenshot of Wi-Fi settings showing WPA2/WPA3-Enterprise or at minimum a strong WPA2 passphrase, and that the guest network is separate",
+      "Screenshot of MFA enrollment status for users in the identity provider",
+      "Checklist or text statement that default credentials on the firewall, printer, and cameras were changed, with dates"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Verify that a password policy is actually configured (screenshot of the setting, not just a written policy) and that network devices do not use default credentials; a router login page showing username 'admin' is not automatically a fail but ask for confirmation the password was changed. Device authentication [c] can be shown via Wi-Fi security settings, 802.1X, VPN certificates, or MDM enrollment. Never accept a screenshot that reveals an actual password; flag it and ask for a redacted re-upload. Testing by an assessor is still expected.",
+    "commonFailures": [
+      "Default admin password still set on the firewall, Wi-Fi access point, or network printer",
+      "Auto-login enabled on shared office computers",
+      "Open or shared guest Wi-Fi on the same network as FCI computers",
+      "No password requirements enforced technically"
+    ],
+    "estimatedEffortMinutes": 30,
+    "pointValue": 0
+  },
+  {
+    "id": "MP.L1-b.1.vii",
+    "level": 1,
+    "family": "MP",
+    "familyName": "Media Protection",
+    "nist171Ref": "3.8.3",
+    "title": "Media Disposal",
+    "officialText": "Sanitize or destroy information system media containing Federal Contract Information before disposal or release for reuse.",
+    "plainEnglish": "Before you throw away, sell, donate, or hand down a computer, hard drive, USB stick, phone, or paper file that held contract information, wipe it or physically destroy it.",
+    "assessmentObjectives": [
+      "[a] system media containing [FCI] is sanitized or destroyed before disposal; and",
+      "[b] system media containing [FCI] is sanitized before it is released for reuse."
+    ],
+    "whyItMatters": "Discarded drives and papers are routinely recovered from dumpsters and resale sites with the data intact.",
+    "evidenceTypes": ["photo", "document", "screenshot", "text"],
+    "evidenceExamples": [
+      "Photo of the cross-cut shredder or locked shred-bin where paper with FCI goes",
+      "Certificate of destruction from a shredding or e-waste vendor (photo or PDF)",
+      "Photo of a drive-destruction log or a drilled/crushed hard drive before disposal",
+      "Screenshot of a BitLocker/FileVault reset, factory-reset confirmation, or wipe-tool report (e.g., DBAN, manufacturer secure-erase) for a reused laptop",
+      "One-paragraph written disposal procedure naming the method for paper, drives, USB sticks, and phones",
+      "Photo of the IT asset disposal log listing device, date, method, and who did it"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Strong evidence is a destruction certificate or disposal log entry tied to a specific device plus a photo of the shredder or shred bin. A policy alone covers neither objective; it must be paired with proof it was applied at least once, or a statement that no media has been disposed of yet. Reject photos of ordinary trash cans or recycling bins, and reject 'we delete the files' as a sanitization method for drives being resold or reused. Interview still needed to confirm reuse cases (objective [b]).",
+    "commonFailures": [
+      "Old laptops donated or sold with the drive intact",
+      "Paper with contract details placed in regular recycling",
+      "Printer or copier returned at lease end without wiping its internal drive",
+      "No record of what was disposed of or how"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 0
+  },
+  {
+    "id": "PE.L1-b.1.viii",
+    "level": 1,
+    "family": "PE",
+    "familyName": "Physical Protection",
+    "nist171Ref": "3.10.1",
+    "title": "Limit Physical Access",
+    "officialText": "Limit physical access to organizational information systems, equipment, and the respective operating environments to authorized individuals.",
+    "plainEnglish": "Keep your computers, servers, network gear, and printers in spaces that only approved employees can get into, and keep a list of who those people are.",
+    "assessmentObjectives": [
+      "[a] authorized individuals allowed physical access are identified;",
+      "[b] physical access to organizational systems is limited to authorized individuals;",
+      "[c] physical access to equipment is limited to authorized individuals; and",
+      "[d] physical access to operating environments is limited to authorized individuals."
+    ],
+    "whyItMatters": "Someone who can touch a machine can bypass most software protections in minutes.",
+    "evidenceTypes": ["photo", "document", "video", "text"],
+    "evidenceExamples": [
+      "Photo of the main office entry door showing the lock, keypad, or badge reader",
+      "Photo of the closed and locked server/network closet or the locked rack/cabinet holding the router and switch",
+      "Photo of the printer location showing it is inside the employee-only area, not in a lobby",
+      "List (document or text) of employees authorized to enter the office and the server closet, with the date it was last reviewed",
+      "Short video walking from the public entrance to the FCI work area showing each locked door along the way",
+      "Photo of the key-holder or badge-holder list"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for a physical barrier (lock, badge reader, keypad) between public space and the area where systems live, and a named list of authorized people. A photo of a door with no visible lock, a server on an open shelf in a shared hallway, or a propped-open door is a fail. The authorized list must exist as a document, not just be implied by the photo. The AI cannot confirm the door is actually kept locked during the day; an assessor will walk the site.",
+    "commonFailures": [
+      "Network equipment in an unlocked closet or under a desk in a shared space",
+      "No written list of who is authorized to be in the office or server area",
+      "Printer in a public lobby prints FCI where visitors can see it",
+      "Doors left propped open for deliveries"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 0
+  },
+  {
+    "id": "PE.L1-b.1.ix",
+    "level": 1,
+    "family": "PE",
+    "familyName": "Physical Protection",
+    "nist171Ref": "3.10.3, 3.10.4, 3.10.5",
+    "title": "Manage Visitors & Physical Access",
+    "officialText": "Escort visitors and monitor visitor activity; maintain audit logs of physical access; and control and manage physical access devices.",
+    "plainEnglish": "Visitors sign in, wear a badge, and are walked around by an employee. Keep a log of who entered the building. Know exactly who has keys, badges, and door codes, and take them back when people leave.",
+    "assessmentObjectives": [
+      "[a] visitors are escorted;",
+      "[b] visitor activity is monitored;",
+      "[c] audit logs of physical access are maintained;",
+      "[d] physical access devices are identified;",
+      "[e] physical access devices are controlled; and",
+      "[f] physical access devices are managed."
+    ],
+    "whyItMatters": "Unescorted visitors and unaccounted-for keys are how 'walk-in' theft of equipment and documents happens.",
+    "evidenceTypes": ["photo", "document", "screenshot", "video", "text"],
+    "evidenceExamples": [
+      "Photo of the visitor sign-in sheet or kiosk at reception with recent (redacted) entries",
+      "Photo of the visitor badges or lanyards",
+      "Screenshot of the badge-reader access log export, or photo of the paper employee sign-in log",
+      "Spreadsheet or photo of the key/badge/fob inventory listing each key number or badge ID and the person holding it",
+      "Photo of the lock-box or key cabinet where spare keys are kept",
+      "One-page visitor procedure: sign in, badge, escort at all times, sign out; plus how keys are returned at termination and when codes are changed"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Expect three distinct things: visitor controls (sign-in sheet or kiosk plus badges), an access log that is retained, and a key/badge inventory naming holders. A visitor log with gaps of weeks when the business is clearly open, or a key inventory with unassigned or 'unknown' keys, should be flagged. A procedure without a filled-in log is not sufficient for [c]. Escorting [a] and monitoring [b] are behaviors the AI cannot verify from a photo; note that an assessor will interview reception staff.",
+    "commonFailures": [
+      "Visitors wander unescorted once past the front desk",
+      "Visitor log exists but is rarely filled in or is thrown out",
+      "No inventory of who holds keys or badges; departed employees still have keys",
+      "Door codes never changed after staff turnover"
+    ],
+    "estimatedEffortMinutes": 30,
+    "pointValue": 0
+  },
+  {
+    "id": "SC.L1-b.1.x",
+    "level": 1,
+    "family": "SC",
+    "familyName": "System and Communications Protection",
+    "nist171Ref": "3.13.1",
+    "title": "Boundary Protection",
+    "officialText": "Monitor, control, and protect organizational communications (i.e., information transmitted or received by organizational information systems) at the external boundaries and key internal boundaries of the information systems.",
+    "plainEnglish": "Have a firewall between your office network and the internet, know where the edges of your network are, and have some way of seeing or logging what crosses them.",
+    "assessmentObjectives": [
+      "[a] the external system boundary is defined;",
+      "[b] key internal system boundaries are defined;",
+      "[c] communications are monitored at the external system boundary;",
+      "[d] communications are monitored at key internal boundaries;",
+      "[e] communications are controlled at the external system boundary;",
+      "[f] communications are controlled at key internal boundaries;",
+      "[g] communications are protected at the external system boundary; and",
+      "[h] communications are protected at key internal boundaries."
+    ],
+    "whyItMatters": "A firewall is the fence around the network; without it every computer is directly exposed to the internet.",
+    "evidenceTypes": ["screenshot", "photo", "document", "text"],
+    "evidenceExamples": [
+      "Simple network diagram (hand-drawn and photographed is acceptable) showing the internet, the firewall/router, the office network, Wi-Fi, guest network, and any cloud services",
+      "Photo of the firewall or business router with the model label visible",
+      "Screenshot of the firewall rules page showing inbound traffic denied by default",
+      "Screenshot of the firewall's log or traffic summary page showing it records blocked connections",
+      "Screenshot showing a separate guest Wi-Fi VLAN or SSID isolated from the office network",
+      "Screenshot of the firewall firmware version page showing a recent update"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Require a network diagram (even rough) to satisfy [a] and [b], plus a firewall screenshot showing both a deny-by-default inbound rule set [e] and some logging or monitoring feature enabled [c]. A photo of a consumer ISP modem with no evidence of firewall configuration is weak. Reject if the diagram omits obvious components (cloud email, Wi-Fi) or if the rules screenshot shows 'allow any/any' inbound. Testing and interview of whoever manages the firewall are still expected.",
+    "commonFailures": [
+      "No network diagram; nobody can say where the boundary is",
+      "Consumer ISP router with default settings and no logging",
+      "Guest Wi-Fi on the same network as FCI workstations",
+      "Firewall logs exist but nobody ever looks at them"
+    ],
+    "estimatedEffortMinutes": 45,
+    "pointValue": 0
+  },
+  {
+    "id": "SC.L1-b.1.xi",
+    "level": 1,
+    "family": "SC",
+    "familyName": "System and Communications Protection",
+    "nist171Ref": "3.13.5",
+    "title": "Public-Access System Separation",
+    "officialText": "Implement subnetworks for publicly accessible system components that are physically or logically separated from internal networks.",
+    "plainEnglish": "Anything the public can reach (your website, a customer portal, guest Wi-Fi) must sit on a separate network from the computers that hold contract information. If your website is hosted by a vendor, that usually counts.",
+    "assessmentObjectives": [
+      "[a] publicly accessible system components are identified; and",
+      "[b] subnetworks for publicly accessible system components are physically or logically separated from internal networks."
+    ],
+    "whyItMatters": "A compromised public web server on the same network as your office PCs is a direct path to FCI.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Text statement listing every publicly reachable system (website, customer portal, remote-access gateway, guest Wi-Fi) and where each is hosted",
+      "Screenshot of the hosting provider's dashboard (Squarespace, GoDaddy, AWS) showing the website is hosted externally, not in the office",
+      "Screenshot of the firewall/router VLAN or DMZ configuration showing the guest or public segment separated from the internal LAN",
+      "Network diagram with the public-facing components clearly outside the internal network",
+      "Screenshot of guest Wi-Fi settings showing 'client isolation' or 'block access to LAN' enabled"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "First confirm the organization listed its public-facing components; 'we have none' is acceptable only if a guest Wi-Fi and website are also addressed. Then look for proof of separation: external hosting dashboard, DMZ/VLAN configuration, or guest-isolation setting. Reject if a web server or publicly reachable device is shown on the same subnet as workstations, or if evidence is a diagram with no supporting screenshot. An assessor may test reachability between segments.",
+    "commonFailures": [
+      "Guest Wi-Fi bridged to the internal office network",
+      "Self-hosted website or camera DVR exposed to the internet from the office LAN",
+      "Public components never inventoried",
+      "Port-forwarding rules exposing internal devices directly"
+    ],
+    "estimatedEffortMinutes": 25,
+    "pointValue": 0
+  },
+  {
+    "id": "SI.L1-b.1.xii",
+    "level": 1,
+    "family": "SI",
+    "familyName": "System and Information Integrity",
+    "nist171Ref": "3.14.1",
+    "title": "Flaw Remediation",
+    "officialText": "Identify, report, and correct information and information system flaws in a timely manner.",
+    "plainEnglish": "Install security updates for Windows, macOS, browsers, office software, phones, and your firewall within a set time frame you have written down, and keep track that it happened.",
+    "assessmentObjectives": [
+      "[a] the time within which to identify system flaws is specified;",
+      "[b] system flaws are identified within the specified time frame;",
+      "[c] the time within which to report system flaws is specified;",
+      "[d] system flaws are reported within the specified time frame;",
+      "[e] the time within which to correct system flaws is specified; and",
+      "[f] system flaws are corrected within the specified time frame."
+    ],
+    "whyItMatters": "Most successful attacks exploit flaws for which a patch has existed for months.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Written patch policy (a few sentences) stating that updates are checked weekly and critical patches applied within X days",
+      "Screenshot of Windows Update or macOS Software Update showing 'You're up to date' with today's date visible",
+      "Screenshot of the patch-management or RMM dashboard (Intune, NinjaOne, Datto, Jamf) showing compliance across all devices",
+      "Screenshot of the firewall or router firmware page showing the current version and last update date",
+      "Screenshot of browser 'About' page showing the version is current",
+      "Simple patch log spreadsheet with device, date, and what was updated"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Require both a defined time frame (policy text with actual numbers of days) and evidence of currency (update screenshots with visible dates no older than about 30 days, or a dashboard showing all devices compliant). A single laptop screenshot does not prove the whole fleet is patched; ask for a dashboard or one screenshot per device for small fleets. Reject screenshots showing pending updates, 'restart required' for weeks, or firmware years out of date. Interview is still needed to confirm the process is routine.",
+    "commonFailures": [
+      "No written time frame for applying patches",
+      "Firewall and network device firmware never updated",
+      "Updates disabled on a 'critical' machine that is never patched",
+      "No record showing patches were applied, only a verbal assurance"
+    ],
+    "estimatedEffortMinutes": 30,
+    "pointValue": 0
+  },
+  {
+    "id": "SI.L1-b.1.xiii",
+    "level": 1,
+    "family": "SI",
+    "familyName": "System and Information Integrity",
+    "nist171Ref": "3.14.2",
+    "title": "Malicious Code Protection",
+    "officialText": "Provide protection from malicious code at appropriate locations within organizational information systems.",
+    "plainEnglish": "Run antivirus/anti-malware on every computer, server, and phone that handles contract information, and on email if your provider offers it. Decide where it needs to be and make sure it is there.",
+    "assessmentObjectives": [
+      "[a] designated locations for malicious code protection are identified; and",
+      "[b] protection from malicious code at designated locations is provided."
+    ],
+    "whyItMatters": "Ransomware and spyware still arrive mostly through email and downloads; endpoint protection is the first line that stops them.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of the antivirus console (Microsoft Defender for Business, CrowdStrike, Bitdefender, Sophos) listing all protected devices",
+      "Screenshot of Windows Security or macOS endpoint protection showing 'Protected / Real-time protection On' on a workstation",
+      "Short list (text) of locations where protection is installed: every laptop, the file server, email gateway, phones",
+      "Screenshot of email provider's anti-malware/attachment scanning setting (Microsoft 365 Defender, Google Workspace)",
+      "Screenshot of the AV vendor subscription or license page showing the device count matches the number of devices"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Verify the console or per-device screenshot shows real-time protection enabled, and that the number of protected devices matches the device inventory the organization provided elsewhere. A list of designated locations should be present as text. Reject screenshots showing 'Protection off', expired licenses, or a console with fewer devices than the organization owns. Consumer free AV is acceptable at Level 1 as long as it is installed everywhere.",
+    "commonFailures": [
+      "Antivirus installed on laptops but not on the file server or Macs",
+      "Expired subscription so definitions have stopped updating",
+      "No decision about which locations need protection (e.g., email gateway ignored)",
+      "Real-time protection disabled to 'make software work'"
+    ],
+    "estimatedEffortMinutes": 15,
+    "pointValue": 0
+  },
+  {
+    "id": "SI.L1-b.1.xiv",
+    "level": 1,
+    "family": "SI",
+    "familyName": "System and Information Integrity",
+    "nist171Ref": "3.14.4",
+    "title": "Update Malicious Code Protection",
+    "officialText": "Update malicious code protection mechanisms when new releases are available.",
+    "plainEnglish": "Antivirus is only useful if its definitions are current. Set it to update automatically and check that it does.",
+    "assessmentObjectives": [
+      "[a] malicious code protection mechanisms are updated when new releases are available."
+    ],
+    "whyItMatters": "New malware appears hourly; definitions more than a few days old leave a gap attackers count on.",
+    "evidenceTypes": ["screenshot", "text"],
+    "evidenceExamples": [
+      "Screenshot of the antivirus settings page showing automatic updates enabled",
+      "Screenshot of the antivirus status page showing 'Definitions last updated' with a date within the last few days",
+      "Screenshot of the AV management console showing all devices with current definitions (no 'out of date' warnings)",
+      "Text statement of the update frequency (e.g., 'checks every 4 hours automatically')"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Look for a visible definition/engine date within a few days of the upload date and an automatic-update toggle set to on. Compare the screenshot date to the submission date; definitions more than about 7 days old fail. If a console is provided, any device flagged 'out of date' should be noted and the organization asked to resolve it. This is one of the most directly verifiable practices from a screenshot alone.",
+    "commonFailures": [
+      "Automatic updates turned off",
+      "Machines that have been powered off for weeks come back with stale definitions",
+      "Subscription lapsed so updates silently stopped",
+      "Nobody checks the console for out-of-date devices"
+    ],
+    "estimatedEffortMinutes": 10,
+    "pointValue": 0
+  },
+  {
+    "id": "SI.L1-b.1.xv",
+    "level": 1,
+    "family": "SI",
+    "familyName": "System and Information Integrity",
+    "nist171Ref": "3.14.5",
+    "title": "System & File Scanning",
+    "officialText": "Perform periodic scans of the information system and real-time scans of files from external sources as files are downloaded, opened, or executed.",
+    "plainEnglish": "Antivirus should scan every file as it is downloaded or opened, and also run a full scheduled scan (for example weekly) of each computer.",
+    "assessmentObjectives": [
+      "[a] the frequency for malicious code scans is defined;",
+      "[b] malicious code scans are performed with the defined frequency; and",
+      "[c] real-time malicious code scans of files from external sources as files are downloaded, opened, or executed are performed."
+    ],
+    "whyItMatters": "Real-time scanning catches malware the moment it arrives; periodic scans catch what slipped past before definitions caught up.",
+    "evidenceTypes": ["screenshot", "text"],
+    "evidenceExamples": [
+      "Screenshot of the antivirus settings showing real-time protection on and a scheduled scan configured (e.g., weekly full scan)",
+      "Screenshot of the scan history showing the last completed full scan with its date",
+      "Screenshot of email provider attachment-scanning / Safe Attachments setting",
+      "Screenshot of the AV console showing scheduled-scan policy applied to all devices",
+      "Text statement of the defined scan frequency"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Confirm three items: real-time protection on, a scheduled scan configured, and scan history showing it actually ran recently. A defined frequency must be stated (text or visible in the schedule setting). Reject if scan history shows the last full scan months ago, if real-time scanning is off, or if only one of the three is shown. Check that USB/removable-media scanning is not disabled where the setting is visible.",
+    "commonFailures": [
+      "Scheduled scans never configured; only real-time protection",
+      "Scans scheduled at a time the laptop is always off, so they never run",
+      "No defined frequency written anywhere",
+      "USB drives excluded from scanning"
+    ],
+    "estimatedEffortMinutes": 10,
+    "pointValue": 0
+  },
+  {
+    "id": "MP.L2-3.8.1",
+    "level": 2,
+    "family": "MP",
+    "familyName": "Media Protection",
+    "nist171Ref": "3.8.1",
+    "title": "Media Protection",
+    "officialText": "Protect (i.e., physically control and securely store) system media containing CUI, both paper and digital.",
+    "plainEnglish": "Paper files, USB drives, external disks, and backup media that hold CUI are kept in a locked drawer, cabinet, or room, and you keep track of them.",
+    "assessmentObjectives": [
+      "[a] paper media containing CUI is physically controlled;",
+      "[b] digital media containing CUI is physically controlled;",
+      "[c] paper media containing CUI is securely stored; and",
+      "[d] digital media containing CUI is securely stored."
+    ],
+    "whyItMatters": "Loose paper and unlabeled USB sticks are the easiest CUI to lose or walk off with.",
+    "evidenceTypes": ["photo", "document", "text"],
+    "evidenceExamples": [
+      "Photo of the locked filing cabinet or safe where CUI paper is stored, with the lock visible",
+      "Photo of the locked drawer or lockbox holding USB drives, external disks, or backup media",
+      "Photo of the media inventory sheet listing each drive/binder, its label, and its storage location",
+      "Photo of the check-out/check-in log for media",
+      "Short written procedure for handling and storing CUI media"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for a lockable container (visible lock, keypad, or safe dial) and an inventory or log that names the media. A photo of a cabinet without a visible lock, or papers stacked on an open desk, fails [c]. An inventory with no storage location listed is incomplete for [a]/[b]. The AI cannot verify the cabinet is kept locked or that the inventory is current; the assessor will interview the custodian.",
+    "commonFailures": [
+      "CUI paper left in open in-trays or unlocked cabinets",
+      "USB drives with CUI kept in desk drawers that do not lock",
+      "No inventory of digital media holding CUI",
+      "Backup drives stored unsecured next to the server"
+    ],
+    "estimatedEffortMinutes": 25,
+    "pointValue": 3
+  },
+  {
+    "id": "MP.L2-3.8.2",
+    "level": 2,
+    "family": "MP",
+    "familyName": "Media Protection",
+    "nist171Ref": "3.8.2",
+    "title": "Media Access",
+    "officialText": "Limit access to CUI on system media to authorized users.",
+    "plainEnglish": "Only the specific people on an approved list can get at the drawers, cabinets, drives, or folders that hold CUI, and you record who takes media out.",
+    "assessmentObjectives": [
+      "[a] access to CUI on system media is limited to authorized users."
+    ],
+    "whyItMatters": "Securely storing media is pointless if everyone in the office has the key.",
+    "evidenceTypes": ["photo", "document", "screenshot", "text"],
+    "evidenceExamples": [
+      "Document listing the named people authorized to access CUI media, approved by the data owner",
+      "Photo of the key or combination holder list for the CUI cabinet",
+      "Photo of the media check-out log with entries",
+      "Screenshot of folder permissions on the CUI network share or cloud folder showing only the authorized group",
+      "Screenshot of encrypted-USB management software showing assigned users"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Expect a named authorized-user list and a mechanism that enforces it: limited key holders, a check-out log, or folder permissions restricted to a group. Flag if the authorized list is larger than seems reasonable (e.g., all employees) with no justification, or if the key list and the authorized list do not match. A log with no entries over a long period is acceptable only with an explanation. Assessors will interview the data owner.",
+    "commonFailures": [
+      "Everyone in the office knows the cabinet combination",
+      "No defined owner who approves access to CUI media",
+      "Check-out log exists but is not used",
+      "CUI share permissions inherited from a company-wide group"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 3
+  },
+  {
+    "id": "MP.L2-3.8.4",
+    "level": 2,
+    "family": "MP",
+    "familyName": "Media Protection",
+    "nist171Ref": "3.8.4",
+    "title": "Media Markings",
+    "officialText": "Mark media with necessary CUI markings and distribution limitations.",
+    "plainEnglish": "Put a 'CUI' label on every USB drive, disk, binder, and printed document that contains CUI, following the NARA label format, and include any distribution limits.",
+    "assessmentObjectives": [
+      "[a] media containing CUI is marked with applicable CUI markings; and",
+      "[b] media containing CUI is marked with distribution limitations."
+    ],
+    "whyItMatters": "If people cannot see that something is CUI, they will not handle it as CUI.",
+    "evidenceTypes": ["photo", "document", "text"],
+    "evidenceExamples": [
+      "Photo of a USB drive or external disk with a 'CUI' sticker label on it",
+      "Photo of a binder or folder spine marked 'CUI' with distribution statement",
+      "Photo of a printed CUI document's header/footer showing the 'CUI' banner marking and the CUI designation indicator block",
+      "Photo of the CUI coversheet (SF 901 style) used on paper files",
+      "Photo of the label stock or template the company uses for marking media",
+      "Short marking procedure referencing NARA CUI Notice 2019-01 and DoDI 5200.48"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Verify the photo shows a legible 'CUI' marking on the physical media or document, and that distribution limitation text (or a distribution statement) is present for [b]. A plain 'Confidential' or 'Proprietary' label is not a CUI marking and fails. Reject if the marking is on a document screenshot but the organization claims to use physical media without showing a labeled device. This is directly verifiable from a clear photo.",
+    "commonFailures": [
+      "Media marked 'Confidential' instead of 'CUI'",
+      "Digital media (USB, drives) never labeled even though paper is",
+      "No distribution limitation shown",
+      "Markings applied to documents but not to the drive they are stored on"
+    ],
+    "estimatedEffortMinutes": 15,
+    "pointValue": 1
+  },
+  {
+    "id": "MP.L2-3.8.5",
+    "level": 2,
+    "family": "MP",
+    "familyName": "Media Protection",
+    "nist171Ref": "3.8.5",
+    "title": "Media Accountability",
+    "officialText": "Control access to media containing CUI and maintain accountability for media during transport outside of controlled areas.",
+    "plainEnglish": "When CUI on paper or a drive leaves the office (mailed, hand-carried, shipped), only approved people handle it, it is locked or encrypted, and you keep a record of who had it and when.",
+    "assessmentObjectives": [
+      "[a] access to media containing CUI is controlled; and",
+      "[b] accountability for media containing CUI is maintained during transport outside of controlled areas."
+    ],
+    "whyItMatters": "Media is most likely to be lost while in transit, and without a record you will not even know it is gone.",
+    "evidenceTypes": ["photo", "document", "screenshot", "text"],
+    "evidenceExamples": [
+      "Photo of the media transport log showing item, sender, recipient, date out, date received",
+      "Photo of the locked courier bag or tamper-evident envelope used for transporting CUI",
+      "Screenshot of a shipping-carrier tracking page for a CUI shipment, with signature required",
+      "Written transport procedure naming who may carry CUI media and how it is packaged",
+      "Photo of the chain-of-custody form"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Expect a procedure plus at least one filled-in log or tracking record, or an explicit statement that CUI media never leaves the site (in which case the procedure should say so). Look for a locked container or tamper-evident packaging in photos. Reject a blank log template with no entries unless accompanied by a 'no transport has occurred' statement, and reject plain envelopes or unlabeled boxes. Assessors will interview staff who ship or carry media.",
+    "commonFailures": [
+      "CUI drives hand-carried in a backpack with no log",
+      "Paper CUI mailed in standard envelopes without tracking",
+      "No defined list of who may transport media",
+      "Procedure exists but no records of actual transports"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 1
+  },
+  {
+    "id": "MP.L2-3.8.6",
+    "level": 2,
+    "family": "MP",
+    "familyName": "Media Protection",
+    "nist171Ref": "3.8.6",
+    "title": "Portable Storage Encryption",
+    "officialText": "Implement cryptographic mechanisms to protect the confidentiality of CUI stored on digital media during transport unless otherwise protected by alternative physical safeguards.",
+    "plainEnglish": "Any USB stick, external drive, or backup tape with CUI that leaves the building must be encrypted with FIPS-validated encryption, or physically protected (locked case, courier) if encryption is impossible.",
+    "assessmentObjectives": [
+      "[a] the confidentiality of CUI stored on digital media is protected during transport using cryptographic mechanisms or alternative physical safeguards."
+    ],
+    "whyItMatters": "An encrypted drive that is lost is an inconvenience; an unencrypted one is a reportable CUI spill.",
+    "evidenceTypes": ["screenshot", "photo", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of BitLocker To Go or FileVault/encrypted-disk status for the USB or external drive",
+      "Photo of a hardware-encrypted USB drive (e.g., Kingston IronKey, Apricorn) showing the model, plus its FIPS 140 certificate number",
+      "Screenshot of the backup software's encryption setting for off-site media",
+      "Screenshot of the NIST CMVP certificate for the encryption module in use",
+      "Policy statement that only company-issued encrypted drives may carry CUI"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Look for a screenshot or photo that shows encryption is actually enabled on the specific portable media, not just that an encryption tool exists. For Level 2, check that the organization names the FIPS-validated module (BitLocker in FIPS mode, a specific hardware-encrypted drive model) since SC.L2-3.13.11 applies. Reject if the only evidence is a policy with no device screenshot, or if a consumer drive with no encryption is shown. If the organization claims physical safeguards instead, require the transport evidence from MP.L2-3.8.5.",
+    "commonFailures": [
+      "Unencrypted USB drives used for convenience",
+      "Encryption enabled but not FIPS-validated (e.g., some third-party tools)",
+      "Backup tapes/drives sent off-site unencrypted",
+      "No policy preventing use of personal drives"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 1
+  },
+  {
+    "id": "MP.L2-3.8.7",
+    "level": 2,
+    "family": "MP",
+    "familyName": "Media Protection",
+    "nist171Ref": "3.8.7",
+    "title": "Removable Media",
+    "officialText": "Control the use of removable media on system components.",
+    "plainEnglish": "Decide whether USB drives, SD cards, and external disks are allowed on company computers at all, and if so, which ones; enforce it with policy and, where possible, a technical block.",
+    "assessmentObjectives": [
+      "[a] the use of removable media on system components is controlled."
+    ],
+    "whyItMatters": "Removable media is a two-way risk: it brings malware in and carries CUI out.",
+    "evidenceTypes": ["screenshot", "document", "photo", "text"],
+    "evidenceExamples": [
+      "Screenshot of the Group Policy, Intune, or Jamf setting that blocks or restricts USB storage devices",
+      "Screenshot of the endpoint-protection console's device-control policy",
+      "Written removable media policy stating which devices are permitted and for what purpose",
+      "Photo of a USB port blocker installed on a workstation",
+      "Screenshot showing the list of approved (allow-listed) USB device IDs"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Strongest evidence is a technical control screenshot (GPO/MDM/device-control) showing USB storage blocked or allow-listed, plus a policy. A policy alone is acceptable per the guide but weaker; note it and recommend a technical control. Reject if the screenshot shows the policy 'Not configured' or disabled, or if the policy permits any device without approval. An assessor may test by inserting a drive.",
+    "commonFailures": [
+      "No policy at all; staff use personal USB drives freely",
+      "Policy exists but no technical enforcement and no monitoring",
+      "Device-control policy configured but not deployed to all machines",
+      "Exceptions granted informally and never documented"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 5
+  },
+  {
+    "id": "MP.L2-3.8.8",
+    "level": 2,
+    "family": "MP",
+    "familyName": "Media Protection",
+    "nist171Ref": "3.8.8",
+    "title": "Shared Media",
+    "officialText": "Prohibit the use of portable storage devices when such devices have no identifiable owner.",
+    "plainEnglish": "Never plug in a USB drive you found or that nobody can account for. Every portable drive in use must be labeled or registered to a person, project, or the company.",
+    "assessmentObjectives": [
+      "[a] the use of portable storage devices is prohibited when such devices have no identifiable owner."
+    ],
+    "whyItMatters": "Dropped-in-the-parking-lot USB drives are a classic attack; an unowned drive is also one nobody is responsible for keeping clean.",
+    "evidenceTypes": ["photo", "document", "screenshot", "text"],
+    "evidenceExamples": [
+      "Photo of company-issued USB drives with owner or asset labels",
+      "Photo or spreadsheet of the portable-storage register listing serial numbers and assigned owners",
+      "Policy excerpt prohibiting unknown or unlabeled drives and directing staff to turn them in to IT",
+      "Screenshot of the USB allow-list showing only registered device IDs are accepted",
+      "Photo of the awareness poster or email reminding staff not to plug in found drives"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Look for a policy statement that explicitly prohibits unowned devices plus evidence that owned devices are identifiable (labels or a register). A technical allow-list screenshot is strong proof. Reject if drives in the photo have no label and no register is provided, or if the policy only says 'be careful' without a prohibition. An assessor may interview staff about what they would do with a found drive.",
+    "commonFailures": [
+      "Drives in use with no label and no register",
+      "Policy does not explicitly prohibit unowned devices",
+      "Staff unaware of the rule",
+      "Loaner/shared drives with no assigned custodian"
+    ],
+    "estimatedEffortMinutes": 15,
+    "pointValue": 3
+  },
+  {
+    "id": "MP.L2-3.8.9",
+    "level": 2,
+    "family": "MP",
+    "familyName": "Media Protection",
+    "nist171Ref": "3.8.9",
+    "title": "Protect Backups",
+    "officialText": "Protect the confidentiality of backup CUI at storage locations.",
+    "plainEnglish": "Wherever your backups live (external drive, NAS, cloud backup service, tapes), they must be encrypted and/or physically locked up so nobody unauthorized can read the CUI inside them.",
+    "assessmentObjectives": [
+      "[a] the confidentiality of backup CUI is protected at storage locations."
+    ],
+    "whyItMatters": "Backups are a complete copy of everything; an unprotected backup is the easiest full copy of your CUI to steal.",
+    "evidenceTypes": ["screenshot", "photo", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of the backup software settings showing encryption enabled (e.g., Veeam, Acronis, Backblaze, Datto, Synology Hyper Backup)",
+      "Screenshot of the cloud backup provider's encryption/compliance page (and FedRAMP status if used for CUI)",
+      "Photo of the locked cabinet or off-site safe where backup drives are stored",
+      "Screenshot of BitLocker status on the external backup drive",
+      "Short statement listing every backup location and how each is protected"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Require the organization to list all backup locations, then look for an encryption setting screenshot or a locked storage photo for each one. A screenshot of a backup job running with no visible encryption option is insufficient. For cloud backups, check that encryption is enabled and note whether the provider is FedRAMP Moderate or equivalent, which matters for CUI. Reject if any listed location has no protection evidence.",
+    "commonFailures": [
+      "External backup drive sits unencrypted on a shelf next to the server",
+      "Cloud backup enabled but provider-side encryption key is shared or unknown",
+      "Backup locations never inventoried, so one is forgotten",
+      "Encryption not FIPS-validated"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 1
+  },
+  {
+    "id": "PE.L2-3.10.2",
+    "level": 2,
+    "family": "PE",
+    "familyName": "Physical Protection",
+    "nist171Ref": "3.10.2",
+    "title": "Monitor Facility",
+    "officialText": "Protect and monitor the physical facility and support infrastructure for organizational systems.",
+    "plainEnglish": "Your building, server room, wiring closets, and cabling are physically protected (locks, conduit) and watched (cameras, alarms, or a person) so tampering or break-ins are noticed.",
+    "assessmentObjectives": [
+      "[a] the physical facility where organizational systems reside is protected;",
+      "[b] the support infrastructure for organizational systems is protected;",
+      "[c] the physical facility where organizational systems reside is monitored; and",
+      "[d] the support infrastructure for organizational systems is monitored."
+    ],
+    "whyItMatters": "Locks keep people out; monitoring tells you when someone got in anyway.",
+    "evidenceTypes": ["photo", "video", "screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Photo of security cameras covering the entrance and the server/network closet",
+      "Screenshot of the camera system or alarm app dashboard showing recording is active",
+      "Photo of the alarm panel or monitoring-service sticker and the alarm contract",
+      "Photo of the locked wiring closet, locked network rack, or patch panel in a secured area",
+      "Photo showing network cabling in conduit or ceiling runs that are not accessible from public areas",
+      "Screenshot of the alarm or door-sensor event log"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Look for two layers: protection (locks on the facility and on network/wiring spaces, cabling not exposed in public areas) and monitoring (cameras, alarm, sensors, or guard). A single photo of a camera does not prove it records; prefer a dashboard screenshot. Reject if the server rack or patch panel is shown in an unlocked, unmonitored shared space, or if there is no monitoring evidence at all. An assessor will walk the facility.",
+    "commonFailures": [
+      "Cameras installed but not recording or never reviewed",
+      "Wiring closet shared with janitorial supplies and unlocked",
+      "Network jacks live in the public lobby",
+      "No alarm or after-hours monitoring"
+    ],
+    "estimatedEffortMinutes": 25,
+    "pointValue": 5
+  },
+  {
+    "id": "PE.L2-3.10.6",
+    "level": 2,
+    "family": "PE",
+    "familyName": "Physical Protection",
+    "nist171Ref": "3.10.6",
+    "title": "Alternative Work Sites",
+    "officialText": "Enforce safeguarding measures for CUI at alternate work sites.",
+    "plainEnglish": "If people work from home or on the road with CUI, write down the rules for that (encrypted laptop, VPN, no printing at home, locked storage) and make sure the rules are actually in force.",
+    "assessmentObjectives": [
+      "[a] safeguarding measures for CUI are defined for alternate work sites; and",
+      "[b] safeguarding measures for CUI are enforced for alternate work sites."
+    ],
+    "whyItMatters": "A home office or hotel room has none of the office's protections unless you deliberately extend them.",
+    "evidenceTypes": ["document", "screenshot", "photo", "text"],
+    "evidenceExamples": [
+      "Written remote-work/telework policy covering CUI handling at home and while traveling",
+      "Screenshot of full-disk encryption status (BitLocker/FileVault) on a remote worker's laptop",
+      "Screenshot of the VPN client configuration showing MFA and no split tunneling",
+      "Signed remote-work acknowledgement form from an employee",
+      "Photo of a remote worker's lockable drawer or cabinet for CUI paper (if paper is permitted)",
+      "Screenshot of MDM showing remote devices are enrolled and compliant"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Require a written policy that names specific measures for alternate sites (not a generic security policy), plus at least one technical screenshot showing a measure enforced on a remote device (encryption, VPN, MDM compliance). If the organization states no remote work with CUI occurs, accept a policy that prohibits it. Reject a policy with no enforcement evidence, or evidence from an office machine presented as a remote one. Assessors will interview remote staff.",
+    "commonFailures": [
+      "No policy; remote work with CUI happens informally",
+      "Policy exists but laptops are not encrypted or MDM-managed",
+      "Staff print CUI at home with no storage or disposal rules",
+      "Personal computers used for CUI from home"
+    ],
+    "estimatedEffortMinutes": 30,
+    "pointValue": 1
+  },
+  {
+    "id": "AT.L2-3.2.1",
+    "level": 2,
+    "family": "AT",
+    "familyName": "Awareness and Training",
+    "nist171Ref": "3.2.1",
+    "title": "Role-Based Risk Awareness",
+    "officialText": "Ensure that managers, systems administrators, and users of organizational systems are made aware of the security risks associated with their activities and of the applicable policies, standards, and procedures related to the security of those systems.",
+    "plainEnglish": "Everyone who uses company systems gets security awareness training (phishing, passwords, handling CUI) and is told what the company's security rules are, when they start and on a regular schedule after that.",
+    "assessmentObjectives": [
+      "[a] security risks associated with organizational activities involving CUI are identified;",
+      "[b] policies, standards, and procedures related to the security of the system are identified;",
+      "[c] managers, systems administrators, and users of the system are made aware of the security risks associated with their activities; and",
+      "[d] managers, systems administrators, and users of the system are made aware of the applicable policies, standards, and procedures related to the security of the system."
+    ],
+    "whyItMatters": "People are the most common entry point; awareness is the cheapest control with the biggest effect.",
+    "evidenceTypes": ["document", "screenshot", "photo", "text"],
+    "evidenceExamples": [
+      "Screenshot of the training platform (KnowBe4, Proofpoint, Microsoft Learn, in-house LMS) completion report listing every employee and date",
+      "PDF or photo of the slide deck or handout used for awareness training",
+      "Spreadsheet training log with employee name, date, topic, and signature",
+      "Photo of security awareness posters in the office",
+      "Screenshot of a phishing-simulation campaign result",
+      "Signed acknowledgement that the employee read the security policy"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for two things: the training content (deck or module outline covering risks relevant to CUI and the organization's own policies) and completion records that cover all users including managers and admins. A completion report missing several employees, or dated more than a year ago with no refresher, should be flagged. Generic cybersecurity content with no mention of the company's policies does not satisfy [d]. Assessors will interview employees to confirm they can recall the training.",
+    "commonFailures": [
+      "Training given at hire but never refreshed",
+      "No records of who completed it",
+      "Content is generic and never mentions CUI or company policies",
+      "Owners and admins exempt themselves from training"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 5
+  },
+  {
+    "id": "AT.L2-3.2.2",
+    "level": 2,
+    "family": "AT",
+    "familyName": "Awareness and Training",
+    "nist171Ref": "3.2.2",
+    "title": "Role-Based Training",
+    "officialText": "Ensure that personnel are trained to carry out their assigned information security-related duties and responsibilities.",
+    "plainEnglish": "The people who have specific security jobs (whoever manages the firewall, accounts, backups, incident response) are named in writing and have been trained to do those jobs.",
+    "assessmentObjectives": [
+      "[a] information security-related duties, roles, and responsibilities are defined;",
+      "[b] information security-related duties, roles, and responsibilities are assigned to designated personnel; and",
+      "[c] personnel are adequately trained to carry out their assigned information security-related duties, roles, and responsibilities."
+    ],
+    "whyItMatters": "A control managed by someone who was never trained on it is a control that will silently fail.",
+    "evidenceTypes": ["document", "screenshot", "photo", "text"],
+    "evidenceExamples": [
+      "Roles-and-responsibilities table naming who is responsible for firewall, user accounts, backups, patching, incident response, physical security",
+      "Screenshot or photo of a vendor training certificate (e.g., Microsoft, Fortinet, CompTIA) for the IT administrator",
+      "Screenshot of MSP contract or statement of work showing which security duties are outsourced and to whom",
+      "Training log entries for role-specific training (e.g., 'Admin attended Microsoft 365 security workshop')",
+      "Job description excerpt listing security responsibilities"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "First confirm roles are defined and assigned to named people or a named MSP ([a],[b]); a table is sufficient. Then look for evidence of training specific to those roles, such as certificates or course completions, not just general awareness training. Reject if the role table lists 'IT' with no names, or if the only training evidence is the general awareness course. Assessors will interview the role holders about their competence.",
+    "commonFailures": [
+      "Security duties not written down; 'whoever is around' handles it",
+      "Administrator has never been trained on the tools they manage",
+      "Outsourced MSP responsibilities not documented",
+      "Awareness training offered as proof of role-based training"
+    ],
+    "estimatedEffortMinutes": 30,
+    "pointValue": 5
+  },
+  {
+    "id": "AT.L2-3.2.3",
+    "level": 2,
+    "family": "AT",
+    "familyName": "Awareness and Training",
+    "nist171Ref": "3.2.3",
+    "title": "Insider Threat Awareness",
+    "officialText": "Provide security awareness training on recognizing and reporting potential indicators of insider threat.",
+    "plainEnglish": "Your awareness training must include a section on insider threat: what warning signs look like (unusual hours, copying lots of data, resentment) and how to report concerns.",
+    "assessmentObjectives": [
+      "[a] potential indicators associated with insider threats are identified; and",
+      "[b] security awareness training on recognizing and reporting potential indicators of insider threat is provided to managers and employees."
+    ],
+    "whyItMatters": "Insiders already have access; the only early warning is coworkers who know what to look for and where to report it.",
+    "evidenceTypes": ["document", "screenshot", "photo", "text"],
+    "evidenceExamples": [
+      "Photo or PDF of the training slides that list insider threat indicators and the reporting procedure",
+      "Screenshot of the training platform module titled insider threat (e.g., CDSE Insider Threat Awareness course) with completion report",
+      "Short written list of the insider threat indicators the company has adopted",
+      "Screenshot of the reporting channel (email alias, form, or hotline) referenced in training",
+      "Training log showing all employees and managers completed the module"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Confirm the training content explicitly lists insider threat indicators (not just 'phishing' or 'passwords') and tells people how to report. Then check the completion records cover managers and employees. The free DoD CDSE insider threat course with a completion certificate is acceptable. Reject if the deck has no insider-threat section, or if indicators are listed but no reporting method is given.",
+    "commonFailures": [
+      "General awareness training with no insider threat content",
+      "Indicators listed but no reporting procedure",
+      "Managers not included in the training",
+      "No completion records"
+    ],
+    "estimatedEffortMinutes": 15,
+    "pointValue": 1
+  },
+  {
+    "id": "CM.L2-3.4.1",
+    "level": 2,
+    "family": "CM",
+    "familyName": "Configuration Management",
+    "nist171Ref": "3.4.1",
+    "title": "System Baselining",
+    "officialText": "Establish and maintain baseline configurations and inventories of organizational systems (including hardware, software, firmware, and documentation) throughout the respective system development life cycles.",
+    "plainEnglish": "Keep an up-to-date list of every computer, device, and piece of software in scope (with versions), and a written 'standard build' describing how a new machine is set up.",
+    "assessmentObjectives": [
+      "[a] a baseline configuration is established;",
+      "[b] the baseline configuration includes hardware, software, firmware, and documentation;",
+      "[c] the baseline configuration is maintained (reviewed and updated) throughout the system development life cycle;",
+      "[d] a system inventory is established;",
+      "[e] the system inventory includes hardware, software, firmware, and documentation; and",
+      "[f] the inventory is maintained (reviewed and updated) throughout the system development life cycle."
+    ],
+    "whyItMatters": "You cannot protect, patch, or scan what you do not know you have.",
+    "evidenceTypes": ["document", "screenshot", "photo", "text"],
+    "evidenceExamples": [
+      "Hardware inventory spreadsheet: asset tag, make/model, serial, OS version, assigned user, location, last-reviewed date",
+      "Screenshot of the RMM/MDM/Intune device list with OS and software versions",
+      "Software inventory listing approved applications and versions",
+      "Standard build document or checklist for setting up a new laptop (OS, apps, settings, AV, encryption)",
+      "Screenshot of the firewall/switch firmware version page included in the inventory",
+      "Change log showing the inventory and baseline were reviewed (dated entries)"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for an inventory that covers hardware, software, and firmware with versions and a last-reviewed date, and a separate baseline/standard-build document. An inventory missing firmware (firewall, switch) or software versions is incomplete for [b]/[e]. A baseline with no review date, or an inventory clearly stale (devices visible elsewhere not listed), fails [c]/[f]. Assessors will spot-check the inventory against real devices.",
+    "commonFailures": [
+      "Inventory is a one-time list never updated",
+      "Software and firmware versions missing",
+      "No documented standard build; every machine is set up differently",
+      "Network devices omitted from the inventory"
+    ],
+    "estimatedEffortMinutes": 60,
+    "pointValue": 5
+  },
+  {
+    "id": "CM.L2-3.4.2",
+    "level": 2,
+    "family": "CM",
+    "familyName": "Configuration Management",
+    "nist171Ref": "3.4.2",
+    "title": "Security Configuration Enforcement",
+    "officialText": "Establish and enforce security configuration settings for information technology products employed in organizational systems.",
+    "plainEnglish": "Decide the security settings for your computers, phones, firewall, and cloud apps (for example from a CIS Benchmark or Microsoft baseline), write them down, and apply them everywhere, with any exceptions recorded.",
+    "assessmentObjectives": [
+      "[a] security configuration settings for information technology products employed in the system are established and included in the baseline configuration; and",
+      "[b] security configuration settings for information technology products employed in the system are enforced."
+    ],
+    "whyItMatters": "Default settings favor convenience; hardened settings close the doors attackers use most.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Document listing the chosen security settings per product type (e.g., 'Windows 11: CIS Level 1 benchmark; Microsoft 365: Secure Score recommendations')",
+      "Screenshot of Intune/Jamf/Group Policy configuration profiles that push the settings",
+      "Screenshot of Microsoft Secure Score or Google Workspace security health page",
+      "Screenshot of a compliance report showing devices meeting the configuration policy",
+      "Documented exception list with justification and approval for any deviations"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Require a written settings list or named benchmark and an enforcement screenshot (policy profile, compliance report, or settings page) that matches it. A benchmark named with no evidence it was applied fails [b]; a screenshot of settings with no documented baseline fails [a]. Flag large numbers of non-compliant devices in a compliance report. Assessors will test a sample device against the documented settings.",
+    "commonFailures": [
+      "No documented settings; machines left at vendor defaults",
+      "Settings documented but applied manually and inconsistently",
+      "Deviations granted verbally and never recorded",
+      "Cloud services (M365, Google) ignored in the baseline"
+    ],
+    "estimatedEffortMinutes": 60,
+    "pointValue": 5
+  },
+  {
+    "id": "IA.L2-3.5.3",
+    "level": 2,
+    "family": "IA",
+    "familyName": "Identification and Authentication",
+    "nist171Ref": "3.5.3",
+    "title": "Multifactor Authentication",
+    "officialText": "Use multifactor authentication for local and network access to privileged accounts and for network access to non-privileged accounts.",
+    "plainEnglish": "Everyone must use a second factor (authenticator app, hardware key, smart card) when logging in over the network, including email and VPN. Administrators must use MFA even when logging in directly at the machine.",
+    "assessmentObjectives": [
+      "[a] privileged accounts are identified;",
+      "[b] multifactor authentication is implemented for local access to privileged accounts;",
+      "[c] multifactor authentication is implemented for network access to privileged accounts; and",
+      "[d] multifactor authentication is implemented for network access to non-privileged accounts."
+    ],
+    "whyItMatters": "MFA defeats the vast majority of password-theft attacks; it is the single highest-value technical control.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of Microsoft Entra Conditional Access or Google Workspace '2-Step Verification enforced' showing MFA required for all users",
+      "Screenshot of the per-user MFA registration report showing every account enrolled",
+      "List of privileged (admin) accounts with their MFA method",
+      "Screenshot of the VPN or firewall settings showing MFA required for remote access",
+      "Screenshot of Windows Hello for Business, smart-card, or FIDO2 login configured for admin workstation local login",
+      "Screenshot of the MFA prompt on a phone (authenticator app) during login"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Verify an enforcement policy (not just 'available') applies to all users, that a registration report shows no unenrolled accounts, and that admin accounts are listed separately with MFA for local login addressed. A screenshot showing MFA 'enabled' for some users with others 'disabled' fails [d]. Local MFA for privileged accounts [b] is often missed; if admins log into servers or workstations locally with only a password, mark that objective not met. SMS-only MFA is weak but acceptable at Level 2.",
+    "commonFailures": [
+      "MFA optional, so some users never enrolled",
+      "Admin accounts excluded from MFA 'for convenience'",
+      "Local (console) admin login has no MFA",
+      "VPN or RDP access without MFA"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 5
+  },
+  {
+    "id": "IA.L2-3.5.7",
+    "level": 2,
+    "family": "IA",
+    "familyName": "Identification and Authentication",
+    "nist171Ref": "3.5.7",
+    "title": "Password Complexity",
+    "officialText": "Enforce a minimum password complexity and change of characters when new passwords are created.",
+    "plainEnglish": "Write down your minimum password rules (length, character types, how many characters must differ from the old one) and configure the system so it refuses passwords that break the rules.",
+    "assessmentObjectives": [
+      "[a] password complexity requirements are defined;",
+      "[b] password change of character requirements are defined;",
+      "[c] minimum password complexity requirements as defined are enforced when new passwords are created; and",
+      "[d] minimum password change of character requirements as defined are enforced when new passwords are created."
+    ],
+    "whyItMatters": "Short, predictable passwords are cracked in seconds once a hash leaks.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Policy excerpt stating minimum length, character classes, and change-of-character rule",
+      "Screenshot of the Active Directory / Entra / Google Workspace password policy settings page",
+      "Screenshot of the error shown when a user tries to set a non-compliant password",
+      "Screenshot of a password manager's generator policy if used for shared credentials",
+      "Screenshot of the local Windows/macOS password policy for standalone machines"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Compare the written policy to the configured settings screenshot; the numbers must match (e.g., policy says 14 characters, system enforces 14). Change-of-character [b]/[d] is rarely configurable in modern identity providers; accept a documented rule plus password-history enforcement and note the limitation rather than failing. Reject if the screenshot shows length under 8 or complexity 'off', or if no written definition exists.",
+    "commonFailures": [
+      "Policy says one thing, system enforces another",
+      "No defined change-of-character requirement",
+      "Complexity enforced in cloud but not on local machine accounts",
+      "Network device admin passwords exempt"
+    ],
+    "estimatedEffortMinutes": 15,
+    "pointValue": 1
+  },
+  {
+    "id": "IA.L2-3.5.10",
+    "level": 2,
+    "family": "IA",
+    "familyName": "Identification and Authentication",
+    "nist171Ref": "3.5.10",
+    "title": "Cryptographically-Protected Passwords",
+    "officialText": "Store and transmit only cryptographically-protected passwords.",
+    "plainEnglish": "Passwords are never stored or sent in readable form: systems hash them, logins happen over encrypted connections, and nobody keeps passwords in spreadsheets or sticky notes.",
+    "assessmentObjectives": [
+      "[a] passwords are cryptographically protected in storage; and",
+      "[b] passwords are cryptographically protected in transit."
+    ],
+    "whyItMatters": "A plaintext password list is a complete compromise waiting to be found.",
+    "evidenceTypes": ["screenshot", "document", "photo", "text"],
+    "evidenceExamples": [
+      "Screenshot of the password manager (1Password, Bitwarden, Keeper) admin console showing it is in use for shared credentials",
+      "Screenshot of the Active Directory setting 'Store passwords using reversible encryption' set to Disabled",
+      "Screenshot of the firewall/VPN/web admin login page URL showing HTTPS and a valid certificate",
+      "Statement from the cloud identity provider documentation that passwords are salted and hashed (e.g., Entra ID, Google) with a link",
+      "Photo of the office showing no visible sticky-note passwords (optional, humorous but real)",
+      "Screenshot showing legacy protocols (basic auth, telnet, FTP) disabled"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Accept vendor documentation for cloud identity providers for [a], plus a screenshot of reversible-encryption disabled for on-prem AD. For [b], look for HTTPS/TLS on all login pages and evidence that legacy cleartext protocols are off. Flag any screenshot that shows a plaintext password list, spreadsheet, or document. Reject if an admin console is accessed over plain HTTP. An assessor may test with a packet capture or configuration review.",
+    "commonFailures": [
+      "Shared passwords kept in an Excel file or email",
+      "Admin pages on internal devices served over HTTP",
+      "Legacy authentication (basic auth, LDAP without TLS) still enabled",
+      "Reversible encryption enabled in AD for a legacy app"
+    ],
+    "estimatedEffortMinutes": 25,
+    "pointValue": 5
+  },
+  {
+    "id": "IR.L2-3.6.1",
+    "level": 2,
+    "family": "IR",
+    "familyName": "Incident Response",
+    "nist171Ref": "3.6.1",
+    "title": "Incident Handling",
+    "officialText": "Establish an operational incident-handling capability for organizational systems that includes preparation, detection, analysis, containment, recovery, and user response activities.",
+    "plainEnglish": "Have a written plan for what happens when something goes wrong (phishing click, lost laptop, ransomware): who to call, how to contain it, how to recover, and what employees should do.",
+    "assessmentObjectives": [
+      "[a] an operational incident-handling capability is established;",
+      "[b] the operational incident-handling capability includes preparation;",
+      "[c] the operational incident-handling capability includes detection;",
+      "[d] the operational incident-handling capability includes analysis;",
+      "[e] the operational incident-handling capability includes containment;",
+      "[f] the operational incident-handling capability includes recovery; and",
+      "[g] the operational incident-handling capability includes user response activities."
+    ],
+    "whyItMatters": "The first hour of an incident decides whether it is a bad day or a lost contract; a plan written in advance is the difference.",
+    "evidenceTypes": ["document", "screenshot", "photo", "text"],
+    "evidenceExamples": [
+      "Incident response plan PDF with sections for preparation, detection, analysis, containment, recovery, and user reporting",
+      "Photo of the one-page 'what to do if you suspect an incident' poster or wallet card",
+      "Screenshot of the incident reporting mailbox, form, or ticket queue",
+      "Contact list for the IR team, MSP, legal, cyber insurance, and DoD (DIBNet) reporting",
+      "Screenshot of a tabletop exercise agenda or notes",
+      "Screenshot of the alerting tool (EDR, M365 Defender) that feeds detection"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Read the plan for all six named phases; a plan missing containment or recovery steps, or with no user reporting instructions, is incomplete. Check that roles are assigned to named people or an MSP and that contact info is current. A template with placeholder text like '[Company Name]' left in should be rejected. Operational capability [a] is hard to prove from documents alone; assessors interview the IR lead and may ask about past incidents.",
+    "commonFailures": [
+      "No written plan; response is improvised",
+      "Plan is a generic template never customized",
+      "Employees do not know how to report",
+      "No recovery/backup restore steps"
+    ],
+    "estimatedEffortMinutes": 45,
+    "pointValue": 5
+  },
+  {
+    "id": "IR.L2-3.6.2",
+    "level": 2,
+    "family": "IR",
+    "familyName": "Incident Response",
+    "nist171Ref": "3.6.2",
+    "title": "Incident Reporting",
+    "officialText": "Track, document, and report incidents to designated officials and/or authorities both internal and external to the organization.",
+    "plainEnglish": "Every incident gets logged and written up, and you know exactly who inside the company and which outside authorities (for DoD: DIBNet within 72 hours under DFARS 252.204-7012) must be told.",
+    "assessmentObjectives": [
+      "[a] incidents are tracked;",
+      "[b] incidents are documented;",
+      "[c] authorities to whom incidents are to be reported are identified;",
+      "[d] organizational officials to whom incidents are to be reported are identified;",
+      "[e] identified authorities are notified of incidents; and",
+      "[f] identified organizational officials are notified of incidents."
+    ],
+    "whyItMatters": "Failing to report a CUI incident to DoD within 72 hours is itself a contract violation.",
+    "evidenceTypes": ["document", "screenshot", "text"],
+    "evidenceExamples": [
+      "Incident log (spreadsheet or ticketing screenshot) with columns for date, description, status, who was notified; may show zero incidents with a note",
+      "Section of the IR plan naming internal officials (owner, FSO) and external authorities (DIBNet/DC3, contracting officer, law enforcement) with contact details and time limits",
+      "Screenshot showing the company has a DoD-approved medium assurance certificate for DIBNet reporting, or the plan to obtain one",
+      "Completed incident report form from a past or exercise incident",
+      "Email showing management notification of a (test or real) incident"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for a tracking mechanism (log or ticket system) and a reporting matrix that names both internal officials and external authorities including DIBNet with the 72-hour requirement. An empty log is acceptable if accompanied by a statement that no incidents have occurred, but the matrix must still exist. Reject if external reporting omits DoD, or if 'authorities' is left generic. Whether notifications actually happen [e]/[f] needs interview or a past-incident record.",
+    "commonFailures": [
+      "No incident log at all",
+      "DFARS 72-hour DIBNet reporting requirement unknown",
+      "No medium-assurance certificate, so DIBNet reporting is impossible when needed",
+      "Internal escalation path undefined"
+    ],
+    "estimatedEffortMinutes": 30,
+    "pointValue": 5
+  },
+  {
+    "id": "MA.L2-3.7.2",
+    "level": 2,
+    "family": "MA",
+    "familyName": "Maintenance",
+    "nist171Ref": "3.7.2",
+    "title": "System Maintenance Control",
+    "officialText": "Provide controls on the tools, techniques, mechanisms, and personnel used to conduct system maintenance.",
+    "plainEnglish": "Only approved people (your IT person or named MSP) may service your systems, using approved tools, and you keep a record of maintenance work and who did it.",
+    "assessmentObjectives": [
+      "[a] tools used to conduct system maintenance are controlled;",
+      "[b] techniques used to conduct system maintenance are controlled;",
+      "[c] mechanisms used to conduct system maintenance are controlled; and",
+      "[d] personnel used to conduct system maintenance are controlled."
+    ],
+    "whyItMatters": "Maintenance access is privileged access; uncontrolled tools and technicians are a direct channel into every system.",
+    "evidenceTypes": ["document", "screenshot", "photo", "text"],
+    "evidenceExamples": [
+      "List of approved maintenance tools (RMM agent, remote-access software, diagnostic USB kit) and who may use them",
+      "Screenshot of the RMM/remote-support tool's user list showing only named technicians",
+      "MSP contract or statement of work naming the vendor and the personnel/escort rules for on-site work",
+      "Maintenance log with date, device, work performed, technician name",
+      "Photo of the locked cabinet where maintenance media/tools are kept",
+      "Screenshot showing unapproved remote-access tools (TeamViewer, AnyDesk) are blocked"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Expect an approved tools list, a named list of authorized maintenance personnel (internal or MSP), and a maintenance log with recent entries. A screenshot of the remote-support tool with many unnamed or generic accounts fails [d]. Reject if no log exists or if ad-hoc remote tools are in use without approval. Assessors will interview the technician and may review maintenance tickets.",
+    "commonFailures": [
+      "Any employee can install remote-access tools",
+      "MSP technicians unknown by name; no vetting",
+      "No maintenance records",
+      "Diagnostic USB drives not scanned or controlled"
+    ],
+    "estimatedEffortMinutes": 30,
+    "pointValue": 5
+  },
+  {
+    "id": "PS.L2-3.9.1",
+    "level": 2,
+    "family": "PS",
+    "familyName": "Personnel Security",
+    "nist171Ref": "3.9.1",
+    "title": "Screen Individuals",
+    "officialText": "Screen individuals prior to authorizing access to organizational systems containing CUI.",
+    "plainEnglish": "Before anyone (employee or contractor) is given access to CUI, run the background check your policy defines and keep a record that it was done.",
+    "assessmentObjectives": [
+      "[a] individuals are screened prior to authorizing access to organizational systems containing CUI."
+    ],
+    "whyItMatters": "Access decisions are trust decisions; screening is how you earn the right to trust.",
+    "evidenceTypes": ["document", "screenshot", "text"],
+    "evidenceExamples": [
+      "Policy excerpt stating the screening required (e.g., criminal background check, reference check, citizenship verification where required) before CUI access",
+      "Screenshot of the background-check vendor portal (Checkr, Sterling, HireRight) showing completed checks, with personal details redacted",
+      "Spreadsheet of CUI-authorized personnel with screening date and type (no results shown)",
+      "Onboarding checklist showing 'background check complete' precedes 'CUI access granted'",
+      "Screenshot of an invoice from the background-check vendor"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for a defined screening standard and a record (dates) showing it was completed before access for each CUI user. Never require or accept actual background-check results or sensitive personal data; ask for a redacted tracking list. Reject if the policy exists but no record of completed screening is shown, or if screening dates are after the access-granted dates. Assessors will interview HR.",
+    "commonFailures": [
+      "Screening policy exists but was never applied to long-tenured staff or owners",
+      "Contractors given CUI access without screening",
+      "No record of when screening occurred",
+      "Screening done after access was already granted"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 3
+  },
+  {
+    "id": "PS.L2-3.9.2",
+    "level": 2,
+    "family": "PS",
+    "familyName": "Personnel Security",
+    "nist171Ref": "3.9.2",
+    "title": "Personnel Actions",
+    "officialText": "Ensure that organizational systems containing CUI are protected during and after personnel actions such as terminations and transfers.",
+    "plainEnglish": "When someone leaves or changes roles, there is a checklist: disable accounts, collect laptops/keys/badges, and remove CUI access, all within a set time, and a record that it was done.",
+    "assessmentObjectives": [
+      "[a] a policy and/or process for terminating system access and any credentials coincident with personnel actions is established;",
+      "[b] system access and credentials are terminated consistent with personnel actions such as termination or transfer; and",
+      "[c] the system is protected during and after personnel transfer actions."
+    ],
+    "whyItMatters": "Departed employees with live accounts are a leading source of data theft and sabotage.",
+    "evidenceTypes": ["document", "screenshot", "photo", "text"],
+    "evidenceExamples": [
+      "Offboarding checklist template listing account disable, MFA revoke, laptop/key/badge return, CUI folder removal, with time frame",
+      "Completed offboarding checklist for a recent departure (name redacted) with dates",
+      "Screenshot of the disabled account in the identity provider with the disable date matching the departure",
+      "Screenshot of the badge system showing the departed employee's badge deactivated",
+      "Photo of the equipment-return log entry",
+      "Transfer checklist showing access adjusted for a role change"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Require a defined process with a time frame and at least one completed example (or a statement no departures have occurred). Cross-check: the disable date on the account screenshot should be on or shortly after the departure date. Reject if the checklist is blank, if accounts of known departures are still active, or if physical items (keys, badges) are not covered. Assessors will compare HR departure lists to active accounts.",
+    "commonFailures": [
+      "Accounts disabled days or weeks after departure",
+      "Keys and badges never collected",
+      "Transfers ignored; staff accumulate access from old roles",
+      "No record that offboarding steps were performed"
+    ],
+    "estimatedEffortMinutes": 25,
+    "pointValue": 5
+  },
+  {
+    "id": "RA.L2-3.11.2",
+    "level": 2,
+    "family": "RA",
+    "familyName": "Risk Assessment",
+    "nist171Ref": "3.11.2",
+    "title": "Vulnerability Scan",
+    "officialText": "Scan for vulnerabilities in organizational systems and applications periodically and when new vulnerabilities affecting those systems and applications are identified.",
+    "plainEnglish": "Run a vulnerability scanner against all your in-scope computers, servers, network gear, and apps on a schedule you have written down (e.g., monthly), and again when a major new vulnerability is announced.",
+    "assessmentObjectives": [
+      "[a] the frequency to scan for vulnerabilities in organizational systems and applications is defined;",
+      "[b] vulnerability scans are performed on organizational systems with the defined frequency;",
+      "[c] vulnerability scans are performed on applications with the defined frequency;",
+      "[d] vulnerability scans are performed on organizational systems when new vulnerabilities are identified; and",
+      "[e] vulnerability scans are performed on applications when new vulnerabilities are identified."
+    ],
+    "whyItMatters": "Scanning is how you find the unpatched flaw before an attacker does.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Policy statement of scan frequency and trigger for ad-hoc scans",
+      "Screenshot of the vulnerability scanner dashboard (Nessus, Qualys, Rapid7, Microsoft Defender Vulnerability Management, OpenVAS) showing the last scan date and asset count",
+      "Screenshot of the scan schedule configuration",
+      "Exported scan summary report (PDF) with date and list of scanned hosts",
+      "Ticket or email showing an out-of-cycle scan after a major CVE announcement"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Confirm a written frequency, a scan report dated within that frequency, and that the scanned host count roughly matches the system inventory. Flag if laptops that rarely connect are missing from scans, or if only the external IP is scanned. Reject a single old report with no schedule, or a 'scan' that is really just antivirus. Evidence for scanning on new vulnerabilities [d]/[e] usually needs an example or an interview.",
+    "commonFailures": [
+      "Scanning done once for the assessment, never again",
+      "Only servers scanned; laptops and network devices skipped",
+      "Web applications never scanned",
+      "No defined frequency in writing"
+    ],
+    "estimatedEffortMinutes": 30,
+    "pointValue": 5
+  },
+  {
+    "id": "CA.L2-3.12.4",
+    "level": 2,
+    "family": "CA",
+    "familyName": "Security Assessment",
+    "nist171Ref": "3.12.4",
+    "title": "System Security Plan",
+    "officialText": "Develop, document, and periodically update system security plans that describe system boundaries, system environments of operation, how security requirements are implemented, and the relationships with or connections to other systems.",
+    "plainEnglish": "Write and maintain a System Security Plan (SSP): what systems are in scope, where they live, how each of the 110 requirements is met (or is not applicable), how you connect to other systems, and how often you update it (at least yearly).",
+    "assessmentObjectives": [
+      "[a] a system security plan is developed;",
+      "[b] the system boundary is described and documented in the system security plan;",
+      "[c] the system environment of operation is described and documented in the system security plan;",
+      "[d] the security requirements identified and approved by the designated authority as non-applicable are identified;",
+      "[e] the method of security requirement implementation is described and documented in the system security plan;",
+      "[f] the relationship with or connection to other systems is described and documented in the system security plan;",
+      "[g] the frequency to update the system security plan is defined; and",
+      "[h] system security plan is updated with the defined frequency."
+    ],
+    "whyItMatters": "Without an SSP an assessment cannot even be completed; it is the document everything else hangs on.",
+    "evidenceTypes": ["document", "screenshot", "text"],
+    "evidenceExamples": [
+      "The SSP itself (PDF or Word), with a version/date on the cover",
+      "Screenshot of the SSP table of contents showing boundary, environment, implementation per requirement, interconnections, and update frequency sections",
+      "Network/boundary diagram page from the SSP",
+      "Screenshot of the revision-history table showing updates at the defined frequency",
+      "Screenshot of the 'not applicable' requirements table with justification"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Review the document for each required section: scope/boundary, environment of operation, per-requirement implementation statements, interconnections, N/A requirements with justification, and a defined update frequency with a revision history. Reject templates with unfilled placeholders, SSPs with no revision date, or implementation statements that just restate the requirement without saying how it is met. This practice is primarily a document review, so it is well suited to AI verification, though an assessor will use the SSP as the roadmap for all other practices.",
+    "commonFailures": [
+      "No SSP, or a template never completed",
+      "Implementation statements copy the requirement text instead of describing the actual control",
+      "No boundary diagram",
+      "Last updated years ago; no revision history"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 0
+  },
+  {
+    "id": "SC.L2-3.13.8",
+    "level": 2,
+    "family": "SC",
+    "familyName": "System and Communications Protection",
+    "nist171Ref": "3.13.8",
+    "title": "Data in Transit",
+    "officialText": "Implement cryptographic mechanisms to prevent unauthorized disclosure of CUI during transmission unless otherwise protected by alternative physical safeguards.",
+    "plainEnglish": "CUI must be encrypted whenever it moves over a network: email (TLS or encrypted messages), file transfer (SFTP/HTTPS, not FTP), VPN for remote access, and Wi-Fi with WPA2/3.",
+    "assessmentObjectives": [
+      "[a] cryptographic mechanisms intended to prevent unauthorized disclosure of CUI are identified;",
+      "[b] alternative physical safeguards intended to prevent unauthorized disclosure of CUI are identified; and",
+      "[c] either cryptographic mechanisms or alternative physical safeguards are implemented to prevent unauthorized disclosure of CUI during transmission."
+    ],
+    "whyItMatters": "Unencrypted CUI on the wire or in the air can be read by anyone on the path.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Table listing every way CUI is transmitted (email, file share, VPN, Wi-Fi, web portal) and the encryption used for each",
+      "Screenshot of the email service's TLS enforcement or message-encryption settings (Microsoft Purview, Google S/MIME, Virtru, Preveil)",
+      "Screenshot of the VPN configuration showing the cipher suite (e.g., AES-256, IKEv2)",
+      "Screenshot of Wi-Fi settings showing WPA2/WPA3 (Enterprise preferred)",
+      "Screenshot of the SFTP/HTTPS file-transfer tool settings; evidence FTP/HTTP are disabled",
+      "Screenshot of the CMVP certificate for the module (ties to SC.L2-3.13.11)"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Require the transmission-path table first; then expect a screenshot per path showing encryption. Email is the usual gap: opportunistic TLS alone is weak, so look for enforced TLS or message-level encryption for CUI. Reject if any listed path (e.g., Wi-Fi, file transfer) has no evidence, or if cleartext protocols are enabled. For Level 2, note whether the modules named are FIPS-validated. Assessors may test with configuration review or packet capture.",
+    "commonFailures": [
+      "CUI emailed with no encryption beyond default TLS",
+      "FTP still used for customer file transfers",
+      "Guest or legacy Wi-Fi with WPA/WEP",
+      "Encryption present but not FIPS-validated"
+    ],
+    "estimatedEffortMinutes": 40,
+    "pointValue": 3
+  },
+  {
+    "id": "SC.L2-3.13.11",
+    "level": 2,
+    "family": "SC",
+    "familyName": "System and Communications Protection",
+    "nist171Ref": "3.13.11",
+    "title": "CUI Encryption",
+    "officialText": "Employ FIPS-validated cryptography when used to protect the confidentiality of CUI.",
+    "plainEnglish": "Wherever you rely on encryption to protect CUI (disk encryption, VPN, encrypted USB, email encryption), the encryption module must have a NIST FIPS 140 validation certificate, not just use a 'good algorithm'.",
+    "assessmentObjectives": [
+      "[a] FIPS-validated cryptography is employed to protect the confidentiality of CUI."
+    ],
+    "whyItMatters": "DoD only trusts encryption that has been independently tested; non-validated encryption counts as no encryption for CUI.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Table mapping each encryption use (BitLocker, FileVault, VPN, USB drives, email encryption, cloud storage) to its FIPS 140-2/140-3 certificate number",
+      "Screenshot of the NIST CMVP search result for each certificate number",
+      "Screenshot of Windows 'System cryptography: Use FIPS compliant algorithms' policy enabled, or the macOS FIPS module version",
+      "Screenshot of the firewall/VPN appliance in FIPS mode",
+      "Vendor documentation page stating the product's FIPS validation status (e.g., cloud provider FIPS endpoints)"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Look for a mapping of every encryption use to a specific CMVP certificate number and a screenshot of that certificate's CMVP entry. 'Uses AES-256' is not evidence of validation; 'FIPS compliant' marketing language is not the same as validated. Reject if any encryption use from SC.L2-3.13.8, SC.L2-3.13.16, MP.L2-3.8.6, or MP.L2-3.8.9 has no certificate listed, or if certificates are listed as 'Historical' without an explanation. This is largely a documentation check and can be verified by the AI.",
+    "commonFailures": [
+      "Consumer or open-source encryption tools with no FIPS validation",
+      "FIPS mode available but never enabled",
+      "Certificate numbers unknown; team assumes BitLocker is 'automatically FIPS'",
+      "Cloud services used via non-FIPS endpoints"
+    ],
+    "estimatedEffortMinutes": 45,
+    "pointValue": 5
+  },
+  {
+    "id": "SC.L2-3.13.16",
+    "level": 2,
+    "family": "SC",
+    "familyName": "System and Communications Protection",
+    "nist171Ref": "3.13.16",
+    "title": "Data at Rest",
+    "officialText": "Protect the confidentiality of CUI at rest.",
+    "plainEnglish": "CUI sitting on laptops, servers, phones, and cloud storage must be protected, normally by full-disk or file encryption, or by strong physical security where encryption is not practical.",
+    "assessmentObjectives": [
+      "[a] the confidentiality of CUI at rest is protected."
+    ],
+    "whyItMatters": "Lost and stolen laptops are the most common CUI incident; encryption turns them into non-events.",
+    "evidenceTypes": ["screenshot", "photo", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of BitLocker status ('Protection On') on a Windows laptop or FileVault 'On' on a Mac",
+      "Screenshot of the MDM/Intune encryption compliance report across all devices",
+      "Screenshot of the server's disk encryption or SAN/NAS encryption setting",
+      "Screenshot of the cloud storage provider's encryption-at-rest statement for the tenant",
+      "Photo of the locked server room if physical protection is claimed for a server that is not encrypted",
+      "Screenshot of mobile device encryption status via MDM"
+    ],
+    "aiVerifiable": "full",
+    "aiReviewGuidance": "Expect a fleet-wide view (MDM/compliance report) or per-device screenshots for small fleets showing encryption on, plus coverage of servers, phones, and cloud storage. A single laptop screenshot is not fleet evidence. If physical protection is claimed instead of encryption, require the PE evidence and a justification. Reject screenshots showing 'Encryption off', 'Suspended', or devices missing from the compliance report. Note the FIPS requirement from SC.L2-3.13.11.",
+    "commonFailures": [
+      "Encryption enabled on some laptops but not all",
+      "Servers and NAS unencrypted and in a shared space",
+      "Phones with CUI email not managed or encrypted",
+      "Recovery keys not escrowed, so encryption gets turned off after a lockout"
+    ],
+    "estimatedEffortMinutes": 20,
+    "pointValue": 1
+  },
+  {
+    "id": "SI.L2-3.14.6",
+    "level": 2,
+    "family": "SI",
+    "familyName": "System and Information Integrity",
+    "nist171Ref": "3.14.6",
+    "title": "Monitor Communications for Attacks",
+    "officialText": "Monitor organizational systems, including inbound and outbound communications traffic, to detect attacks and indicators of potential attacks.",
+    "plainEnglish": "Something (an EDR agent, firewall IDS/IPS, or a managed security service) is watching your network traffic in both directions and your computers for signs of attack, and someone gets the alerts.",
+    "assessmentObjectives": [
+      "[a] the system is monitored to detect attacks and indicators of potential attacks;",
+      "[b] inbound communications traffic is monitored to detect attacks and indicators of potential attacks; and",
+      "[c] outbound communications traffic is monitored to detect attacks and indicators of potential attacks."
+    ],
+    "whyItMatters": "Attacks that go unnoticed for months are the ones that cost the most; monitoring shortens that window to hours.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of the EDR/XDR console (Microsoft Defender for Business, CrowdStrike, SentinelOne) showing all devices reporting and alerts enabled",
+      "Screenshot of the firewall's IDS/IPS feature enabled with recent events",
+      "Screenshot of the firewall log showing outbound connections are logged, or DNS filtering (e.g., Cisco Umbrella) blocking events",
+      "Screenshot of the alert-notification settings showing who receives alerts",
+      "MSSP/SOC service agreement and a sample monthly report",
+      "Short written description of what is monitored, by what tool, and who reviews it"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for host monitoring (EDR console) and network monitoring (IDS/IPS or firewall logging) that explicitly covers outbound traffic, which is the usual gap. A firewall screenshot showing only inbound blocking does not satisfy [c]. Alert routing to a named person or SOC is required to count as 'monitoring' rather than 'logging'. Reject if the EDR console shows devices offline for weeks or if IDS/IPS is 'available but disabled'. Assessors will interview whoever reviews alerts.",
+    "commonFailures": [
+      "Logs are collected but nobody is alerted or reviews them",
+      "Outbound traffic not monitored at all",
+      "IDS/IPS licence expired or feature never turned on",
+      "EDR deployed to some but not all devices"
+    ],
+    "estimatedEffortMinutes": 30,
+    "pointValue": 5
+  }
+]
+
