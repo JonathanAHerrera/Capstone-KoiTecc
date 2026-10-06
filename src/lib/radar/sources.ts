@@ -28,6 +28,31 @@ function cleanText(value: string | null | undefined): string {
     .trim();
 }
 
+function cleanMarkdown(value: string | null | undefined): string {
+  return cleanText(
+    (value ?? "")
+      .replace(/^\s*#{1,6}\s*(summary|what(?:'|’)s changed)\s*$/gim, " ")
+      .replace(/!\[[^\]]*\]\([^)]+\)/g, " ")
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+      .replace(/^\s*#{1,6}\s+/gm, "")
+      .replace(/^\s*[-*+]\s+/gm, "; ")
+      .replace(/\*\*|__|`/g, "")
+      .replace(/\s+by\s+@[\w-]+/gi, "")
+      .replace(/\s+in\s+https?:\/\/\S+/gi, "")
+      .replace(/https?:\/\/\S+/g, ""),
+  )
+    .replace(/^;\s*/, "")
+    .replace(/\.\s*;/g, ";")
+    .replace(/\s*;\s*/g, "; ");
+}
+
+function excerpt(value: string, maximumLength = 440): string {
+  if (value.length <= maximumLength) return value;
+  const shortened = value.slice(0, maximumLength + 1);
+  const lastBoundary = Math.max(shortened.lastIndexOf(". "), shortened.lastIndexOf("; "), shortened.lastIndexOf(" "));
+  return `${shortened.slice(0, lastBoundary > maximumLength * 0.7 ? lastBoundary + 1 : maximumLength).trim()}...`;
+}
+
 function safeIsoDate(value: string | null | undefined): string {
   const parsed = value ? new Date(value) : new Date();
   return Number.isNaN(parsed.getTime()) ? new Date().toISOString() : parsed.toISOString();
@@ -153,7 +178,7 @@ async function fetchFederalRegister(): Promise<UnscoredRadarItem[]> {
       source: "Federal Register",
       updateType,
       title: cleanText(String(document.title ?? "Untitled federal document")),
-      summary: cleanText(String(document.abstract ?? document.excerpts ?? "Review the official document for details.")),
+      summary: excerpt(cleanText(String(document.abstract ?? document.excerpts ?? "Review the official document for details."))),
       publishedAt: safeIsoDate(String(document.publication_date ?? "")),
       effectiveAt: document.effective_on ? safeIsoDate(String(document.effective_on)) : undefined,
       url: String(document.html_url ?? document.pdf_url ?? "https://www.federalregister.gov/"),
@@ -178,7 +203,7 @@ async function fetchCisaKev(): Promise<UnscoredRadarItem[]> {
     source: "CISA KEV",
     updateType: "active_threat",
     title: `${String(vulnerability.cveID ?? "CVE")} · ${cleanText(String(vulnerability.vulnerabilityName ?? "Known exploited vulnerability"))}`,
-    summary: cleanText(`${String(vulnerability.vendorProject ?? "")} ${String(vulnerability.product ?? "")}. ${String(vulnerability.shortDescription ?? "")} Required action: ${String(vulnerability.requiredAction ?? "Review vendor guidance.")}`),
+    summary: excerpt(cleanText(`${String(vulnerability.vendorProject ?? "")} ${String(vulnerability.product ?? "")}. ${String(vulnerability.shortDescription ?? "")} Required action: ${String(vulnerability.requiredAction ?? "Review vendor guidance.")}`), 520),
     publishedAt: safeIsoDate(String(vulnerability.dateAdded ?? "")),
     effectiveAt: vulnerability.dueDate ? safeIsoDate(String(vulnerability.dueDate)) : undefined,
     url: "https://www.cisa.gov/known-exploited-vulnerabilities-catalog",
@@ -210,7 +235,7 @@ async function fetchTexasRegister(): Promise<UnscoredRadarItem[]> {
       source: "Texas Register",
       updateType,
       title,
-      summary: description,
+      summary: excerpt(description),
       publishedAt: safeIsoDate(valueOf("pubDate")),
       url,
       agency: "Texas Secretary of State",
@@ -231,7 +256,7 @@ async function fetchNistOscal(): Promise<UnscoredRadarItem[]> {
     source: "NIST OSCAL",
     updateType: "framework_update",
     title: `NIST OSCAL ${cleanText(String(release.name ?? release.tag_name ?? "release"))}`,
-    summary: cleanText(String(release.body ?? "Updated machine-readable security control models and tooling." )).slice(0, 600),
+    summary: excerpt(cleanMarkdown(String(release.body ?? "Updated machine-readable security control models and tooling."))),
     publishedAt: safeIsoDate(String(release.published_at ?? release.created_at ?? "")),
     url: String(release.html_url ?? "https://pages.nist.gov/OSCAL/"),
     agency: "National Institute of Standards and Technology",
