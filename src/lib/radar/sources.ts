@@ -102,6 +102,13 @@ function scoreItem(item: UnscoredRadarItem, profile: RadarProfile | null): Radar
     reasons.push("Add your software and hardware to determine whether this active threat applies.");
   }
 
+  // Texas-oriented profiles get an additive nudge toward Texas privacy and breach topics.
+  // Federal items are untouched, so they still surface for everyone.
+  if (profile.texasOperations && /texas|tdpsa|data privacy|breach|resident/.test(corpus)) {
+    score += 20;
+    reasons.push("This touches Texas privacy or breach-notification topics relevant to your Texas operations.");
+  }
+
   if (item.updateType === "binding_requirement") score += 10;
   return { ...item, impact, relevanceScore: Math.min(score, 100), relevanceReasons: reasons.length > 0 ? reasons : ["No direct profile match found; keep under watch if it affects a customer or vendor."] };
 }

@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 import { z } from "zod";
 import { getDb, nowIsoTimestamp } from "@/db/client";
 import { organizations, type OrganizationRow } from "@/db/schema";
+import { FRAMEWORK_ORDER, type FrameworkId } from "@/lib/practice-types";
 
 export type Organization = OrganizationRow;
 
@@ -16,6 +17,15 @@ export const CreateOrganizationInputSchema = z.object({
 });
 
 export type CreateOrganizationInput = z.infer<typeof CreateOrganizationInputSchema>;
+
+export const TexasProfileInputSchema = z.object({
+  handlesTexasResidentData: z.boolean(),
+  sellsToStateOfTexas: z.boolean(),
+  texasPhysicalPresence: z.boolean(),
+  processesPersonalDataAtScale: z.boolean(),
+});
+
+export type TexasProfileInput = z.infer<typeof TexasProfileInputSchema>;
 
 export async function getOrganization(): Promise<Organization | null> {
   const db = await getDb();
@@ -49,8 +59,60 @@ export async function createOrganization(input: CreateOrganizationInput): Promis
   const newOrganization: Organization = {
     id: nanoid(),
     ...validatedInput,
+    handlesTexasResidentData: false,
+    sellsToStateOfTexas: false,
+    texasPhysicalPresence: false,
+    processesPersonalDataAtScale: false,
+    enabledFrameworks: JSON.stringify(["cmmc"]),
     createdAt: nowIsoTimestamp(),
   };
   await db.insert(organizations).values(newOrganization);
   return newOrganization;
+}
+
+export async function updateOrganizationTexasProfile(
+  input: TexasProfileInput,
+): Promise<Organization> {
+  const validatedInput = TexasProfileInputSchema.parse(input);
+  const organization = await requireOrganization();
+  const db = await getDb();
+  await db
+    .update(organizations)
+    .set(validatedInput)
+    .where(eq(organizations.id, organization.id));
+  return { ...organization, ...validatedInput };
+}
+
+// CMMC is always present; ids are de-duplicated and ordered by FRAMEWORK_ORDER for stable storage.
+export function parseEnabledFrameworks(organization: Organization): FrameworkId[] {
+  const enabled = new Set<FrameworkId>(["cmmc"]);
+  try {
+    const parsed = JSON.parse(organization.enabledFrameworks) as unknown;
+    if (Array.isArray(parsed)) {
+      for (const value of parsed) {
+        if (FRAMEWORK_ORDER.includes(value as FrameworkId)) {
+          enabled.add(value as FrameworkId);
+        }
+      }
+    }
+  } catch {
+    // Fall back to the CMMC-only default when the stored value is unreadable.
+  }
+  return FRAMEWORK_ORDER.filter((framework) => enabled.has(framework));
+}
+
+export async function setEnabledFrameworks(frameworks: FrameworkId[]): Promise<Organization> {
+  const organization = await requireOrganization();
+  const deduped = new Set<FrameworkId>(["cmmc"]);
+  for (const framework of frameworks) {
+    if (FRAMEWORK_ORDER.includes(framework)) deduped.add(framework);
+  }
+  const ordered = FRAMEWORK_ORDER.filter((framework) => deduped.has(framework));
+  const serialized = JSON.stringify(ordered);
+  const db = await getDb();
+  await db
+    .update(organizations)
+    .set({ enabledFrameworks: serialized })
+    .where(eq(organizations.id, organization.id));
+  return { ...organization, enabledFrameworks: serialized };
 }

@@ -8,6 +8,21 @@ export const organizations = sqliteTable("organizations", {
   employeeCount: text("employee_count").notNull().$type<"1-10" | "11-50" | "51-250" | "250+">(),
   itSetup: text("it_setup").notNull().$type<"cloud" | "onprem" | "mixed" | "unsure">(),
   hasItProvider: integer("has_it_provider", { mode: "boolean" }).notNull(),
+  // Texas applicability profile; defaulted so existing rows and the onboarding payload stay valid.
+  handlesTexasResidentData: integer("handles_texas_resident_data", { mode: "boolean" })
+    .notNull()
+    .default(false),
+  sellsToStateOfTexas: integer("sells_to_state_of_texas", { mode: "boolean" })
+    .notNull()
+    .default(false),
+  texasPhysicalPresence: integer("texas_physical_presence", { mode: "boolean" })
+    .notNull()
+    .default(false),
+  processesPersonalDataAtScale: integer("processes_personal_data_at_scale", { mode: "boolean" })
+    .notNull()
+    .default(false),
+  // JSON array of FrameworkId; CMMC is always enabled.
+  enabledFrameworks: text("enabled_frameworks").notNull().default('["cmmc"]'),
   createdAt: text("created_at").notNull(),
 });
 
@@ -19,6 +34,9 @@ export const submissions = sqliteTable(
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),
     practiceId: text("practice_id").notNull(),
+    // Convenience/filter column only; correctness relies on globally namespaced practice ids, so
+    // the UNIQUE(org_id, practice_id) index is unchanged. Null on rows created before this column.
+    framework: text("framework").$type<"cmmc" | "tdpsa" | "tx521" | "tac202">(),
     status: text("status")
       .notNull()
       .$type<"draft" | "submitted" | "reviewing" | "accepted" | "needs_work">(),

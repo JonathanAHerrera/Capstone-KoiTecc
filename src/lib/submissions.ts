@@ -9,8 +9,13 @@ import {
   type SubmissionStatus,
 } from "@/db/schema";
 import { requireOrganization } from "@/lib/org";
-import { getAllPractices, getPractice } from "@/lib/practices";
-import type { DerivedPracticeStatus } from "@/lib/practice-types";
+import {
+  getAllPractices,
+  getFrameworkForPractice,
+  getPractice,
+  getPracticesForFramework,
+} from "@/lib/practices";
+import type { DerivedPracticeStatus, FrameworkId } from "@/lib/practice-types";
 import { getLatestReviewForSubmission, type ReviewRecord } from "@/lib/reviews";
 
 export type Submission = SubmissionRow;
@@ -74,6 +79,7 @@ export async function getOrCreateDraftSubmission(practiceId: string): Promise<Su
     id: nanoid(),
     orgId: organization.id,
     practiceId,
+    framework: getFrameworkForPractice(practiceId) ?? null,
     status: "draft",
     note: null,
     createdAt: timestamp,
@@ -125,6 +131,26 @@ export async function listPracticeStatuses(): Promise<Record<string, DerivedPrac
 
   const statuses: Record<string, DerivedPracticeStatus> = {};
   for (const practice of getAllPractices()) {
+    statuses[practice.id] = deriveStatusFromSubmission(
+      statusBySubmissionPractice.get(practice.id),
+    );
+  }
+  return statuses;
+}
+
+export async function listPracticeStatusesForFramework(
+  framework: FrameworkId,
+): Promise<Record<string, DerivedPracticeStatus>> {
+  const organization = await requireOrganization();
+  const db = await getDb();
+  const rows = await db
+    .select({ practiceId: submissions.practiceId, status: submissions.status })
+    .from(submissions)
+    .where(eq(submissions.orgId, organization.id));
+  const statusBySubmissionPractice = new Map(rows.map((row) => [row.practiceId, row]));
+
+  const statuses: Record<string, DerivedPracticeStatus> = {};
+  for (const practice of getPracticesForFramework(framework)) {
     statuses[practice.id] = deriveStatusFromSubmission(
       statusBySubmissionPractice.get(practice.id),
     );

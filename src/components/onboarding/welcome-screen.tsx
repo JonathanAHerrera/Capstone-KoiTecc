@@ -1,4 +1,4 @@
-import { Camera, ClipboardCheck, ListChecks, ShieldCheck, Timer } from "lucide-react";
+import { Camera, ClipboardCheck, ListChecks, MapPin, ShieldCheck, Timer } from "lucide-react";
 import { BigButton } from "@/components/ui/big-button";
 import { BottomActionBar } from "@/components/ui/bottom-action-bar";
 
@@ -27,13 +27,17 @@ export function WelcomeScreen({ hasExistingPath, onStart }: WelcomeScreenProps) 
         >
           <ShieldCheck className="size-11" strokeWidth={1.75} aria-hidden />
         </span>
-        <div className="flex flex-col gap-3">
-          <p className="caption text-primary-text">CMMC Ready</p>
+        <div className="flex flex-col items-center gap-3">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-3 py-1 text-xs font-semibold uppercase tracking-[0.12em] text-primary-text">
+            <MapPin className="size-3.5" aria-hidden />
+            Texas · CMMC Ready
+          </span>
           <h1 className="display text-[40px] sm:text-[48px]">
             Let&apos;s get your shop <span className="whitespace-nowrap">CMMC-ready</span>
           </h1>
           <p className="text-base text-text-secondary">
-            Answer a few quick questions and we&apos;ll build your requirement-by-requirement path.
+            Built for Texas small businesses. Answer a few quick questions and we&apos;ll build your
+            requirement-by-requirement path.
           </p>
         </div>
         <ul className="flex w-full flex-col gap-3 text-left">
@@ -52,6 +56,17 @@ export function WelcomeScreen({ hasExistingPath, onStart }: WelcomeScreenProps) 
             </li>
           ))}
         </ul>
+        <div className="w-full rounded-card border border-border bg-primary-pale/60 px-4 py-3 text-left">
+          <p className="flex items-center gap-2 text-sm font-semibold text-primary-text">
+            <MapPin className="size-4" aria-hidden />
+            Why Texas?
+          </p>
+          <p className="mt-1 text-sm text-text-secondary">
+            Texas small shops keep the state&apos;s supply chains running, and they&apos;re increasingly in
+            attackers&apos; crosshairs. We turn federal and Texas requirements into a phone-friendly checklist so
+            you can protect your business without hiring a consultant.
+          </p>
+        </div>
         <p className="flex items-center gap-2 text-sm font-medium text-muted">
           <Timer className="size-4" aria-hidden />
           Takes about 2 minutes

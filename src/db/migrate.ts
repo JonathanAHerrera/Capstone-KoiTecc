@@ -32,12 +32,18 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
     employee_count TEXT NOT NULL,
     it_setup TEXT NOT NULL,
     has_it_provider INTEGER NOT NULL,
+    handles_texas_resident_data INTEGER NOT NULL DEFAULT 0,
+    sells_to_state_of_texas INTEGER NOT NULL DEFAULT 0,
+    texas_physical_presence INTEGER NOT NULL DEFAULT 0,
+    processes_personal_data_at_scale INTEGER NOT NULL DEFAULT 0,
+    enabled_frameworks TEXT NOT NULL DEFAULT '["cmmc"]',
     created_at TEXT NOT NULL
   )`,
   `CREATE TABLE IF NOT EXISTS submissions (
     id TEXT PRIMARY KEY,
     org_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
     practice_id TEXT NOT NULL,
+    framework TEXT,
     status TEXT NOT NULL,
     note TEXT,
     created_at TEXT NOT NULL,
@@ -106,6 +112,32 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
 // tables, so each one is back-filled with ALTER TABLE when absent.
 const ADDED_COLUMNS: readonly { table: string; column: string; definition: string }[] = [
   { table: "evidence_files", column: "sha256", definition: "TEXT NOT NULL DEFAULT ''" },
+  {
+    table: "organizations",
+    column: "handles_texas_resident_data",
+    definition: "INTEGER NOT NULL DEFAULT 0",
+  },
+  {
+    table: "organizations",
+    column: "sells_to_state_of_texas",
+    definition: "INTEGER NOT NULL DEFAULT 0",
+  },
+  {
+    table: "organizations",
+    column: "texas_physical_presence",
+    definition: "INTEGER NOT NULL DEFAULT 0",
+  },
+  {
+    table: "organizations",
+    column: "processes_personal_data_at_scale",
+    definition: "INTEGER NOT NULL DEFAULT 0",
+  },
+  {
+    table: "organizations",
+    column: "enabled_frameworks",
+    definition: `TEXT NOT NULL DEFAULT '["cmmc"]'`,
+  },
+  { table: "submissions", column: "framework", definition: "TEXT" },
 ];
 
 async function addMissingColumns(client: Client): Promise<void> {

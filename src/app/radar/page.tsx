@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ChevronLeft, Download, RadioTower, SlidersHorizontal } from "lucide-react";
+import { BreachPlaybook } from "@/components/radar/breach-playbook";
 import { RadarItemCard } from "@/components/radar/radar-item-card";
 import { RadarProfileForm } from "@/components/radar/radar-profile-form";
 import { getOrganization } from "@/lib/org";
@@ -17,6 +18,7 @@ export default async function RadarPage() {
   const profile = await getRadarProfile();
   const [feed, decisions] = await Promise.all([getRadarFeed(profile), listRadarDecisions()]);
   const decisionsByItemId = new Map(decisions.map((decision) => [decision.itemId, decision]));
+  const showBreachPlaybook = organization.handlesTexasResidentData || (profile?.texasOperations ?? false);
 
   return (
     <div className="flex min-h-dvh flex-col gap-6 px-4 pb-[calc(40px+env(safe-area-inset-bottom))] pt-[calc(8px+env(safe-area-inset-top))]">
@@ -39,6 +41,8 @@ export default async function RadarPage() {
           <div className="mt-4 border-t border-border-subtle pt-4"><RadarProfileForm profile={profile} defaultGovernmentContractor={true} defaultHandlesSensitiveData={organization.handlesCui} /></div>
         </details>
       </section>
+
+      {showBreachPlaybook ? <BreachPlaybook /> : null}
 
       <section aria-labelledby="source-health-heading">
         <div className="flex items-end justify-between gap-3">

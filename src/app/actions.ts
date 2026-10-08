@@ -8,6 +8,7 @@ import {
   type CreateOrganizationInput,
   type Organization,
 } from "@/lib/org";
+import { resetAllData } from "@/lib/reset";
 import {
   getOrCreateDraftSubmission,
   saveSubmissionNote,
@@ -78,5 +79,18 @@ export async function getOrCreateDraftSubmissionAction(
   } catch (error) {
     console.error(`getOrCreateDraftSubmissionAction failed for ${practiceId}`, error);
     return { ok: false, error: "Could not open this practice. Please try again." };
+  }
+}
+
+// Clears the organization, submissions, evidence, reviews, and radar data so the next
+// visit starts at onboarding again. Testing aid for the single-org MVP.
+export async function resetAllDataAction(): Promise<ActionResult<null>> {
+  try {
+    await resetAllData();
+    revalidatePath("/", "layout");
+    return { ok: true, data: null };
+  } catch (error) {
+    console.error("resetAllDataAction failed", error);
+    return { ok: false, error: "Could not reset app data. Please try again." };
   }
 }

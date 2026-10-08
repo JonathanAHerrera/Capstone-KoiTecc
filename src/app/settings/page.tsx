@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronLeft, MonitorCog } from "lucide-react";
+import { ResetDataSetting } from "@/components/settings/reset-data-setting";
 import { ThemeSetting } from "@/components/settings/theme-setting";
 
 export const metadata: Metadata = { title: "Settings — CMMC Ready" };
@@ -24,6 +25,10 @@ export default function SettingsPage() {
       <section aria-labelledby="appearance-heading" className="py-6">
         <p id="appearance-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">Appearance</p>
         <div className="mt-3 rounded-card border border-border bg-surface p-4 shadow-float"><ThemeSetting /></div>
+      </section>
+      <section aria-labelledby="data-heading" className="pb-6">
+        <p id="data-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">Data</p>
+        <div className="mt-3 rounded-card border border-border bg-surface p-4 shadow-float"><ResetDataSetting /></div>
       </section>
     </div>
   );

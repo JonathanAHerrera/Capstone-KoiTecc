@@ -1,0 +1,176 @@
+[
+  {
+    "id": "TX521-DETECT-1",
+    "framework": "tx521",
+    "groupCode": "DETECT",
+    "groupName": "Detection & Assessment",
+    "level": 1,
+    "family": "DETECT",
+    "familyName": "Detection & Assessment",
+    "nist171Ref": "",
+    "legalRef": "Tex. Bus. & Com. Code §521.053(a)",
+    "title": "Detect and confirm a breach of sensitive personal information",
+    "officialText": "A person who conducts business in this state and owns or licenses computerized data that includes sensitive personal information shall, following discovery or notification of a breach of system security, conduct a prompt assessment to determine whether sensitive personal information was, or is reasonably believed to have been, acquired by an unauthorized person.",
+    "plainEnglish": "You need a way to notice a data breach quickly and figure out whether Texans' sensitive personal information (like Social Security, driver's license, or financial account numbers) was actually exposed.",
+    "assessmentObjectives": [
+      "[a] a process exists to detect and report suspected breaches of system security;",
+      "[b] the type of data involved is assessed against the statutory definition of sensitive personal information; and",
+      "[c] the assessment is documented and dated."
+    ],
+    "whyItMatters": "Every breach-notification clock starts at discovery. If you cannot detect or scope a breach, you cannot meet any of the deadlines that follow.",
+    "evidenceTypes": ["document", "screenshot", "text"],
+    "evidenceExamples": [
+      "Written incident-detection procedure that defines what counts as a breach of system security",
+      "Screenshot of monitoring or alerting that would surface unauthorized access",
+      "A breach-assessment template that checks whether sensitive personal information was involved"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for a defined detection path plus an assessment step that maps the incident to the statute's definition of sensitive personal information. A plan that jumps straight to notification without an assessment step is incomplete.",
+    "commonFailures": [
+      "No monitoring, so breaches are found only when someone complains",
+      "No documented assessment of whether sensitive data was actually acquired",
+      "Treating every event as 'not a breach' with no analysis on file"
+    ],
+    "estimatedEffortMinutes": 75,
+    "pointValue": 0
+  },
+  {
+    "id": "TX521-NOTIFY-1",
+    "framework": "tx521",
+    "groupCode": "NOTIFY",
+    "groupName": "Individual Notification",
+    "level": 1,
+    "family": "NOTIFY",
+    "familyName": "Individual Notification",
+    "nist171Ref": "",
+    "legalRef": "Tex. Bus. & Com. Code §521.053(b)",
+    "title": "Notify affected individuals without unreasonable delay",
+    "officialText": "A person shall disclose any breach of system security to each individual whose sensitive personal information was, or is reasonably believed to have been, acquired by an unauthorized person as quickly as possible and without unreasonable delay, but not later than the 60th day after the date on which the person determines that the breach occurred, subject to the legitimate needs of law enforcement.",
+    "plainEnglish": "Tell affected people about the breach as fast as you reasonably can, and no later than 60 days after you determine a breach happened.",
+    "assessmentObjectives": [
+      "[a] a method and template for notifying affected individuals exists;",
+      "[b] notification occurs without unreasonable delay and within 60 days of determining a breach; and",
+      "[c] the determination date and notification dates are recorded."
+    ],
+    "whyItMatters": "The 60-day individual-notice deadline is the core duty of Chapter 521. Missing it is the most common and most penalized failure.",
+    "evidenceTypes": ["document", "text", "screenshot"],
+    "evidenceExamples": [
+      "Individual breach-notification letter template",
+      "Procedure stating the 60-day deadline and who owns it",
+      "A tabletop or past-incident record showing determination date and notice date"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Confirm both a usable notice template and a procedure tying notification to the 60-day statutory clock from the determination date. A template with no timeline ownership only partially meets this.",
+    "commonFailures": [
+      "No pre-written notice, so drafting delays blow the deadline",
+      "Clock tracked from the wrong date",
+      "No single owner accountable for sending notices"
+    ],
+    "estimatedEffortMinutes": 90,
+    "pointValue": 0
+  },
+  {
+    "id": "TX521-NOTIFY-2",
+    "framework": "tx521",
+    "groupCode": "NOTIFY",
+    "groupName": "Individual Notification",
+    "level": 1,
+    "family": "NOTIFY",
+    "familyName": "Individual Notification",
+    "nist171Ref": "",
+    "legalRef": "Tex. Bus. & Com. Code §521.053(b)-(c)",
+    "title": "Include the required content and delivery method in notices",
+    "officialText": "Notice may be provided in writing, by electronic means if consistent with federal electronic records law, or by substitute notice when the cost or number of affected persons meets the statutory thresholds. The notice must give affected individuals meaningful information about the breach.",
+    "plainEnglish": "Your breach notice has to reach people by an approved method (mail, email, or substitute notice for very large breaches) and clearly explain what happened.",
+    "assessmentObjectives": [
+      "[a] the notice uses an allowed delivery method;",
+      "[b] the notice content describes the breach and the data involved; and",
+      "[c] substitute-notice criteria are understood for large breaches."
+    ],
+    "whyItMatters": "A notice sent the wrong way, or one too vague to be useful, does not satisfy the statute even if you sent it on time.",
+    "evidenceTypes": ["document", "text"],
+    "evidenceExamples": [
+      "Notice template showing the breach description and data categories affected",
+      "Procedure listing allowed delivery methods and the substitute-notice thresholds",
+      "A decision record choosing a delivery method for a given incident size"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Check that the notice content is specific (what happened, what data, what people can do) and that the delivery method matches the statute, including substitute notice for large breaches.",
+    "commonFailures": [
+      "Vague notices that omit the categories of data involved",
+      "Emailing notice without meeting electronic-records requirements",
+      "Not knowing when substitute notice is allowed"
+    ],
+    "estimatedEffortMinutes": 60,
+    "pointValue": 0
+  },
+  {
+    "id": "TX521-AG-1",
+    "framework": "tx521",
+    "groupCode": "AG",
+    "groupName": "Attorney General & Consumer Reporting Agencies",
+    "level": 1,
+    "family": "AG",
+    "familyName": "Attorney General & Consumer Reporting Agencies",
+    "nist171Ref": "",
+    "legalRef": "Tex. Bus. & Com. Code §521.053(i)",
+    "title": "Notify the Texas Attorney General when 250 or more residents are affected",
+    "officialText": "If a breach of system security requires notification of at least 250 residents of this state, the person shall notify the Attorney General of that breach as soon as practicable and not later than the 30th day after the date of the determination that the breach occurred. The notification must include a detailed description of the breach, the number of residents affected, the measures taken and to be taken, and whether law enforcement is engaged.",
+    "plainEnglish": "If a breach affects 250 or more Texans, you must also notify the Texas Attorney General within 30 days, using the AG's online form, with specific details about the breach.",
+    "assessmentObjectives": [
+      "[a] the 250-resident threshold and 30-day AG deadline are built into the response plan;",
+      "[b] the required AG notification content is captured; and",
+      "[c] the AG online submission channel is identified."
+    ],
+    "whyItMatters": "The AG-notification duty is unique to larger breaches and has a shorter 30-day clock than individual notice. The Attorney General publishes these reports, so accuracy matters.",
+    "evidenceTypes": ["document", "screenshot", "text"],
+    "evidenceExamples": [
+      "Procedure specifying the 250-resident trigger and 30-day AG deadline",
+      "Screenshot or link to the Texas AG data-breach reporting form",
+      "A completed AG-notice worksheet capturing the required fields"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Confirm the plan encodes the 250-resident threshold, the 30-day deadline, the required content fields, and points to the AG's official submission form. Missing any of these is a gap.",
+    "commonFailures": [
+      "Only planning individual notice and forgetting the AG entirely",
+      "Applying the 60-day individual deadline to the AG's 30-day one",
+      "AG notice missing the count of affected residents or remediation steps"
+    ],
+    "estimatedEffortMinutes": 60,
+    "pointValue": 0
+  },
+  {
+    "id": "TX521-RECORDS-1",
+    "framework": "tx521",
+    "groupCode": "RECORDS",
+    "groupName": "Recordkeeping & Readiness",
+    "level": 1,
+    "family": "RECORDS",
+    "familyName": "Recordkeeping & Readiness",
+    "nist171Ref": "",
+    "legalRef": "Tex. Bus. & Com. Code §521.053",
+    "title": "Keep an incident response plan and breach records",
+    "officialText": "A person should maintain records sufficient to demonstrate the timeline of discovery, determination, assessment, and notification for any breach of system security, and should maintain a response plan to meet the statutory deadlines.",
+    "plainEnglish": "Keep a simple incident response plan and a record of every breach, so you can prove you acted within the deadlines if the Attorney General asks.",
+    "assessmentObjectives": [
+      "[a] a written breach-response plan exists and assigns owners; and",
+      "[b] records capture discovery, determination, assessment, and notification dates."
+    ],
+    "whyItMatters": "If you cannot show when you discovered and acted on a breach, you cannot prove you met the deadlines. Records are your defense.",
+    "evidenceTypes": ["document", "text", "screenshot"],
+    "evidenceExamples": [
+      "The written incident/breach response plan",
+      "A breach log template with discovery, determination, and notification dates",
+      "Minutes or notes from a tabletop exercise testing the plan"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for a response plan plus a record structure that captures the key dates the statute's timeline depends on. A plan with no record-keeping mechanism only partially meets this.",
+    "commonFailures": [
+      "No written plan, so each incident is improvised",
+      "No log of dates to prove deadlines were met",
+      "Plan exists but has never been tested or assigned an owner"
+    ],
+    "estimatedEffortMinutes": 75,
+    "pointValue": 0
+  }
+]

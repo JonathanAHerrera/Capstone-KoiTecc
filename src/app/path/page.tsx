@@ -9,10 +9,11 @@ import { PathFooter } from "@/components/path/path-footer";
 import { PathHeroCard } from "@/components/path/path-hero-card";
 import { PathTopBar } from "@/components/path/path-top-bar";
 import { selectNeedsAttention } from "@/components/path/select-needs-attention";
-import { getOrganization } from "@/lib/org";
+import { TrackSwitcher, type TrackSwitcherEntry } from "@/components/path/track-switcher";
+import { getOrganization, parseEnabledFrameworks } from "@/lib/org";
 import { getFamilies, getPracticeCountForLevel } from "@/lib/practices";
 import type { CmmcLevel } from "@/lib/practice-types";
-import { computeProgressFromStatuses } from "@/lib/progress";
+import { computeProgressForFramework, computeProgressFromStatuses } from "@/lib/progress";
 import { listPracticeStatuses } from "@/lib/submissions";
 
 const LEVEL_TWO_TOTAL_REQUIREMENT_COUNT = 110;
@@ -35,6 +36,19 @@ export default async function PathHomePage({ searchParams }: PathHomePageProps) 
   const pathViewModel = buildPathViewModel(families, statuses);
   const needsAttention = selectNeedsAttention(pathViewModel.families.flatMap((family) => family.nodes));
 
+  const enabledFrameworks = parseEnabledFrameworks(organization);
+  const trackEntries: TrackSwitcherEntry[] = await Promise.all(
+    enabledFrameworks.map(async (framework): Promise<TrackSwitcherEntry> => {
+      const frameworkProgress = await computeProgressForFramework(framework);
+      return {
+        framework,
+        accepted: frameworkProgress.accepted,
+        total: frameworkProgress.total,
+        percent: frameworkProgress.percent,
+      };
+    }),
+  );
+
   return (
     <div className="flex flex-col gap-8 px-4 pb-[calc(112px+env(safe-area-inset-bottom))] pt-[calc(16px+env(safe-area-inset-top))]">
       <PathCelebration intensity={celebrationIntensity} />
@@ -42,6 +56,8 @@ export default async function PathHomePage({ searchParams }: PathHomePageProps) 
       <PathTopBar organizationName={organization.name} targetLevel={targetLevel} />
 
       <PathHeroCard progress={progress} />
+
+      <TrackSwitcher entries={trackEntries} />
 
       <NeedsAttentionList rows={needsAttention.rows} totalCount={needsAttention.totalCount} />
 

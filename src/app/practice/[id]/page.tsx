@@ -2,9 +2,14 @@ import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { PracticeWorkspace, type PracticeWorkspaceEvidenceFile } from "@/components/practice/practice-workspace";
 import { getOrganization } from "@/lib/org";
-import { getPractice, getPracticesForLevel } from "@/lib/practices";
-import type { DerivedPracticeStatus, Practice } from "@/lib/practice-types";
-import { deriveStatusFromSubmission, getSubmissionWithEvidence, listPracticeStatuses } from "@/lib/submissions";
+import { getPractice, getPracticesForFramework, getPracticesForLevel } from "@/lib/practices";
+import { frameworkForPractice, resolveGroup, type DerivedPracticeStatus, type Practice } from "@/lib/practice-types";
+import {
+  deriveStatusFromSubmission,
+  getSubmissionWithEvidence,
+  listPracticeStatuses,
+  listPracticeStatusesForFramework,
+} from "@/lib/submissions";
 
 type PracticePageProps = { params: Promise<{ id: string }> };
 
@@ -33,17 +38,25 @@ export default async function PracticePage({ params }: PracticePageProps) {
   const organization = await getOrganization();
   if (!organization) redirect("/onboarding");
 
+  // Texas practices navigate and celebrate within their own framework; CMMC keeps its level scope.
+  const framework = frameworkForPractice(practice);
   const [submissionWithEvidence, practiceStatuses] = await Promise.all([
     getSubmissionWithEvidence(practice.id),
-    listPracticeStatuses(),
+    framework === "cmmc" ? listPracticeStatuses() : listPracticeStatusesForFramework(framework),
   ]);
 
-  const practicesInLevel = getPracticesForLevel(organization.targetLevel);
-  const otherPracticesInLevel = practicesInLevel.filter((candidate) => candidate.id !== practice.id);
-  const otherPracticesInFamily = otherPracticesInLevel.filter((candidate) => candidate.family === practice.family);
-  const allOtherPracticesAccepted = otherPracticesInLevel.every((candidate) => practiceStatuses[candidate.id] === "accepted");
+  const practicesInScope =
+    framework === "cmmc"
+      ? getPracticesForLevel(organization.targetLevel)
+      : getPracticesForFramework(framework);
+  const currentGroupCode = resolveGroup(practice).code;
+  const otherPracticesInScope = practicesInScope.filter((candidate) => candidate.id !== practice.id);
+  const otherPracticesInFamily = otherPracticesInScope.filter(
+    (candidate) => resolveGroup(candidate).code === currentGroupCode,
+  );
+  const allOtherPracticesAccepted = otherPracticesInScope.every((candidate) => practiceStatuses[candidate.id] === "accepted");
   const allOtherFamilyPracticesAccepted = otherPracticesInFamily.every((candidate) => practiceStatuses[candidate.id] === "accepted");
-  const nextPractice = findNextPracticeNeedingWork(practicesInLevel, practice.id, practiceStatuses);
+  const nextPractice = findNextPracticeNeedingWork(practicesInScope, practice.id, practiceStatuses);
 
   const initialEvidenceFiles: PracticeWorkspaceEvidenceFile[] = (submissionWithEvidence?.evidenceFiles ?? []).map((file) => ({
     id: file.id,

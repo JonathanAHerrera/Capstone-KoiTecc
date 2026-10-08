@@ -1,0 +1,244 @@
+[
+  {
+    "id": "TDPSA-NOTICE-1",
+    "framework": "tdpsa",
+    "groupCode": "NOTICE",
+    "groupName": "Privacy Notice & Transparency",
+    "level": 1,
+    "family": "NOTICE",
+    "familyName": "Privacy Notice & Transparency",
+    "nist171Ref": "",
+    "legalRef": "Tex. Bus. & Com. Code §541.102",
+    "title": "Publish a reasonably accessible privacy notice",
+    "officialText": "A controller shall provide consumers with a reasonably accessible and clear privacy notice that includes the categories of personal data processed, the purpose for processing, how consumers may exercise their rights, the categories of personal data shared with third parties, and the categories of third parties with whom data is shared.",
+    "plainEnglish": "Post a clear privacy notice on your website that says what personal information you collect, why you collect it, who you share it with, and how a customer can ask to see, correct, or delete their data.",
+    "assessmentObjectives": [
+      "[a] a privacy notice exists and is publicly accessible;",
+      "[b] it lists the categories of personal data processed and the purpose;",
+      "[c] it lists categories of data shared and the categories of third parties; and",
+      "[d] it explains how consumers exercise their rights."
+    ],
+    "whyItMatters": "The privacy notice is the first thing the Texas Attorney General and your customers look at. A missing or vague notice is the easiest violation to spot and to prove.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of your published privacy policy page showing the required categories and a visible last-updated date",
+      "Link or document showing where the notice is linked from (website footer, app settings)",
+      "Document mapping each required disclosure to the paragraph in your notice that covers it"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for the required disclosures actually present in the notice: categories of personal data, purposes, categories shared, categories of third parties, and a described rights/opt-out method. A generic template with placeholders, no last-updated date, or no mention of consumer rights is a red flag. A reviewer should confirm the notice is actually linked where consumers can find it.",
+    "commonFailures": [
+      "A boilerplate policy that never mentions Texas consumer rights",
+      "No description of how to submit a rights request",
+      "Notice exists but is not linked anywhere customers can reach it"
+    ],
+    "estimatedEffortMinutes": 60,
+    "pointValue": 0
+  },
+  {
+    "id": "TDPSA-NOTICE-2",
+    "framework": "tdpsa",
+    "groupCode": "NOTICE",
+    "groupName": "Privacy Notice & Transparency",
+    "level": 1,
+    "family": "NOTICE",
+    "familyName": "Privacy Notice & Transparency",
+    "nist171Ref": "",
+    "legalRef": "Tex. Bus. & Com. Code §541.102(b)",
+    "title": "Disclose sale of data and targeted advertising with an opt-out",
+    "officialText": "If a controller sells personal data to third parties or processes personal data for targeted advertising, the controller shall clearly and conspicuously disclose that processing and the manner in which a consumer may exercise the right to opt out.",
+    "plainEnglish": "If you sell personal data or use it for targeted ads, you must say so plainly and give customers an easy way to opt out.",
+    "assessmentObjectives": [
+      "[a] any sale of personal data or targeted advertising is disclosed clearly and conspicuously; and",
+      "[b] a working opt-out method is provided to consumers."
+    ],
+    "whyItMatters": "Selling data or running targeted ads without a disclosed opt-out is a specific, enforceable TDPSA obligation and a common enforcement target.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of the disclosure and opt-out link in your privacy notice",
+      "Screenshot of the opt-out form or preference page a customer would use",
+      "Written statement that you do not sell data or run targeted advertising, with the systems checked to confirm it"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Confirm either a clear 'we do not sell / no targeted advertising' statement backed by evidence, or a disclosure paired with a reachable opt-out mechanism. A disclosure with no opt-out path is a fail.",
+    "commonFailures": [
+      "Using ad pixels or data brokers without any disclosure",
+      "Disclosing a sale but providing no opt-out link",
+      "Opt-out link that leads to a 404 or a dead form"
+    ],
+    "estimatedEffortMinutes": 45,
+    "pointValue": 0
+  },
+  {
+    "id": "TDPSA-RIGHTS-1",
+    "framework": "tdpsa",
+    "groupCode": "RIGHTS",
+    "groupName": "Consumer Rights Requests",
+    "level": 1,
+    "family": "RIGHTS",
+    "familyName": "Consumer Rights Requests",
+    "nist171Ref": "",
+    "legalRef": "Tex. Bus. & Com. Code §541.051",
+    "title": "Honor consumer rights requests within the deadline",
+    "officialText": "A controller shall respond to a consumer request to confirm, access, correct, delete, or obtain a portable copy of personal data without undue delay and not later than the 45th day after receipt, subject to one permitted extension.",
+    "plainEnglish": "When a Texan asks to see, fix, delete, or get a copy of their personal data, you must act on it, usually within 45 days.",
+    "assessmentObjectives": [
+      "[a] a method for consumers to submit rights requests exists;",
+      "[b] requests are verified and tracked; and",
+      "[c] responses are completed within the statutory deadline."
+    ],
+    "whyItMatters": "Ignoring or fumbling a rights request is a visible, individual harm that consumers report directly to the Attorney General.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Screenshot of the intake form or email channel used to receive requests",
+      "A request-tracking log (even a spreadsheet) showing date received, type, and date resolved",
+      "Written procedure describing how a request is verified and fulfilled within 45 days"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for both an intake method and evidence it is operated: a log or at least a documented procedure with the 45-day deadline. A form with no process behind it only partially meets this.",
+    "commonFailures": [
+      "No way for a consumer to actually submit a request",
+      "Requests received by email but never logged or tracked",
+      "No defined owner, so deadlines are missed"
+    ],
+    "estimatedEffortMinutes": 90,
+    "pointValue": 0
+  },
+  {
+    "id": "TDPSA-RIGHTS-2",
+    "framework": "tdpsa",
+    "groupCode": "RIGHTS",
+    "groupName": "Consumer Rights Requests",
+    "level": 1,
+    "family": "RIGHTS",
+    "familyName": "Consumer Rights Requests",
+    "nist171Ref": "",
+    "legalRef": "Tex. Bus. & Com. Code §541.055",
+    "title": "Provide a consumer appeal process",
+    "officialText": "A controller shall establish a process for a consumer to appeal the controller's refusal to take action on a request and shall inform the consumer of the decision within 60 days, including how to contact the Attorney General if the appeal is denied.",
+    "plainEnglish": "If you deny a customer's privacy request, you must give them a way to appeal and respond to the appeal within 60 days.",
+    "assessmentObjectives": [
+      "[a] an appeal process exists and is communicated when a request is refused; and",
+      "[b] appeal decisions are returned within 60 days with Attorney General contact information."
+    ],
+    "whyItMatters": "The appeal right is explicit in the statute. A denial letter that does not mention the appeal path is itself a violation.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Template denial/appeal response that includes appeal instructions and AG contact information",
+      "Procedure document describing the 60-day appeal timeline",
+      "Screenshot of the appeal step in your request-handling workflow"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Check that the appeal path and the Attorney General contact information are actually included in the consumer-facing response, not only in an internal note.",
+    "commonFailures": [
+      "Denying requests with no appeal option offered",
+      "Appeal response omits Attorney General contact details",
+      "No tracking of the 60-day appeal deadline"
+    ],
+    "estimatedEffortMinutes": 45,
+    "pointValue": 0
+  },
+  {
+    "id": "TDPSA-CONSENT-1",
+    "framework": "tdpsa",
+    "groupCode": "CONSENT",
+    "groupName": "Sensitive Data & Consent",
+    "level": 1,
+    "family": "CONSENT",
+    "familyName": "Sensitive Data & Consent",
+    "nist171Ref": "",
+    "legalRef": "Tex. Bus. & Com. Code §541.101(b)(3)",
+    "title": "Obtain consent before processing sensitive data",
+    "officialText": "A controller may not process sensitive data concerning a consumer without obtaining the consumer's consent, or, in the case of a known child, without processing the data in accordance with applicable children's privacy law.",
+    "plainEnglish": "Before you collect sensitive information (like health, precise location, race, religion, or data about kids), you must get clear consent first.",
+    "assessmentObjectives": [
+      "[a] sensitive data categories handled are identified;",
+      "[b] consent is obtained before processing sensitive data; and",
+      "[c] consent records are retained."
+    ],
+    "whyItMatters": "Sensitive data has stricter rules than ordinary personal data. Collecting it without consent is a bright-line violation.",
+    "evidenceTypes": ["screenshot", "document", "text"],
+    "evidenceExamples": [
+      "Inventory listing which sensitive data categories you collect and where",
+      "Screenshot of the consent checkbox or banner shown before sensitive data is collected",
+      "Sample of stored consent records tied to a date and a consumer"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "First confirm whether sensitive data is even collected. If it is, look for an affirmative opt-in (not a pre-checked box or buried term) captured before collection, plus a record of that consent.",
+    "commonFailures": [
+      "Collecting location or health data with no consent step",
+      "Pre-checked consent boxes or consent bundled into general terms",
+      "No record kept of who consented and when"
+    ],
+    "estimatedEffortMinutes": 75,
+    "pointValue": 0
+  },
+  {
+    "id": "TDPSA-SECURITY-1",
+    "framework": "tdpsa",
+    "groupCode": "SECURITY",
+    "groupName": "Data Security & Minimization",
+    "level": 1,
+    "family": "SECURITY",
+    "familyName": "Data Security & Minimization",
+    "nist171Ref": "",
+    "legalRef": "Tex. Bus. & Com. Code §541.101(a)",
+    "title": "Limit data collection and apply reasonable security",
+    "officialText": "A controller shall limit the collection of personal data to what is adequate, relevant, and reasonably necessary in relation to the purposes for which the data is processed, and shall establish, implement, and maintain reasonable administrative, technical, and physical data security practices.",
+    "plainEnglish": "Only collect the personal data you actually need, and protect it with sensible security like access limits, encryption, and backups.",
+    "assessmentObjectives": [
+      "[a] data collection is limited to what is necessary for a stated purpose; and",
+      "[b] reasonable administrative, technical, and physical safeguards are in place."
+    ],
+    "whyItMatters": "Minimizing data shrinks your risk, and 'reasonable security' is the standard regulators apply after any incident. This overlaps heavily with your CMMC work.",
+    "evidenceTypes": ["screenshot", "document", "photo", "text"],
+    "evidenceExamples": [
+      "Data inventory tying each field you collect to a business purpose",
+      "Screenshot showing access controls or encryption on the system holding personal data",
+      "Reference to the CMMC practices you have already completed that cover these safeguards"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Accept evidence of both minimization (a purpose-mapped inventory) and reasonable safeguards (access control, encryption, backup). Note where existing CMMC evidence already satisfies the security half.",
+    "commonFailures": [
+      "Collecting data 'just in case' with no defined purpose",
+      "Personal data stored in an open shared drive",
+      "No safeguards documented at all"
+    ],
+    "estimatedEffortMinutes": 90,
+    "pointValue": 0
+  },
+  {
+    "id": "TDPSA-CONTRACTS-1",
+    "framework": "tdpsa",
+    "groupCode": "CONTRACTS",
+    "groupName": "Processor Agreements",
+    "level": 1,
+    "family": "CONTRACTS",
+    "familyName": "Processor Agreements",
+    "nist171Ref": "",
+    "legalRef": "Tex. Bus. & Com. Code §541.104",
+    "title": "Put data processing agreements in place with vendors",
+    "officialText": "A contract between a controller and a processor shall govern the processor's data processing procedures and must set out processing instructions, the nature and purpose of processing, the type of data, the duration, and the duties of both parties, including confidentiality and deletion or return of data.",
+    "plainEnglish": "Any vendor that handles personal data for you (payroll, email marketing, cloud storage) needs a written data processing agreement spelling out how they must protect and handle that data.",
+    "assessmentObjectives": [
+      "[a] processors handling personal data are identified; and",
+      "[b] each has a contract with the required data-processing terms."
+    ],
+    "whyItMatters": "You stay responsible for data even after you hand it to a vendor. A missing processor contract is a gap the statute specifically calls out.",
+    "evidenceTypes": ["document", "screenshot", "text"],
+    "evidenceExamples": [
+      "List of vendors/processors that touch personal data",
+      "A signed data processing agreement or DPA addendum from a key vendor",
+      "Screenshot of a vendor's DPA acceptance in their admin console"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for a processor inventory and at least sample contracts containing the required terms (instructions, confidentiality, deletion/return). A vendor list with no agreements only partially meets this.",
+    "commonFailures": [
+      "Using vendors with only click-through terms and no DPA",
+      "No inventory of which vendors see personal data",
+      "Agreements that omit deletion/return or confidentiality duties"
+    ],
+    "estimatedEffortMinutes": 120,
+    "pointValue": 0
+  }
+]

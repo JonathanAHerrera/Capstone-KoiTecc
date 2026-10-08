@@ -2,11 +2,32 @@ import { desc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { evidenceFiles, reviews, submissions, type EvidenceFileRow } from "@/db/schema";
 import { requireOrganization, type Organization } from "@/lib/org";
-import { getFamilies } from "@/lib/practices";
-import type { DerivedPracticeStatus, Practice } from "@/lib/practice-types";
-import { computeProgressFromStatuses, type ProgressSummary } from "@/lib/progress";
+import { getFamilies, getGroupsForFramework } from "@/lib/practices";
+import {
+  FRAMEWORKS,
+  resolveGroup,
+  type DerivedPracticeStatus,
+  type FrameworkId,
+  type Practice,
+} from "@/lib/practice-types";
+import {
+  computeProgressForFrameworkFromStatuses,
+  computeProgressFromStatuses,
+} from "@/lib/progress";
 import { parseReviewRow, type ReviewRecord } from "@/lib/reviews";
 import { deriveStatusFromSubmission, type Submission } from "@/lib/submissions";
+
+// Shared subset of ProgressSummary / FrameworkProgressSummary that the score section renders.
+type ScoreCounts = {
+  total: number;
+  accepted: number;
+  needsWork: number;
+  underReview: number;
+  inProgress: number;
+  notStarted: number;
+  percent: number;
+  sprsScore?: number;
+};
 
 const STATUS_LABELS: Readonly<Record<DerivedPracticeStatus, string>> = {
   not_started: "Not started",
@@ -43,7 +64,10 @@ function yesNo(value: boolean): string {
   return value ? "Yes" : "No";
 }
 
-async function loadPracticeExportStates(organization: Organization): Promise<PracticeExportState[]> {
+async function loadPracticeExportStates(
+  organization: Organization,
+  framework: FrameworkId,
+): Promise<PracticeExportState[]> {
   const db = await getDb();
   const submissionRows = await db
     .select()
@@ -77,8 +101,14 @@ async function loadPracticeExportStates(organization: Organization): Promise<Pra
     }
   }
 
+  // CMMC keeps its level-scoped family view unchanged; Texas frameworks iterate their own groups.
+  const groups =
+    framework === "cmmc"
+      ? getFamilies(organization.targetLevel)
+      : getGroupsForFramework(framework);
+
   const states: PracticeExportState[] = [];
-  for (const family of getFamilies(organization.targetLevel)) {
+  for (const family of groups) {
     for (const practice of family.practices) {
       const submission = submissionByPracticeId.get(practice.id) ?? null;
       states.push({
@@ -93,26 +123,36 @@ async function loadPracticeExportStates(organization: Organization): Promise<Pra
   return states;
 }
 
-function renderOrganizationSection(organization: Organization): string[] {
-  return [
+function renderOrganizationSection(
+  organization: Organization,
+  framework: FrameworkId,
+): string[] {
+  const lines = [
     "## Organization",
     "",
     `- **Name:** ${organization.name}`,
-    `- **Target CMMC level:** Level ${organization.targetLevel}`,
+  ];
+  if (framework === "cmmc") {
+    lines.push(`- **Target CMMC level:** Level ${organization.targetLevel}`);
+  } else {
+    lines.push(`- **Framework:** ${FRAMEWORKS[framework].fullName}`);
+  }
+  lines.push(
     `- **Handles CUI:** ${yesNo(organization.handlesCui)}`,
     `- **Employee count:** ${organization.employeeCount}`,
     `- **IT setup:** ${organization.itSetup}`,
     `- **Uses an external IT provider:** ${yesNo(organization.hasItProvider)}`,
     `- **Onboarded:** ${formatDate(organization.createdAt)}`,
     "",
-  ];
+  );
+  return lines;
 }
 
-function renderScoreSection(progress: ProgressSummary): string[] {
+function renderScoreSection(progress: ScoreCounts, leadSentence: string): string[] {
   const lines = [
     "## Readiness score",
     "",
-    `**${progress.percent}%** of Level ${progress.level} practices accepted (${progress.accepted} of ${progress.total}).`,
+    leadSentence,
     "",
     "| Status | Count |",
     "| --- | ---: |",
@@ -132,27 +172,33 @@ function renderScoreSection(progress: ProgressSummary): string[] {
   return lines;
 }
 
-function renderPracticeTables(states: PracticeExportState[]): string[] {
-  const lines = ["## Practices by family", ""];
-  let currentFamilyCode: string | null = null;
+function renderPracticeTables(states: PracticeExportState[], framework: FrameworkId): string[] {
+  const isCmmc = framework === "cmmc";
+  const sectionHeading = isCmmc ? "## Practices by family" : "## Requirements by topic";
+  const referenceHeading = isCmmc ? "NIST 800-171" : "Legal reference";
+  const itemHeading = isCmmc ? "Practice" : "Requirement";
+  const lines = [sectionHeading, ""];
+  let currentGroupCode: string | null = null;
   for (const state of states) {
-    if (state.practice.family !== currentFamilyCode) {
-      currentFamilyCode = state.practice.family;
+    const group = resolveGroup(state.practice);
+    if (group.code !== currentGroupCode) {
+      currentGroupCode = group.code;
       lines.push(
-        `### ${state.practice.family} — ${state.practice.familyName}`,
+        `### ${group.code} — ${group.name}`,
         "",
-        "| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |",
+        `| ${itemHeading} | Title | ${referenceHeading} | Status | Evidence files | Last review |`,
         "| --- | --- | --- | --- | ---: | --- |",
       );
     }
+    const reference = isCmmc ? state.practice.nist171Ref : (state.practice.legalRef ?? "—");
     const lastReview = state.latestReview
       ? `${formatDate(state.latestReview.createdAt)} (${state.latestReview.verdict === "accepted" ? "accepted" : "needs work"}${state.latestReview.isMock ? ", mock" : ""})`
       : "—";
     lines.push(
-      `| ${state.practice.id} | ${escapeMarkdownTableCell(state.practice.title)} | ${state.practice.nist171Ref} | ${STATUS_LABELS[state.status]} | ${state.files.length} | ${lastReview} |`,
+      `| ${state.practice.id} | ${escapeMarkdownTableCell(state.practice.title)} | ${reference} | ${STATUS_LABELS[state.status]} | ${state.files.length} | ${lastReview} |`,
     );
     const nextState = states[states.indexOf(state) + 1];
-    if (!nextState || nextState.practice.family !== currentFamilyCode) lines.push("");
+    if (!nextState || resolveGroup(nextState.practice).code !== currentGroupCode) lines.push("");
   }
   return lines;
 }
@@ -185,6 +231,37 @@ function renderPoamSection(states: PracticeExportState[]): string[] {
         : "Gather evidence and submit for review";
     lines.push(
       `| ${state.practice.id} | ${escapeMarkdownTableCell(state.practice.title)} | ${STATUS_LABELS[state.status]} | ${poamEligible} | ${escapeMarkdownTableCell(missing)} | ${escapeMarkdownTableCell(nextStep)} | ${state.practice.estimatedEffortMinutes} min |`,
+    );
+  }
+  lines.push("");
+  return lines;
+}
+
+// Texas frameworks have no SPRS or POA&M concept, so they get a plain open-items list instead.
+function renderOpenItemsSection(states: PracticeExportState[]): string[] {
+  const openItems = states.filter(
+    (state) => state.status === "needs_work" || state.status === "not_started",
+  );
+  const lines = ["## Open items", ""];
+  if (openItems.length === 0) {
+    lines.push("No open items. Every requirement has been met or is in progress.", "");
+    return lines;
+  }
+  lines.push(
+    "| Requirement | Title | Status | What is missing | Suggested next step | Est. effort |",
+    "| --- | --- | --- | --- | --- | ---: |",
+  );
+  for (const state of openItems) {
+    const missing =
+      state.latestReview && state.latestReview.missingItems.length > 0
+        ? state.latestReview.missingItems.join("; ")
+        : `No evidence submitted. Examples: ${state.practice.evidenceExamples.slice(0, 2).join("; ")}`;
+    const nextStep =
+      state.latestReview && state.latestReview.nextSteps.length > 0
+        ? state.latestReview.nextSteps[0]
+        : "Gather evidence and submit for review";
+    lines.push(
+      `| ${state.practice.id} | ${escapeMarkdownTableCell(state.practice.title)} | ${STATUS_LABELS[state.status]} | ${escapeMarkdownTableCell(missing)} | ${escapeMarkdownTableCell(nextStep)} | ${state.practice.estimatedEffortMinutes} min |`,
     );
   }
   lines.push("");
@@ -225,26 +302,54 @@ function renderNotesSection(states: PracticeExportState[]): string[] {
   return lines;
 }
 
-export async function buildReadinessPackage(): Promise<string> {
+export async function buildReadinessPackage(framework: FrameworkId = "cmmc"): Promise<string> {
   const organization = await requireOrganization();
-  const states = await loadPracticeExportStates(organization);
+  const states = await loadPracticeExportStates(organization, framework);
   const statuses: Record<string, DerivedPracticeStatus> = {};
   for (const state of states) statuses[state.practice.id] = state.status;
-  const progress = computeProgressFromStatuses(organization.targetLevel, statuses);
 
+  if (framework === "cmmc") {
+    const progress = computeProgressFromStatuses(organization.targetLevel, statuses);
+    const lines: string[] = [
+      "# CMMC Readiness Package",
+      "",
+      `Generated ${new Date().toISOString()} by CMMC Ready.`,
+      "",
+      "This readiness package is a self-assessment aid, not a CMMC assessment or certification. Only a C3PAO/DIBCAC certifies; only your Affirming Official affirms in SPRS.",
+      "",
+      "> AI review verdicts indicate whether uploaded evidence plausibly supports each practice. They should be confirmed by a qualified person before any assessment.",
+      "",
+      ...renderOrganizationSection(organization, framework),
+      ...renderScoreSection(
+        progress,
+        `**${progress.percent}%** of Level ${progress.level} practices accepted (${progress.accepted} of ${progress.total}).`,
+      ),
+      ...renderPracticeTables(states, framework),
+      ...renderPoamSection(states),
+      ...renderEvidenceIndex(states),
+      ...renderNotesSection(states),
+    ];
+    return lines.join("\n");
+  }
+
+  const meta = FRAMEWORKS[framework];
+  const progress = computeProgressForFrameworkFromStatuses(framework, statuses);
   const lines: string[] = [
-    "# CMMC Readiness Package",
+    `# ${meta.shortName} Readiness Summary`,
     "",
-    `Generated ${new Date().toISOString()} by CMMC Ready.`,
+    `Generated ${new Date().toISOString()} by CMMC Ready (${meta.fullName}).`,
     "",
-    "This readiness package is a self-assessment aid, not a CMMC assessment or certification. Only a C3PAO/DIBCAC certifies; only your Affirming Official affirms in SPRS.",
+    meta.disclaimer,
     "",
-    "> AI review verdicts indicate whether uploaded evidence plausibly supports each practice. They should be confirmed by a qualified person before any assessment.",
+    "> AI review verdicts indicate whether uploaded evidence plausibly supports each requirement. They should be confirmed by a qualified person.",
     "",
-    ...renderOrganizationSection(organization),
-    ...renderScoreSection(progress),
-    ...renderPracticeTables(states),
-    ...renderPoamSection(states),
+    ...renderOrganizationSection(organization, framework),
+    ...renderScoreSection(
+      progress,
+      `**${progress.percent}%** of requirements met (${progress.accepted} of ${progress.total}).`,
+    ),
+    ...renderPracticeTables(states, framework),
+    ...renderOpenItemsSection(states),
     ...renderEvidenceIndex(states),
     ...renderNotesSection(states),
   ];

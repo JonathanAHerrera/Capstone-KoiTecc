@@ -1,0 +1,212 @@
+[
+  {
+    "id": "TAC202-GOV-1",
+    "framework": "tac202",
+    "groupCode": "GOV",
+    "groupName": "Security Governance",
+    "level": 1,
+    "family": "GOV",
+    "familyName": "Security Governance",
+    "nist171Ref": "",
+    "legalRef": "1 Tex. Admin. Code §202.21 / §202.71",
+    "title": "Assign responsibility for information security",
+    "officialText": "Each organization shall designate an Information Security Officer to administer the organization's information security program and shall ensure management supports and is accountable for the security of state information resources.",
+    "plainEnglish": "Name someone responsible for security (an Information Security Officer) and make sure leadership backs the security program. If you do business with a Texas state agency, you are expected to mirror these roles.",
+    "assessmentObjectives": [
+      "[a] an Information Security Officer or equivalent role is designated in writing;",
+      "[b] responsibilities for the security program are documented; and",
+      "[c] management accountability for security is established."
+    ],
+    "whyItMatters": "TAC 202 is built on clear ownership. State agencies and the vendors serving them are expected to show a named security owner before anything else.",
+    "evidenceTypes": ["document", "text", "screenshot"],
+    "evidenceExamples": [
+      "Appointment memo or org chart naming the Information Security Officer",
+      "A security program charter signed by management",
+      "Role description listing the security owner's duties"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Confirm a specific named role with documented responsibilities and evidence of management backing. A vague 'IT handles it' with no named owner is insufficient.",
+    "commonFailures": [
+      "No one formally accountable for security",
+      "Responsibilities assumed but never written down",
+      "No management sign-off on the security program"
+    ],
+    "estimatedEffortMinutes": 45,
+    "pointValue": 0
+  },
+  {
+    "id": "TAC202-RISK-1",
+    "framework": "tac202",
+    "groupCode": "RISK",
+    "groupName": "Risk Management",
+    "level": 1,
+    "family": "RISK",
+    "familyName": "Risk Management",
+    "nist171Ref": "",
+    "legalRef": "1 Tex. Admin. Code §202.22 / §202.72",
+    "title": "Perform and document a risk assessment",
+    "officialText": "Each organization shall perform risk assessments of information resources and document the risks, and shall review and update the assessment on a defined periodic basis or when significant changes occur.",
+    "plainEnglish": "Regularly look at what could go wrong with your systems and data, write down those risks, and update the list when things change.",
+    "assessmentObjectives": [
+      "[a] a risk assessment covering information resources has been performed;",
+      "[b] identified risks are documented with their impact; and",
+      "[c] a review cadence is defined."
+    ],
+    "whyItMatters": "The entire TAC 202 control baseline is applied based on risk. Without a documented assessment, control decisions cannot be justified.",
+    "evidenceTypes": ["document", "text", "screenshot"],
+    "evidenceExamples": [
+      "A completed risk assessment report or register",
+      "A risk register spreadsheet listing threats, likelihood, and impact",
+      "Policy stating how often risk assessments are refreshed"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for an actual assessment output (register or report) with a defined review cadence, not just a policy promising to do one someday.",
+    "commonFailures": [
+      "Policy says 'we assess risk' but no assessment exists",
+      "One-time assessment never updated",
+      "Risks listed with no impact or ownership"
+    ],
+    "estimatedEffortMinutes": 120,
+    "pointValue": 0
+  },
+  {
+    "id": "TAC202-PLAN-1",
+    "framework": "tac202",
+    "groupCode": "PLAN",
+    "groupName": "Policies & Control Baseline",
+    "level": 1,
+    "family": "PLAN",
+    "familyName": "Policies & Control Baseline",
+    "nist171Ref": "",
+    "legalRef": "1 Tex. Admin. Code §202.23 / §202.73",
+    "title": "Adopt a security control standards catalog and policies",
+    "officialText": "Each organization shall implement a set of security controls based on the state security control standards catalog, document information security policies, and ensure controls are commensurate with the risk and magnitude of harm.",
+    "plainEnglish": "Adopt written security policies based on the Texas DIR control catalog, and put controls in place that match your level of risk.",
+    "assessmentObjectives": [
+      "[a] information security policies are documented and approved;",
+      "[b] controls are selected from the state control standards catalog; and",
+      "[c] controls are matched to assessed risk."
+    ],
+    "whyItMatters": "The control catalog is the measuring stick DIR and state agencies use. Documented policies tied to it are what an audit checks first.",
+    "evidenceTypes": ["document", "text", "screenshot"],
+    "evidenceExamples": [
+      "Your information security policy set",
+      "A control mapping showing which catalog controls you have implemented",
+      "Approval record showing policies were adopted by management"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Confirm documented, approved policies plus a mapping to the state control catalog. Many CMMC controls will overlap; note where existing CMMC evidence supports a catalog control.",
+    "commonFailures": [
+      "No written security policies at all",
+      "Policies copied from a template with no mapping to the DIR catalog",
+      "Controls claimed but not tied to any standard"
+    ],
+    "estimatedEffortMinutes": 150,
+    "pointValue": 0
+  },
+  {
+    "id": "TAC202-ACCESS-1",
+    "framework": "tac202",
+    "groupCode": "ACCESS",
+    "groupName": "Access & Data Protection",
+    "level": 1,
+    "family": "ACCESS",
+    "familyName": "Access & Data Protection",
+    "nist171Ref": "",
+    "legalRef": "1 Tex. Admin. Code §202.24 / §202.74",
+    "title": "Control access to state information resources",
+    "officialText": "Each organization shall manage access to information resources using the principle of least privilege, authenticate users, and review access rights on a periodic basis.",
+    "plainEnglish": "Give people only the access they need, make them log in securely, and review who has access regularly.",
+    "assessmentObjectives": [
+      "[a] access is granted on a least-privilege basis;",
+      "[b] users are authenticated before access; and",
+      "[c] access rights are reviewed periodically."
+    ],
+    "whyItMatters": "Access control is the most frequently cited weakness in state audits and overlaps directly with your CMMC Access Control work.",
+    "evidenceTypes": ["document", "screenshot", "text"],
+    "evidenceExamples": [
+      "Access control policy describing least privilege and review cadence",
+      "Screenshot of role-based access settings or an access review log",
+      "Reference to CMMC Access Control practices you have already completed"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for least-privilege assignment, authentication, and evidence of periodic access reviews. Existing CMMC AC/IA evidence frequently satisfies this; note the overlap.",
+    "commonFailures": [
+      "Everyone has administrator rights",
+      "No periodic review, so stale accounts linger",
+      "Shared logins with no individual authentication"
+    ],
+    "estimatedEffortMinutes": 90,
+    "pointValue": 0
+  },
+  {
+    "id": "TAC202-INCIDENT-1",
+    "framework": "tac202",
+    "groupCode": "INCIDENT",
+    "groupName": "Incident Management & DIR Reporting",
+    "level": 1,
+    "family": "INCIDENT",
+    "familyName": "Incident Management & DIR Reporting",
+    "nist171Ref": "",
+    "legalRef": "1 Tex. Admin. Code §202.25 / §202.75",
+    "title": "Report security incidents to DIR",
+    "officialText": "Each organization shall establish an incident response capability and report security incidents to the Department of Information Resources in accordance with required timeframes, including incidents that propagate to other state systems or involve significant harm.",
+    "plainEnglish": "Have a plan to respond to security incidents and report qualifying incidents to the Texas Department of Information Resources (DIR) within the required time.",
+    "assessmentObjectives": [
+      "[a] an incident response capability exists;",
+      "[b] criteria and timeframes for reporting incidents to DIR are defined; and",
+      "[c] a reporting channel to DIR is identified."
+    ],
+    "whyItMatters": "DIR incident reporting is a distinct state obligation. Knowing what and when to report keeps a local incident from becoming a statewide one.",
+    "evidenceTypes": ["document", "screenshot", "text"],
+    "evidenceExamples": [
+      "Incident response plan that includes DIR reporting criteria and timeframes",
+      "Screenshot or link to the DIR incident-reporting portal",
+      "A reporting decision tree for when an incident must go to DIR"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Confirm an incident response plan that explicitly covers DIR reporting criteria, timeframes, and the channel. A generic IR plan with no DIR reporting step is incomplete for this framework.",
+    "commonFailures": [
+      "IR plan never mentions reporting to DIR",
+      "No defined criteria for which incidents are reportable",
+      "No one knows how to actually reach DIR"
+    ],
+    "estimatedEffortMinutes": 90,
+    "pointValue": 0
+  },
+  {
+    "id": "TAC202-VENDOR-1",
+    "framework": "tac202",
+    "groupCode": "VENDOR",
+    "groupName": "Vendor & State-Contract Requirements",
+    "level": 1,
+    "family": "VENDOR",
+    "familyName": "Vendor & State-Contract Requirements",
+    "nist171Ref": "",
+    "legalRef": "1 Tex. Admin. Code §202.26 / Tex. Gov't Code §2054",
+    "title": "Meet security requirements for doing business with the state",
+    "officialText": "A contractor or vendor providing information resources services to a state agency shall comply with applicable state information security requirements, including the controls, reporting, and assessment obligations flowed down through the agency's contract and the DIR standards.",
+    "plainEnglish": "If you sell IT services or handle data for a Texas state agency, your contract flows these security rules down to you, and you must meet them.",
+    "assessmentObjectives": [
+      "[a] contractual information-security obligations from state agencies are identified;",
+      "[b] the organization can demonstrate compliance with flowed-down controls; and",
+      "[c] assessment or attestation requirements in the contract are met."
+    ],
+    "whyItMatters": "This is the on-ramp for selling to the State of Texas. Vendors that cannot show TAC 202 alignment lose or fail state contracts.",
+    "evidenceTypes": ["document", "text", "screenshot"],
+    "evidenceExamples": [
+      "The security clauses from a state agency contract or RFP",
+      "A compliance matrix mapping contract requirements to your controls",
+      "Any attestation or assessment artifact provided to a state agency"
+    ],
+    "aiVerifiable": "partial",
+    "aiReviewGuidance": "Look for identified contractual obligations and a mapping showing how the organization meets each. If the organization does not contract with the state, this requirement may not apply and should be noted as such.",
+    "commonFailures": [
+      "Signing a state contract without reading its security flow-downs",
+      "No mapping of contract requirements to actual controls",
+      "Missing a required attestation or assessment deadline"
+    ],
+    "estimatedEffortMinutes": 120,
+    "pointValue": 0
+  }
+]
