@@ -30,7 +30,7 @@ beforeAll(async () => {
       employeeCount: "1-10",
       itSetup: "cloud",
       hasItProvider: false,
-    }, 30_000);
+    });
     const task = await createReviewerTask({
       kind: "scam_escalation",
       summary: "Review suspicious vendor message",
@@ -49,7 +49,7 @@ beforeAll(async () => {
       hasItProvider: false,
     });
   });
-});
+}, 30_000);
 
 afterAll(async () => {
   const { closeDb } = await import("@/db/client");
