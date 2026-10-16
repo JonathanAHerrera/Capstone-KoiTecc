@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { getDb, nowIsoTimestamp } from "@/db/client";
 import { reviewerTasks, type ReviewerTaskKind, type ReviewerTaskRow } from "@/db/schema";
@@ -7,6 +7,8 @@ import { requireOrganization } from "@/lib/org";
 import { getSessionUser } from "@/lib/session";
 
 export type ReviewerTask = ReviewerTaskRow;
+export const REVIEWER_TASK_STATUSES = ["open", "in_progress", "closed"] as const;
+export type ReviewerTaskStatus = (typeof REVIEWER_TASK_STATUSES)[number];
 
 export const REVIEWER_TASK_KIND_LABELS: Readonly<Record<ReviewerTaskKind, string>> = {
   incident_help: "Incident help request",
@@ -71,4 +73,18 @@ export async function listOpenReviewerTasks(): Promise<ReviewerTask[]> {
   const organization = await requireOrganization();
   const tasks = await listReviewerTasksForOrg(organization.id);
   return tasks.filter((task) => task.status !== "closed");
+}
+
+export async function updateReviewerTaskStatus(
+  taskId: string,
+  status: ReviewerTaskStatus,
+): Promise<ReviewerTask | null> {
+  const organization = await requireOrganization();
+  const db = await getDb();
+  const [task] = await db
+    .update(reviewerTasks)
+    .set({ status, updatedAt: nowIsoTimestamp() })
+    .where(and(eq(reviewerTasks.id, taskId), eq(reviewerTasks.orgId, organization.id)))
+    .returning();
+  return task ?? null;
 }
