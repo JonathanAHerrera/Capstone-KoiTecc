@@ -1,30 +1,49 @@
-import { integer, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { index, integer, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { user } from "@/db/auth-schema";
+import type { Industry } from "@/frameworks/types";
 
-export const organizations = sqliteTable("organizations", {
-  id: text("id").primaryKey(),
-  name: text("name").notNull(),
-  targetLevel: integer("target_level").notNull().$type<1 | 2>(),
-  handlesCui: integer("handles_cui", { mode: "boolean" }).notNull(),
-  employeeCount: text("employee_count").notNull().$type<"1-10" | "11-50" | "51-250" | "250+">(),
-  itSetup: text("it_setup").notNull().$type<"cloud" | "onprem" | "mixed" | "unsure">(),
-  hasItProvider: integer("has_it_provider", { mode: "boolean" }).notNull(),
-  // Texas applicability profile; defaulted so existing rows and the onboarding payload stay valid.
-  handlesTexasResidentData: integer("handles_texas_resident_data", { mode: "boolean" })
-    .notNull()
-    .default(false),
-  sellsToStateOfTexas: integer("sells_to_state_of_texas", { mode: "boolean" })
-    .notNull()
-    .default(false),
-  texasPhysicalPresence: integer("texas_physical_presence", { mode: "boolean" })
-    .notNull()
-    .default(false),
-  processesPersonalDataAtScale: integer("processes_personal_data_at_scale", { mode: "boolean" })
-    .notNull()
-    .default(false),
-  // JSON array of FrameworkId; CMMC is always enabled.
-  enabledFrameworks: text("enabled_frameworks").notNull().default('["cmmc"]'),
-  createdAt: text("created_at").notNull(),
-});
+export * from "@/db/auth-schema";
+
+export const organizations = sqliteTable(
+  "organizations",
+  {
+    id: text("id").primaryKey(),
+    // One organization per authenticated user. Every tenant-scoped query resolves the org from
+    // the session user, so this is the root of multi-tenant isolation.
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    name: text("name").notNull(),
+    targetLevel: integer("target_level").notNull().$type<1 | 2>(),
+    handlesCui: integer("handles_cui", { mode: "boolean" }).notNull(),
+    employeeCount: text("employee_count")
+      .notNull()
+      .$type<"1-10" | "11-50" | "51-250" | "250+">(),
+    itSetup: text("it_setup").notNull().$type<"cloud" | "onprem" | "mixed" | "unsure">(),
+    hasItProvider: integer("has_it_provider", { mode: "boolean" }).notNull(),
+    // Texas applicability profile; defaulted so existing rows and the onboarding payload stay valid.
+    handlesTexasResidentData: integer("handles_texas_resident_data", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    sellsToStateOfTexas: integer("sells_to_state_of_texas", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    texasPhysicalPresence: integer("texas_physical_presence", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    processesPersonalDataAtScale: integer("processes_personal_data_at_scale", { mode: "boolean" })
+      .notNull()
+      .default(false),
+    // SB 2610 industry-overlay inputs (Phase 3). Industry drives HIPAA/GLBA; card payments drive PCI.
+    industry: text("industry").notNull().$type<Industry>().default("other"),
+    takesCardPayments: integer("takes_card_payments", { mode: "boolean" }).notNull().default(false),
+    // JSON array of FrameworkId; CMMC is always enabled.
+    enabledFrameworks: text("enabled_frameworks").notNull().default('["cmmc"]'),
+    createdAt: text("created_at").notNull(),
+  },
+  // One org per user: the unique index is what enforces the single-tenant-per-account rule.
+  (table) => [uniqueIndex("organizations_user_unique").on(table.userId)],
+);
 
 export const submissions = sqliteTable(
   "submissions",
@@ -114,6 +133,88 @@ export const radarDecisions = sqliteTable(
   (table) => [uniqueIndex("radar_decisions_org_item_unique").on(table.orgId, table.itemId)],
 );
 
+// SB 2610 (and future multi-tier frameworks) enrollment: which tier an org landed in and which
+// industry overlays attached. One row per (org, framework); the ranked plan is recomputed from the
+// org profile, so only the selection is persisted here.
+export const frameworkEnrollments = sqliteTable(
+  "framework_enrollments",
+  {
+    id: text("id").primaryKey(),
+    orgId: text("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    framework: text("framework").notNull(),
+    tier: text("tier"),
+    overlays: text("overlays").notNull().default("[]"), // JSON array of overlay ids
+    version: text("version"),
+    enrolledAt: text("enrolled_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("framework_enrollments_org_framework_unique").on(table.orgId, table.framework),
+  ],
+);
+
+// Append-only security/activity trail. Scoped to an org (nullable for pre-org events like the
+// sign-up that creates the first org). actorUserId records who did it; metadata is a JSON blob.
+export const auditLog = sqliteTable(
+  "audit_log",
+  {
+    id: text("id").primaryKey(),
+    orgId: text("org_id").references(() => organizations.id, { onDelete: "cascade" }),
+    actorUserId: text("actor_user_id").references(() => user.id, { onDelete: "set null" }),
+    action: text("action").notNull(),
+    targetType: text("target_type"),
+    targetId: text("target_id"),
+    metadata: text("metadata"),
+    ipAddress: text("ip_address"),
+    createdAt: text("created_at").notNull(),
+  },
+  (table) => [
+    index("audit_log_org_idx").on(table.orgId),
+    index("audit_log_actor_idx").on(table.actorUserId),
+  ],
+);
+
+// Append-only, hash-chained evidence ledger (Phase 5). One chain per org: each row's entryHash is
+// sha256(prevHash || canonicalJson(hashedFields)), so altering any stored hashed field breaks every
+// link from that seq forward. metadata is an UNHASHED JSON blob for display context only — it is
+// deliberately excluded from the hash so adding display detail later cannot invalidate old chains.
+// externalTimestamp is the hook for RFC 3161 trusted timestamping; left null until that is built.
+export const ledgerEntries = sqliteTable(
+  "ledger_entries",
+  {
+    id: text("id").primaryKey(),
+    orgId: text("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    seq: integer("seq").notNull(),
+    type: text("type")
+      .notNull()
+      .$type<
+        | "evidence_added"
+        | "verdict_set"
+        | "review_signed"
+        | "integration_check"
+        | "training_completed"
+        | "restore_test_logged"
+        | "policy_signed"
+        | "framework_version_change"
+      >(),
+    controlId: text("control_id"),
+    evidenceSha256: text("evidence_sha256"),
+    verdict: text("verdict"),
+    actor: text("actor").notNull(),
+    modelId: text("model_id"),
+    promptVersion: text("prompt_version"),
+    metadata: text("metadata"),
+    prevHash: text("prev_hash").notNull(),
+    entryHash: text("entry_hash").notNull(),
+    externalTimestamp: text("external_timestamp"),
+    createdAt: text("created_at").notNull(),
+  },
+  (table) => [uniqueIndex("ledger_entries_org_seq_unique").on(table.orgId, table.seq)],
+);
+
 export type OrganizationRow = typeof organizations.$inferSelect;
 export type NewOrganizationRow = typeof organizations.$inferInsert;
 export type SubmissionRow = typeof submissions.$inferSelect;
@@ -126,6 +227,13 @@ export type RadarProfileRow = typeof radarProfiles.$inferSelect;
 export type NewRadarProfileRow = typeof radarProfiles.$inferInsert;
 export type RadarDecisionRow = typeof radarDecisions.$inferSelect;
 export type NewRadarDecisionRow = typeof radarDecisions.$inferInsert;
+export type AuditLogRow = typeof auditLog.$inferSelect;
+export type NewAuditLogRow = typeof auditLog.$inferInsert;
+export type FrameworkEnrollmentRow = typeof frameworkEnrollments.$inferSelect;
+export type NewFrameworkEnrollmentRow = typeof frameworkEnrollments.$inferInsert;
+export type LedgerEntryRow = typeof ledgerEntries.$inferSelect;
+export type NewLedgerEntryRow = typeof ledgerEntries.$inferInsert;
+export type LedgerEntryType = LedgerEntryRow["type"];
 
 export type SubmissionStatus = SubmissionRow["status"];
 export type ReviewVerdictValue = ReviewRow["verdict"];

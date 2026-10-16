@@ -1,0 +1,202 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`CMMC readiness package keeps its historical format 1`] = `
+"# CMMC Readiness Package
+
+Generated <TIMESTAMP> by CMMC Ready.
+
+This readiness package is a self-assessment aid, not a CMMC assessment or certification. Only a C3PAO/DIBCAC certifies; only your Affirming Official affirms in SPRS.
+
+> AI review verdicts indicate whether uploaded evidence plausibly supports each practice. They should be confirmed by a qualified person before any assessment.
+
+## Organization
+
+- **Name:** Fixture Machining LLC
+- **Target CMMC level:** Level 2
+- **Handles CUI:** Yes
+- **Employee count:** 11-50
+- **IT setup:** mixed
+- **Uses an external IT provider:** Yes
+- **Onboarded:** <DATE>
+
+## Readiness score
+
+**0%** of Level 2 practices accepted (0 of 44).
+
+| Status | Count |
+| --- | ---: |
+| Accepted | 0 |
+| Needs work | 0 |
+| Under review | 0 |
+| In progress | 0 |
+| Not started | 44 |
+
+**Estimated SPRS score:** 12 (110 minus the point value of every practice not yet accepted; floor −203).
+
+## Practices by family
+
+### AC — Access Control
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| AC.L1-b.1.i | Authorized Access Control | 3.1.1 | Not started | 0 | — |
+| AC.L1-b.1.ii | Transaction & Function Control | 3.1.2 | Not started | 0 | — |
+| AC.L1-b.1.iii | External Connections | 3.1.20 | Not started | 0 | — |
+| AC.L1-b.1.iv | Control Public Information | 3.1.22 | Not started | 0 | — |
+
+### AT — Awareness and Training
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| AT.L2-3.2.1 | Role-Based Risk Awareness | 3.2.1 | Not started | 0 | — |
+| AT.L2-3.2.2 | Role-Based Training | 3.2.2 | Not started | 0 | — |
+| AT.L2-3.2.3 | Insider Threat Awareness | 3.2.3 | Not started | 0 | — |
+
+### CM — Configuration Management
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| CM.L2-3.4.1 | System Baselining | 3.4.1 | Not started | 0 | — |
+| CM.L2-3.4.2 | Security Configuration Enforcement | 3.4.2 | Not started | 0 | — |
+
+### IA — Identification and Authentication
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| IA.L1-b.1.v | Identification | 3.5.1 | Not started | 0 | — |
+| IA.L1-b.1.vi | Authentication | 3.5.2 | Not started | 0 | — |
+| IA.L2-3.5.3 | Multifactor Authentication | 3.5.3 | Not started | 0 | — |
+| IA.L2-3.5.7 | Password Complexity | 3.5.7 | Not started | 0 | — |
+| IA.L2-3.5.10 | Cryptographically-Protected Passwords | 3.5.10 | Not started | 0 | — |
+
+### IR — Incident Response
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| IR.L2-3.6.1 | Incident Handling | 3.6.1 | Not started | 0 | — |
+| IR.L2-3.6.2 | Incident Reporting | 3.6.2 | Not started | 0 | — |
+
+### MA — Maintenance
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| MA.L2-3.7.2 | System Maintenance Control | 3.7.2 | Not started | 0 | — |
+
+### MP — Media Protection
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| MP.L1-b.1.vii | Media Disposal | 3.8.3 | Not started | 0 | — |
+| MP.L2-3.8.1 | Media Protection | 3.8.1 | Not started | 0 | — |
+| MP.L2-3.8.2 | Media Access | 3.8.2 | Not started | 0 | — |
+| MP.L2-3.8.4 | Media Markings | 3.8.4 | Not started | 0 | — |
+| MP.L2-3.8.5 | Media Accountability | 3.8.5 | Not started | 0 | — |
+| MP.L2-3.8.6 | Portable Storage Encryption | 3.8.6 | Not started | 0 | — |
+| MP.L2-3.8.7 | Removable Media | 3.8.7 | Not started | 0 | — |
+| MP.L2-3.8.8 | Shared Media | 3.8.8 | Not started | 0 | — |
+| MP.L2-3.8.9 | Protect Backups | 3.8.9 | Not started | 0 | — |
+
+### PS — Personnel Security
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| PS.L2-3.9.1 | Screen Individuals | 3.9.1 | Not started | 0 | — |
+| PS.L2-3.9.2 | Personnel Actions | 3.9.2 | Not started | 0 | — |
+
+### PE — Physical Protection
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| PE.L1-b.1.viii | Limit Physical Access | 3.10.1 | Not started | 0 | — |
+| PE.L1-b.1.ix | Manage Visitors & Physical Access | 3.10.3, 3.10.4, 3.10.5 | Not started | 0 | — |
+| PE.L2-3.10.2 | Monitor Facility | 3.10.2 | Not started | 0 | — |
+| PE.L2-3.10.6 | Alternative Work Sites | 3.10.6 | Not started | 0 | — |
+
+### RA — Risk Assessment
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| RA.L2-3.11.2 | Vulnerability Scan | 3.11.2 | Not started | 0 | — |
+
+### CA — Security Assessment
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| CA.L2-3.12.4 | System Security Plan | 3.12.4 | Not started | 0 | — |
+
+### SC — System and Communications Protection
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| SC.L1-b.1.x | Boundary Protection | 3.13.1 | Not started | 0 | — |
+| SC.L1-b.1.xi | Public-Access System Separation | 3.13.5 | Not started | 0 | — |
+| SC.L2-3.13.8 | Data in Transit | 3.13.8 | Not started | 0 | — |
+| SC.L2-3.13.11 | CUI Encryption | 3.13.11 | Not started | 0 | — |
+| SC.L2-3.13.16 | Data at Rest | 3.13.16 | Not started | 0 | — |
+
+### SI — System and Information Integrity
+
+| Practice | Title | NIST 800-171 | Status | Evidence files | Last review |
+| --- | --- | --- | --- | ---: | --- |
+| SI.L1-b.1.xii | Flaw Remediation | 3.14.1 | Not started | 0 | — |
+| SI.L1-b.1.xiii | Malicious Code Protection | 3.14.2 | Not started | 0 | — |
+| SI.L1-b.1.xiv | Update Malicious Code Protection | 3.14.4 | Not started | 0 | — |
+| SI.L1-b.1.xv | System & File Scanning | 3.14.5 | Not started | 0 | — |
+| SI.L2-3.14.6 | Monitor Communications for Attacks | 3.14.6 | Not started | 0 | — |
+
+## Plan of Action & Milestones (POA&M)
+
+Level 1 has no POA&M allowance: every Level 1 practice must be met. Under Level 2, only 1-point practices may be left open on a POA&M at assessment time.
+
+| Practice | Title | Status | POA&M eligible | What is missing | Suggested next step | Est. effort |
+| --- | --- | --- | --- | --- | --- | ---: |
+| AC.L1-b.1.i | Authorized Access Control | Not started | No | No evidence submitted. Examples: Screenshot of the user list in Microsoft 365 Admin Center, Google Workspace Admin, or Active Directory Users and Computers showing each account tied to a named person; Spreadsheet or document listing authorized users, their role, and which systems they may access | Gather evidence and submit for review | 30 min |
+| AC.L1-b.1.ii | Transaction & Function Control | Not started | No | No evidence submitted. Examples: Screenshot of the folder or SharePoint permissions dialog for the contracts/FCI folder showing which groups have read vs. edit rights; Screenshot of a standard employee's Windows or macOS account showing 'Standard user' (not Administrator) | Gather evidence and submit for review | 30 min |
+| AC.L1-b.1.iii | External Connections | Not started | No | No evidence submitted. Examples: Written policy (one page is fine) stating that only company-owned devices may access FCI and listing approved cloud services (e.g., Microsoft 365 GCC, Google Workspace); Screenshot of the Conditional Access or device-compliance rule in Microsoft Entra / Google Admin that blocks unmanaged devices | Gather evidence and submit for review | 45 min |
+| AC.L1-b.1.iv | Control Public Information | Not started | No | No evidence submitted. Examples: Screenshot of the website CMS (WordPress, Squarespace, Wix) user list showing only one or two named editors/admins; Screenshot of LinkedIn/Facebook page admin roles | Gather evidence and submit for review | 20 min |
+| AT.L2-3.2.1 | Role-Based Risk Awareness | Not started | No | No evidence submitted. Examples: Screenshot of the training platform (KnowBe4, Proofpoint, Microsoft Learn, in-house LMS) completion report listing every employee and date; PDF or photo of the slide deck or handout used for awareness training | Gather evidence and submit for review | 20 min |
+| AT.L2-3.2.2 | Role-Based Training | Not started | No | No evidence submitted. Examples: Roles-and-responsibilities table naming who is responsible for firewall, user accounts, backups, patching, incident response, physical security; Screenshot or photo of a vendor training certificate (e.g., Microsoft, Fortinet, CompTIA) for the IT administrator | Gather evidence and submit for review | 30 min |
+| AT.L2-3.2.3 | Insider Threat Awareness | Not started | Yes | No evidence submitted. Examples: Photo or PDF of the training slides that list insider threat indicators and the reporting procedure; Screenshot of the training platform module titled insider threat (e.g., CDSE Insider Threat Awareness course) with completion report | Gather evidence and submit for review | 15 min |
+| CM.L2-3.4.1 | System Baselining | Not started | No | No evidence submitted. Examples: Hardware inventory spreadsheet: asset tag, make/model, serial, OS version, assigned user, location, last-reviewed date; Screenshot of the RMM/MDM/Intune device list with OS and software versions | Gather evidence and submit for review | 60 min |
+| CM.L2-3.4.2 | Security Configuration Enforcement | Not started | No | No evidence submitted. Examples: Document listing the chosen security settings per product type (e.g., 'Windows 11: CIS Level 1 benchmark; Microsoft 365: Secure Score recommendations'); Screenshot of Intune/Jamf/Group Policy configuration profiles that push the settings | Gather evidence and submit for review | 60 min |
+| IA.L1-b.1.v | Identification | Not started | No | No evidence submitted. Examples: Screenshot of the user directory (Microsoft 365, Google Workspace, Active Directory) showing one account per person, named after the person; Screenshot of the login screen on a shared office PC showing individual user tiles rather than a single shared account | Gather evidence and submit for review | 25 min |
+| IA.L1-b.1.vi | Authentication | Not started | No | No evidence submitted. Examples: Screenshot of the password policy settings (minimum length, lockout) in Microsoft 365, Google Admin, Active Directory, or macOS/Windows local policy; Photo of a laptop at the Windows/macOS login prompt asking for a password (and the user's name) | Gather evidence and submit for review | 30 min |
+| IA.L2-3.5.3 | Multifactor Authentication | Not started | No | No evidence submitted. Examples: Screenshot of Microsoft Entra Conditional Access or Google Workspace '2-Step Verification enforced' showing MFA required for all users; Screenshot of the per-user MFA registration report showing every account enrolled | Gather evidence and submit for review | 20 min |
+| IA.L2-3.5.7 | Password Complexity | Not started | Yes | No evidence submitted. Examples: Policy excerpt stating minimum length, character classes, and change-of-character rule; Screenshot of the Active Directory / Entra / Google Workspace password policy settings page | Gather evidence and submit for review | 15 min |
+| IA.L2-3.5.10 | Cryptographically-Protected Passwords | Not started | No | No evidence submitted. Examples: Screenshot of the password manager (1Password, Bitwarden, Keeper) admin console showing it is in use for shared credentials; Screenshot of the Active Directory setting 'Store passwords using reversible encryption' set to Disabled | Gather evidence and submit for review | 25 min |
+| IR.L2-3.6.1 | Incident Handling | Not started | No | No evidence submitted. Examples: Incident response plan PDF with sections for preparation, detection, analysis, containment, recovery, and user reporting; Photo of the one-page 'what to do if you suspect an incident' poster or wallet card | Gather evidence and submit for review | 45 min |
+| IR.L2-3.6.2 | Incident Reporting | Not started | No | No evidence submitted. Examples: Incident log (spreadsheet or ticketing screenshot) with columns for date, description, status, who was notified; may show zero incidents with a note; Section of the IR plan naming internal officials (owner, FSO) and external authorities (DIBNet/DC3, contracting officer, law enforcement) with contact details and time limits | Gather evidence and submit for review | 30 min |
+| MA.L2-3.7.2 | System Maintenance Control | Not started | No | No evidence submitted. Examples: List of approved maintenance tools (RMM agent, remote-access software, diagnostic USB kit) and who may use them; Screenshot of the RMM/remote-support tool's user list showing only named technicians | Gather evidence and submit for review | 30 min |
+| MP.L1-b.1.vii | Media Disposal | Not started | No | No evidence submitted. Examples: Photo of the cross-cut shredder or locked shred-bin where paper with FCI goes; Certificate of destruction from a shredding or e-waste vendor (photo or PDF) | Gather evidence and submit for review | 20 min |
+| MP.L2-3.8.1 | Media Protection | Not started | No | No evidence submitted. Examples: Photo of the locked filing cabinet or safe where CUI paper is stored, with the lock visible; Photo of the locked drawer or lockbox holding USB drives, external disks, or backup media | Gather evidence and submit for review | 25 min |
+| MP.L2-3.8.2 | Media Access | Not started | No | No evidence submitted. Examples: Document listing the named people authorized to access CUI media, approved by the data owner; Photo of the key or combination holder list for the CUI cabinet | Gather evidence and submit for review | 20 min |
+| MP.L2-3.8.4 | Media Markings | Not started | Yes | No evidence submitted. Examples: Photo of a USB drive or external disk with a 'CUI' sticker label on it; Photo of a binder or folder spine marked 'CUI' with distribution statement | Gather evidence and submit for review | 15 min |
+| MP.L2-3.8.5 | Media Accountability | Not started | Yes | No evidence submitted. Examples: Photo of the media transport log showing item, sender, recipient, date out, date received; Photo of the locked courier bag or tamper-evident envelope used for transporting CUI | Gather evidence and submit for review | 20 min |
+| MP.L2-3.8.6 | Portable Storage Encryption | Not started | Yes | No evidence submitted. Examples: Screenshot of BitLocker To Go or FileVault/encrypted-disk status for the USB or external drive; Photo of a hardware-encrypted USB drive (e.g., Kingston IronKey, Apricorn) showing the model, plus its FIPS 140 certificate number | Gather evidence and submit for review | 20 min |
+| MP.L2-3.8.7 | Removable Media | Not started | No | No evidence submitted. Examples: Screenshot of the Group Policy, Intune, or Jamf setting that blocks or restricts USB storage devices; Screenshot of the endpoint-protection console's device-control policy | Gather evidence and submit for review | 20 min |
+| MP.L2-3.8.8 | Shared Media | Not started | No | No evidence submitted. Examples: Photo of company-issued USB drives with owner or asset labels; Photo or spreadsheet of the portable-storage register listing serial numbers and assigned owners | Gather evidence and submit for review | 15 min |
+| MP.L2-3.8.9 | Protect Backups | Not started | Yes | No evidence submitted. Examples: Screenshot of the backup software settings showing encryption enabled (e.g., Veeam, Acronis, Backblaze, Datto, Synology Hyper Backup); Screenshot of the cloud backup provider's encryption/compliance page (and FedRAMP status if used for CUI) | Gather evidence and submit for review | 20 min |
+| PS.L2-3.9.1 | Screen Individuals | Not started | No | No evidence submitted. Examples: Policy excerpt stating the screening required (e.g., criminal background check, reference check, citizenship verification where required) before CUI access; Screenshot of the background-check vendor portal (Checkr, Sterling, HireRight) showing completed checks, with personal details redacted | Gather evidence and submit for review | 20 min |
+| PS.L2-3.9.2 | Personnel Actions | Not started | No | No evidence submitted. Examples: Offboarding checklist template listing account disable, MFA revoke, laptop/key/badge return, CUI folder removal, with time frame; Completed offboarding checklist for a recent departure (name redacted) with dates | Gather evidence and submit for review | 25 min |
+| PE.L1-b.1.viii | Limit Physical Access | Not started | No | No evidence submitted. Examples: Photo of the main office entry door showing the lock, keypad, or badge reader; Photo of the closed and locked server/network closet or the locked rack/cabinet holding the router and switch | Gather evidence and submit for review | 20 min |
+| PE.L1-b.1.ix | Manage Visitors & Physical Access | Not started | No | No evidence submitted. Examples: Photo of the visitor sign-in sheet or kiosk at reception with recent (redacted) entries; Photo of the visitor badges or lanyards | Gather evidence and submit for review | 30 min |
+| PE.L2-3.10.2 | Monitor Facility | Not started | No | No evidence submitted. Examples: Photo of security cameras covering the entrance and the server/network closet; Screenshot of the camera system or alarm app dashboard showing recording is active | Gather evidence and submit for review | 25 min |
+| PE.L2-3.10.6 | Alternative Work Sites | Not started | Yes | No evidence submitted. Examples: Written remote-work/telework policy covering CUI handling at home and while traveling; Screenshot of full-disk encryption status (BitLocker/FileVault) on a remote worker's laptop | Gather evidence and submit for review | 30 min |
+| RA.L2-3.11.2 | Vulnerability Scan | Not started | No | No evidence submitted. Examples: Policy statement of scan frequency and trigger for ad-hoc scans; Screenshot of the vulnerability scanner dashboard (Nessus, Qualys, Rapid7, Microsoft Defender Vulnerability Management, OpenVAS) showing the last scan date and asset count | Gather evidence and submit for review | 30 min |
+| CA.L2-3.12.4 | System Security Plan | Not started | No | No evidence submitted. Examples: The SSP itself (PDF or Word), with a version/date on the cover; Screenshot of the SSP table of contents showing boundary, environment, implementation per requirement, interconnections, and update frequency sections | Gather evidence and submit for review | 20 min |
+| SC.L1-b.1.x | Boundary Protection | Not started | No | No evidence submitted. Examples: Simple network diagram (hand-drawn and photographed is acceptable) showing the internet, the firewall/router, the office network, Wi-Fi, guest network, and any cloud services; Photo of the firewall or business router with the model label visible | Gather evidence and submit for review | 45 min |
+| SC.L1-b.1.xi | Public-Access System Separation | Not started | No | No evidence submitted. Examples: Text statement listing every publicly reachable system (website, customer portal, remote-access gateway, guest Wi-Fi) and where each is hosted; Screenshot of the hosting provider's dashboard (Squarespace, GoDaddy, AWS) showing the website is hosted externally, not in the office | Gather evidence and submit for review | 25 min |
+| SC.L2-3.13.8 | Data in Transit | Not started | No | No evidence submitted. Examples: Table listing every way CUI is transmitted (email, file share, VPN, Wi-Fi, web portal) and the encryption used for each; Screenshot of the email service's TLS enforcement or message-encryption settings (Microsoft Purview, Google S/MIME, Virtru, Preveil) | Gather evidence and submit for review | 40 min |
+| SC.L2-3.13.11 | CUI Encryption | Not started | No | No evidence submitted. Examples: Table mapping each encryption use (BitLocker, FileVault, VPN, USB drives, email encryption, cloud storage) to its FIPS 140-2/140-3 certificate number; Screenshot of the NIST CMVP search result for each certificate number | Gather evidence and submit for review | 45 min |
+| SC.L2-3.13.16 | Data at Rest | Not started | Yes | No evidence submitted. Examples: Screenshot of BitLocker status ('Protection On') on a Windows laptop or FileVault 'On' on a Mac; Screenshot of the MDM/Intune encryption compliance report across all devices | Gather evidence and submit for review | 20 min |
+| SI.L1-b.1.xii | Flaw Remediation | Not started | No | No evidence submitted. Examples: Written patch policy (a few sentences) stating that updates are checked weekly and critical patches applied within X days; Screenshot of Windows Update or macOS Software Update showing 'You're up to date' with today's date visible | Gather evidence and submit for review | 30 min |
+| SI.L1-b.1.xiii | Malicious Code Protection | Not started | No | No evidence submitted. Examples: Screenshot of the antivirus console (Microsoft Defender for Business, CrowdStrike, Bitdefender, Sophos) listing all protected devices; Screenshot of Windows Security or macOS endpoint protection showing 'Protected / Real-time protection On' on a workstation | Gather evidence and submit for review | 15 min |
+| SI.L1-b.1.xiv | Update Malicious Code Protection | Not started | No | No evidence submitted. Examples: Screenshot of the antivirus settings page showing automatic updates enabled; Screenshot of the antivirus status page showing 'Definitions last updated' with a date within the last few days | Gather evidence and submit for review | 10 min |
+| SI.L1-b.1.xv | System & File Scanning | Not started | No | No evidence submitted. Examples: Screenshot of the antivirus settings showing real-time protection on and a scheduled scan configured (e.g., weekly full scan); Screenshot of the scan history showing the last completed full scan with its date | Gather evidence and submit for review | 10 min |
+| SI.L2-3.14.6 | Monitor Communications for Attacks | Not started | No | No evidence submitted. Examples: Screenshot of the EDR/XDR console (Microsoft Defender for Business, CrowdStrike, SentinelOne) showing all devices reporting and alerts enabled; Screenshot of the firewall's IDS/IPS feature enabled with recent events | Gather evidence and submit for review | 30 min |
+
+## Evidence index
+
+No evidence files have been uploaded yet.
+"
+`;

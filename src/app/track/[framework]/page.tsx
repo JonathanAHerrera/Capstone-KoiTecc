@@ -4,9 +4,10 @@ import { ArrowLeft, ClipboardList, Info } from "lucide-react";
 import { buildPathViewModel } from "@/components/path/build-path-view-model";
 import { PathFamilies } from "@/components/path/path-families";
 import { ReadinessOverview } from "@/components/summary/readiness-overview";
+import { getFramework, parseFrameworkId } from "@/frameworks";
 import { getOrganization } from "@/lib/org";
 import { getGroupsForFramework } from "@/lib/practices";
-import { FRAMEWORK_ORDER, FRAMEWORKS, type FrameworkId } from "@/lib/practice-types";
+import { FRAMEWORKS } from "@/lib/practice-types";
 import { computeProgressForFrameworkFromStatuses, type ProgressSummary } from "@/lib/progress";
 import { listPracticeStatusesForFramework } from "@/lib/submissions";
 
@@ -14,16 +15,13 @@ export const dynamic = "force-dynamic";
 
 type TrackPageProps = { params: Promise<{ framework: string }> };
 
-function parseFrameworkParam(value: string): FrameworkId | null {
-  return FRAMEWORK_ORDER.includes(value as FrameworkId) ? (value as FrameworkId) : null;
-}
-
 export default async function TrackPage({ params }: TrackPageProps) {
   const { framework: frameworkParam } = await params;
-  const framework = parseFrameworkParam(frameworkParam);
+  const framework = parseFrameworkId(frameworkParam);
   if (!framework) notFound();
-  // CMMC keeps its canonical /path experience; the generic track route is for the Texas frameworks.
-  if (framework === "cmmc") redirect("/path");
+  // Frameworks with their own bespoke routes (CMMC's /path) redirect out of the generic track route.
+  const definition = getFramework(framework);
+  if (definition.hasDedicatedRoutes) redirect(definition.homeRoute);
 
   const organization = await getOrganization();
   if (!organization) redirect("/onboarding");

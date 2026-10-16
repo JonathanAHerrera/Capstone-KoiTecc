@@ -1,6 +1,7 @@
 import { desc, eq, inArray } from "drizzle-orm";
 import { getDb } from "@/db/client";
 import { evidenceFiles, reviews, submissions, type EvidenceFileRow } from "@/db/schema";
+import { DEFAULT_FRAMEWORK_ID, getFramework } from "@/frameworks";
 import { requireOrganization, type Organization } from "@/lib/org";
 import { getFamilies, getGroupsForFramework } from "@/lib/practices";
 import {
@@ -101,11 +102,10 @@ async function loadPracticeExportStates(
     }
   }
 
-  // CMMC keeps its level-scoped family view unchanged; Texas frameworks iterate their own groups.
-  const groups =
-    framework === "cmmc"
-      ? getFamilies(organization.targetLevel)
-      : getGroupsForFramework(framework);
+  // Level-scoped frameworks (CMMC) keep their level-filtered family view; others iterate every group.
+  const groups = getFramework(framework).isLevelScoped
+    ? getFamilies(organization.targetLevel)
+    : getGroupsForFramework(framework);
 
   const states: PracticeExportState[] = [];
   for (const family of groups) {
@@ -132,7 +132,7 @@ function renderOrganizationSection(
     "",
     `- **Name:** ${organization.name}`,
   ];
-  if (framework === "cmmc") {
+  if (getFramework(framework).isLevelScoped) {
     lines.push(`- **Target CMMC level:** Level ${organization.targetLevel}`);
   } else {
     lines.push(`- **Framework:** ${FRAMEWORKS[framework].fullName}`);
@@ -173,7 +173,7 @@ function renderScoreSection(progress: ScoreCounts, leadSentence: string): string
 }
 
 function renderPracticeTables(states: PracticeExportState[], framework: FrameworkId): string[] {
-  const isCmmc = framework === "cmmc";
+  const isCmmc = getFramework(framework).exportStyle === "cmmc";
   const sectionHeading = isCmmc ? "## Practices by family" : "## Requirements by topic";
   const referenceHeading = isCmmc ? "NIST 800-171" : "Legal reference";
   const itemHeading = isCmmc ? "Practice" : "Requirement";
@@ -302,13 +302,15 @@ function renderNotesSection(states: PracticeExportState[]): string[] {
   return lines;
 }
 
-export async function buildReadinessPackage(framework: FrameworkId = "cmmc"): Promise<string> {
+export async function buildReadinessPackage(
+  framework: FrameworkId = DEFAULT_FRAMEWORK_ID,
+): Promise<string> {
   const organization = await requireOrganization();
   const states = await loadPracticeExportStates(organization, framework);
   const statuses: Record<string, DerivedPracticeStatus> = {};
   for (const state of states) statuses[state.practice.id] = state.status;
 
-  if (framework === "cmmc") {
+  if (getFramework(framework).exportStyle === "cmmc") {
     const progress = computeProgressFromStatuses(organization.targetLevel, statuses);
     const lines: string[] = [
       "# CMMC Readiness Package",

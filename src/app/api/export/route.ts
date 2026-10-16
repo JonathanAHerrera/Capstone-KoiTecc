@@ -1,12 +1,11 @@
 import { buildReadinessPackage } from "@/lib/export";
 import { getOrganization } from "@/lib/org";
-import { FRAMEWORK_ORDER, type FrameworkId } from "@/lib/practice-types";
+import { DEFAULT_FRAMEWORK_ID, getFramework, parseFrameworkId } from "@/frameworks";
+import type { FrameworkId } from "@/lib/practice-types";
 
 function resolveRequestedFramework(request: Request): FrameworkId {
   const requested = new URL(request.url).searchParams.get("framework");
-  return FRAMEWORK_ORDER.includes(requested as FrameworkId)
-    ? (requested as FrameworkId)
-    : "cmmc";
+  return parseFrameworkId(requested) ?? DEFAULT_FRAMEWORK_ID;
 }
 
 export async function GET(request: Request) {
@@ -17,8 +16,7 @@ export async function GET(request: Request) {
 
   const framework = resolveRequestedFramework(request);
   const markdown = await buildReadinessPackage(framework);
-  const fileName =
-    framework === "cmmc" ? "cmmc-readiness-package.md" : `${framework}-readiness-summary.md`;
+  const fileName = getFramework(framework).exportFileName;
   return new Response(markdown, {
     status: 200,
     headers: {

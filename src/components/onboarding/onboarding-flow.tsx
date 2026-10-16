@@ -4,13 +4,20 @@ import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
+  Briefcase,
+  Building2,
   Cloud,
+  CreditCard,
   FileLock,
   FileText,
   Handshake,
+  HeartPulse,
   HelpCircle,
+  Landmark,
   Laptop,
+  Receipt,
   Server,
+  ShoppingBag,
   Wrench,
 } from "lucide-react";
 import { createOrganizationAction } from "@/app/actions";
@@ -27,6 +34,7 @@ import {
   targetLevelForCuiHandling,
   type CuiHandlingAnswer,
   type EmployeeCountBucket,
+  type IndustryAnswer,
   type ItSetupAnswer,
   type LevelEstimates,
   type OnboardingAnswers,
@@ -82,6 +90,20 @@ const EMPLOYEE_COUNT_OPTIONS: SingleChoiceOption<EmployeeCountBucket>[] = [
   { value: "11-50", label: "11–50" },
   { value: "51-250", label: "51–250" },
   { value: "250+", label: "250+" },
+];
+
+const INDUSTRY_OPTIONS: SingleChoiceOption<IndustryAnswer>[] = [
+  { value: "healthcare", label: "Healthcare", description: "Clinic, dental, therapy, home health", icon: <HeartPulse /> },
+  { value: "accounting", label: "Tax or accounting", description: "CPA, bookkeeping, tax prep", icon: <Receipt /> },
+  { value: "lending", label: "Lending or finance", description: "Lender, mortgage, financial services", icon: <Landmark /> },
+  { value: "retail", label: "Retail or restaurant", description: "Storefront, e-commerce, food service", icon: <ShoppingBag /> },
+  { value: "professional_services", label: "Professional services", description: "Law, consulting, agency", icon: <Briefcase /> },
+  { value: "other", label: "Something else", icon: <Building2 /> },
+];
+
+const CARD_PAYMENTS_OPTIONS: SingleChoiceOption<"yes" | "no">[] = [
+  { value: "yes", label: "Yes, we take card payments", description: "In person or online", icon: <CreditCard /> },
+  { value: "no", label: "No card payments", description: "Cash, check, or invoice only", icon: <Wrench /> },
 ];
 
 const IT_SETUP_OPTIONS: SingleChoiceOption<ItSetupAnswer>[] = [
@@ -209,6 +231,25 @@ export function OnboardingFlow({ levelEstimates, hasExistingPath, initialAnswers
               onSelect={(employeeCount) => answerThenAutoAdvance({ employeeCount })}
               onContinue={goForward}
               columns={2}
+            />
+          ) : currentStepId === "industry" ? (
+            <SingleChoiceScreen
+              question="What kind of business are you?"
+              questionLabel="Industry"
+              options={INDUSTRY_OPTIONS}
+              selectedValue={answers.industry}
+              onSelect={(industry) => answerThenAutoAdvance({ industry })}
+              onContinue={goForward}
+              note="This tells us which extra rules apply to you — like HIPAA for healthcare or GLBA for financial services."
+            />
+          ) : currentStepId === "cardPayments" ? (
+            <SingleChoiceScreen
+              question="Do you accept credit or debit card payments?"
+              questionLabel="Card payments"
+              options={CARD_PAYMENTS_OPTIONS}
+              selectedValue={answers.takesCardPayments === null ? null : answers.takesCardPayments ? "yes" : "no"}
+              onSelect={(value) => answerThenAutoAdvance({ takesCardPayments: value === "yes" })}
+              onContinue={goForward}
             />
           ) : currentStepId === "halfway" ? (
             <HalfwayScreen onContinue={goForward} />

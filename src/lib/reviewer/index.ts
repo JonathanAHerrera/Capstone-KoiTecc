@@ -1,4 +1,6 @@
+import { hasApiKey } from "@/ai/model";
 import { listEvidenceFilesForSubmission, readEvidenceFileBytes } from "@/lib/evidence";
+import { appendLedgerEntryBestEffort } from "@/lib/ledger";
 import { getPractice } from "@/lib/practices";
 import { runAnthropicReviewer } from "@/lib/reviewer/anthropic";
 import { runMockReviewer } from "@/lib/reviewer/mock";
@@ -10,8 +12,7 @@ export type { ReviewRecord } from "@/lib/reviews";
 export type { ReviewVerdict } from "@/lib/reviewer/schema";
 
 export function hasAnthropicApiKey(): boolean {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  return typeof apiKey === "string" && apiKey.trim().length > 0;
+  return hasApiKey();
 }
 
 async function loadReviewerEvidence(submissionId: string, needsFileBytes: boolean) {
@@ -73,5 +74,20 @@ export async function reviewSubmission(submissionId: string): Promise<ReviewReco
     rawResponse: result.rawResponse,
   });
   await markSubmissionStatus(submissionId, review.verdict);
+
+  await appendLedgerEntryBestEffort({
+    orgId: submission.orgId,
+    type: "verdict_set",
+    controlId: submission.practiceId,
+    verdict: review.verdict,
+    modelId: result.reviewerModel,
+    metadata: {
+      submissionId,
+      reviewId: review.id,
+      confidence: review.confidence,
+      isMock: review.isMock,
+    },
+  });
+
   return review;
 }

@@ -7,13 +7,12 @@ import { BigButton } from "@/components/ui/big-button";
 import { BottomActionBar } from "@/components/ui/bottom-action-bar";
 import { ProgressBar } from "@/components/ui/progress-bar";
 import { StatusChip } from "@/components/ui/status-chip";
+import { getFramework, parseFrameworkId } from "@/frameworks";
 import { getOrganization } from "@/lib/org";
 import { getGroupsForFramework } from "@/lib/practices";
 import {
-  FRAMEWORK_ORDER,
   FRAMEWORKS,
   type DerivedPracticeStatus,
-  type FrameworkId,
   type Practice,
 } from "@/lib/practice-types";
 import { computeProgressForFrameworkFromStatuses, type ProgressSummary } from "@/lib/progress";
@@ -23,17 +22,14 @@ export const dynamic = "force-dynamic";
 
 type FrameworkSummaryPageProps = { params: Promise<{ framework: string }> };
 
-function parseFrameworkParam(value: string): FrameworkId | null {
-  return FRAMEWORK_ORDER.includes(value as FrameworkId) ? (value as FrameworkId) : null;
-}
-
 export default async function FrameworkSummaryPage({ params }: FrameworkSummaryPageProps) {
   await connection();
   const { framework: frameworkParam } = await params;
-  const framework = parseFrameworkParam(frameworkParam);
+  const framework = parseFrameworkId(frameworkParam);
   if (!framework) notFound();
-  // CMMC keeps its canonical /summary with SPRS and POA&M sections intact.
-  if (framework === "cmmc") redirect("/summary");
+  // Frameworks with bespoke routes (CMMC's /summary with SPRS + POA&M) redirect out of the generic page.
+  const definition = getFramework(framework);
+  if (definition.hasDedicatedRoutes) redirect(definition.summaryRoute);
 
   const organization = await getOrganization();
   if (!organization) redirect("/onboarding");

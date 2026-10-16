@@ -15,6 +15,7 @@ import {
   type Practice,
   type PracticeFamily,
 } from "@/lib/practice-types";
+import { DEFAULT_FRAMEWORK_ID, getFramework } from "@/frameworks";
 
 const PracticeSchema = z.object({
   id: z.string().min(1),
@@ -91,7 +92,7 @@ function comparePracticesByFamilyThenCatalogOrder(left: Practice, right: Practic
 }
 
 function cmmcPractices(): Practice[] {
-  return allPractices.filter((practice) => frameworkForPractice(practice) === "cmmc");
+  return allPractices.filter((practice) => frameworkForPractice(practice) === DEFAULT_FRAMEWORK_ID);
 }
 
 // CMMC-only. Several callers assume this returns the entire CMMC universe, so it must not
@@ -142,7 +143,7 @@ export function getPracticesForFramework(framework: FrameworkId): Practice[] {
   const practices = allPractices.filter(
     (practice) => frameworkForPractice(practice) === framework,
   );
-  if (framework === "cmmc") {
+  if (getFramework(framework).grouping === "nist-family") {
     return practices.sort(comparePracticesByFamilyThenCatalogOrder);
   }
   return practices.sort(
@@ -165,7 +166,7 @@ export function getGroupsForFramework(framework: FrameworkId): PracticeFamily[] 
       practices: [practice],
     });
   }
-  if (framework === "cmmc") {
+  if (getFramework(framework).grouping === "nist-family") {
     return [...groupsByCode.values()].sort(
       (left, right) => familySortRank(left.code) - familySortRank(right.code),
     );

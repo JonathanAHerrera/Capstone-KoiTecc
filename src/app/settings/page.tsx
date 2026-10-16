@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronLeft, MonitorCog } from "lucide-react";
 import { ResetDataSetting } from "@/components/settings/reset-data-setting";
+import { SignOutSetting } from "@/components/settings/sign-out-setting";
 import { ThemeSetting } from "@/components/settings/theme-setting";
+import { TwoFactorSetting } from "@/components/settings/two-factor-setting";
 
 export const metadata: Metadata = { title: "Settings — CMMC Ready" };
 
@@ -22,7 +24,14 @@ export default function SettingsPage() {
           </div>
         </div>
       </header>
-      <section aria-labelledby="appearance-heading" className="py-6">
+      <section aria-labelledby="account-heading" className="py-6">
+        <p id="account-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">Account</p>
+        <div className="mt-3 flex flex-col gap-3">
+          <div className="rounded-card border border-border bg-surface p-4 shadow-float"><TwoFactorSetting /></div>
+          <div className="rounded-card border border-border bg-surface p-4 shadow-float"><SignOutSetting /></div>
+        </div>
+      </section>
+      <section aria-labelledby="appearance-heading" className="pb-6">
         <p id="appearance-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">Appearance</p>
         <div className="mt-3 rounded-card border border-border bg-surface p-4 shadow-float"><ThemeSetting /></div>
       </section>

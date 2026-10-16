@@ -47,6 +47,17 @@ export async function getDb(): Promise<Database> {
   return singleton.database;
 }
 
+// Better Auth's drizzle adapter needs the drizzle instance synchronously at config time.
+// Schema creation is kicked off by getDatabaseSingleton(); awaitSchemaReady() lets the auth
+// route handler block on it before serving the first request against a fresh database.
+export function getDrizzleSync(): Database {
+  return getDatabaseSingleton().database;
+}
+
+export function awaitSchemaReady(): Promise<void> {
+  return getDatabaseSingleton().schemaReady;
+}
+
 export function nowIsoTimestamp(): string {
   return new Date().toISOString();
 }

@@ -50,9 +50,16 @@ function assertPracticeExists(practiceId: string): void {
   }
 }
 
+// Org-scoped by design: a submission id from another tenant resolves to null so callers
+// (evidence viewer, status mutations, reviewer) can never reach across the tenant boundary.
 export async function getSubmissionById(submissionId: string): Promise<Submission | null> {
+  const organization = await requireOrganization();
   const db = await getDb();
-  const rows = await db.select().from(submissions).where(eq(submissions.id, submissionId)).limit(1);
+  const rows = await db
+    .select()
+    .from(submissions)
+    .where(and(eq(submissions.id, submissionId), eq(submissions.orgId, organization.id)))
+    .limit(1);
   return rows[0] ?? null;
 }
 
@@ -174,9 +181,15 @@ export async function markSubmissionStatus(
   submissionId: string,
   status: SubmissionStatus,
 ): Promise<Submission> {
+  const organization = await requireOrganization();
   const db = await getDb();
   const updatedAt = nowIsoTimestamp();
-  await db.update(submissions).set({ status, updatedAt }).where(eq(submissions.id, submissionId));
+  // The orgId predicate means a cross-tenant id updates zero rows instead of flipping a status
+  // the caller doesn't own; the follow-up read confirms the row actually belongs to this org.
+  await db
+    .update(submissions)
+    .set({ status, updatedAt })
+    .where(and(eq(submissions.id, submissionId), eq(submissions.orgId, organization.id)));
   const updatedSubmission = await getSubmissionById(submissionId);
   if (!updatedSubmission) {
     throw new Error(`Submission not found: ${submissionId}`);

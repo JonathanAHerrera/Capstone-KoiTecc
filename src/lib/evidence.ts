@@ -6,6 +6,9 @@ import { nanoid } from "nanoid";
 import { getDb, nowIsoTimestamp } from "@/db/client";
 import { ensureDataDirectoriesExist, resolveUploadsDirectoryPath } from "@/db/migrate";
 import { evidenceFiles, type EvidenceFileRow } from "@/db/schema";
+import { assertContentMatchesClaimedType, stripLocationMetadata } from "@/lib/evidence-content";
+import { decryptEvidenceBytes, encryptEvidenceBytes } from "@/lib/evidence-crypto";
+import { appendLedgerEntryBestEffort } from "@/lib/ledger";
 import { EVIDENCE_KINDS, type EvidenceKind } from "@/lib/practice-types";
 import { getPractice } from "@/lib/practices";
 import { getSubmissionById } from "@/lib/submissions";
@@ -106,12 +109,18 @@ export async function storeEvidenceFile(
     );
   }
 
+  const uploadedBytes = Buffer.from(await file.arrayBuffer());
+  // Reject files whose contents contradict the declared type, then strip image location metadata
+  // before anything is persisted so GPS coordinates never touch disk.
+  assertContentMatchesClaimedType(uploadedBytes, mimeType);
+  const sanitizedBytes = stripLocationMetadata(uploadedBytes, mimeType);
+
   await ensureDataDirectoriesExist();
   const fileId = nanoid();
-  const storagePath = `${fileId}.${pickStorageExtension(file.name, mimeType)}`;
+  // .enc marks that the on-disk payload is an AES-256-GCM blob, not the raw media.
+  const storagePath = `${fileId}.${pickStorageExtension(file.name, mimeType)}.enc`;
   const absolutePath = resolveEvidenceAbsolutePath(storagePath);
-  const bytes = Buffer.from(await file.arrayBuffer());
-  await writeFile(absolutePath, bytes);
+  await writeFile(absolutePath, encryptEvidenceBytes(sanitizedBytes));
 
   const row: EvidenceFile = {
     id: fileId,
@@ -119,22 +128,44 @@ export async function storeEvidenceFile(
     kind,
     originalName: file.name || storagePath,
     mimeType,
-    sizeBytes: bytes.byteLength,
+    // Size and hash describe the decrypted evidence the reviewer sees, not the ciphertext.
+    sizeBytes: sanitizedBytes.byteLength,
     storagePath,
-    sha256: createHash("sha256").update(bytes).digest("hex"),
+    sha256: createHash("sha256").update(sanitizedBytes).digest("hex"),
     width: null,
     height: null,
     createdAt: nowIsoTimestamp(),
   };
   const db = await getDb();
   await db.insert(evidenceFiles).values(row);
+
+  await appendLedgerEntryBestEffort({
+    orgId: submission.orgId,
+    type: "evidence_added",
+    controlId: submission.practiceId,
+    evidenceSha256: row.sha256,
+    metadata: {
+      submissionId,
+      fileId: row.id,
+      originalName: row.originalName,
+      mimeType: row.mimeType,
+      sizeBytes: row.sizeBytes,
+    },
+  });
+
   return row;
 }
 
+// Org-scoped: resolves the file only if its parent submission belongs to the caller's org, so a
+// leaked file id from another tenant returns null instead of the row.
 export async function getEvidenceFile(fileId: string): Promise<EvidenceFile | null> {
   const db = await getDb();
   const rows = await db.select().from(evidenceFiles).where(eq(evidenceFiles.id, fileId)).limit(1);
-  return rows[0] ?? null;
+  const file = rows[0];
+  if (!file) return null;
+  const owningSubmission = await getSubmissionById(file.submissionId);
+  if (!owningSubmission) return null;
+  return file;
 }
 
 export async function listEvidenceFilesForSubmission(submissionId: string): Promise<EvidenceFile[]> {
@@ -158,7 +189,23 @@ export async function readEvidenceFile(fileId: string): Promise<ReadableEvidence
 }
 
 export async function readEvidenceFileBytes(file: EvidenceFile): Promise<Buffer> {
-  return readFile(resolveEvidenceAbsolutePath(file.storagePath));
+  const encryptedBlob = await readFile(resolveEvidenceAbsolutePath(file.storagePath));
+  return decryptEvidenceBytes(encryptedBlob);
+}
+
+export type DecryptedEvidenceFile = {
+  file: EvidenceFile;
+  bytes: Buffer;
+};
+
+// Loads and decrypts a file by id, enforcing the same org scope as getEvidenceFile. Used by the
+// file-serving route, which must hand the browser plaintext rather than the on-disk ciphertext.
+export async function readDecryptedEvidenceFile(
+  fileId: string,
+): Promise<DecryptedEvidenceFile | null> {
+  const file = await getEvidenceFile(fileId);
+  if (!file) return null;
+  return { file, bytes: await readEvidenceFileBytes(file) };
 }
 
 export async function deleteEvidenceFile(fileId: string): Promise<boolean> {

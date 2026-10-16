@@ -1,0 +1,163 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`SB 2610 ranked plans > 12-person dental office: sb2610-simple + HIPAA 1`] = `
+{
+  "controls": [
+    {
+      "id": "essential.email-authentication",
+      "kind": "technical",
+      "priority": 5,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "essential.mfa-on-every-account",
+      "kind": "technical",
+      "priority": 5,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "essential.payment-change-callback",
+      "kind": "administrative",
+      "priority": 5,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "essential.security-training",
+      "kind": "administrative",
+      "priority": 5,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "essential.backups-and-restore-test",
+      "kind": "technical",
+      "priority": 4,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "essential.password-policy",
+      "kind": "administrative",
+      "priority": 4,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "hipaa.encrypt-phi",
+      "kind": "technical",
+      "priority": 4,
+      "sourceRef": "TODO_SOURCE",
+    },
+    {
+      "id": "hipaa.security-risk-analysis",
+      "kind": "administrative",
+      "priority": 4,
+      "sourceRef": "TODO_SOURCE",
+    },
+    {
+      "id": "essential.lock-up-devices-and-records",
+      "kind": "physical",
+      "priority": 2,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "hipaa.facility-access",
+      "kind": "physical",
+      "priority": 2,
+      "sourceRef": "TODO_SOURCE",
+    },
+  ],
+  "eligible": true,
+  "overlays": [
+    "hipaa",
+  ],
+  "tier": "sb2610-simple",
+}
+`;
+
+exports[`SB 2610 ranked plans > 45-person CPA firm: sb2610-moderate + GLBA 1`] = `
+{
+  "controls": [
+    {
+      "id": "essential.email-authentication",
+      "kind": "technical",
+      "priority": 5,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "essential.mfa-on-every-account",
+      "kind": "technical",
+      "priority": 5,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "essential.payment-change-callback",
+      "kind": "administrative",
+      "priority": 5,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "essential.security-training",
+      "kind": "administrative",
+      "priority": 5,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "cis-ig1.todo-administrative",
+      "kind": "administrative",
+      "priority": 4,
+      "sourceRef": "TODO_SOURCE",
+    },
+    {
+      "id": "cis-ig1.todo-technical",
+      "kind": "technical",
+      "priority": 4,
+      "sourceRef": "TODO_SOURCE",
+    },
+    {
+      "id": "essential.backups-and-restore-test",
+      "kind": "technical",
+      "priority": 4,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "essential.password-policy",
+      "kind": "administrative",
+      "priority": 4,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "glba.encrypt-customer-info",
+      "kind": "technical",
+      "priority": 4,
+      "sourceRef": "TODO_SOURCE",
+    },
+    {
+      "id": "glba.written-info-security-program",
+      "kind": "administrative",
+      "priority": 4,
+      "sourceRef": "TODO_SOURCE",
+    },
+    {
+      "id": "cis-ig1.todo-physical",
+      "kind": "physical",
+      "priority": 2,
+      "sourceRef": "TODO_SOURCE",
+    },
+    {
+      "id": "essential.lock-up-devices-and-records",
+      "kind": "physical",
+      "priority": 2,
+      "sourceRef": "Texas Safe Harbor essential",
+    },
+    {
+      "id": "glba.secure-disposal",
+      "kind": "physical",
+      "priority": 2,
+      "sourceRef": "TODO_SOURCE",
+    },
+  ],
+  "eligible": true,
+  "overlays": [
+    "glba",
+  ],
+  "tier": "sb2610-moderate",
+}
+`;

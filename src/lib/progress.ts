@@ -1,3 +1,4 @@
+import { getFramework } from "@/frameworks";
 import { getGroupsForFramework, getPracticesForLevel } from "@/lib/practices";
 import type { CmmcLevel, DerivedPracticeStatus, FrameworkId, Practice } from "@/lib/practice-types";
 import { listPracticeStatuses, listPracticeStatusesForFramework } from "@/lib/submissions";
@@ -123,7 +124,7 @@ export function computeProgressForFrameworkFromStatuses(
 
   summary.percent =
     summary.total === 0 ? 0 : Math.round((summary.accepted / summary.total) * 100);
-  if (framework === "cmmc") {
+  if (getFramework(framework).scoring.kind === "sprs") {
     summary.sprsScore = Math.max(SPRS_MIN_SCORE, SPRS_MAX_SCORE - pointsLost);
   }
   return summary;

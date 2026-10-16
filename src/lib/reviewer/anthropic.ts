@@ -1,5 +1,10 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
+import {
+  createModelClient,
+  DEFAULT_MODEL,
+  describeModelError,
+  resolveModel,
+} from "@/ai/model";
 import { buildReviewerSystemPrompt, buildReviewerUserContent } from "@/lib/reviewer/prompt";
 import {
   clampConfidence,
@@ -9,12 +14,11 @@ import {
   type ReviewVerdict,
 } from "@/lib/reviewer/schema";
 
-export const DEFAULT_REVIEWER_MODEL = "claude-opus-5-5";
-
-export function resolveReviewerModel(): string {
-  const override = process.env.CMMC_REVIEWER_MODEL;
-  return override && override.trim().length > 0 ? override.trim() : DEFAULT_REVIEWER_MODEL;
-}
+// Model selection now lives in src/ai/model.ts so the evidence scanner and this legacy practice
+// reviewer resolve the same model and honor the same CMMC_REVIEWER_MODEL override. These re-exports
+// keep existing import sites (src/lib/applicability/enrich.ts) working.
+export const DEFAULT_REVIEWER_MODEL = DEFAULT_MODEL;
+export const resolveReviewerModel = resolveModel;
 
 function buildFailureVerdict(input: ReviewerInput, summary: string): ReviewVerdict {
   return {
@@ -31,20 +35,12 @@ function buildFailureVerdict(input: ReviewerInput, summary: string): ReviewVerdi
   };
 }
 
-function describeError(error: unknown): string {
-  if (error instanceof Anthropic.APIError) {
-    return `${error.status ?? "network"} ${error.name}: ${error.message}`;
-  }
-  if (error instanceof Error) return error.message;
-  return String(error);
-}
-
 export async function runAnthropicReviewer(input: ReviewerInput): Promise<ReviewerResult> {
   const reviewerModel = resolveReviewerModel();
   const baseResult = { reviewerModel, isMock: false as const };
 
   try {
-    const client = new Anthropic();
+    const client = createModelClient();
     const response = await client.messages.parse({
       model: reviewerModel,
       max_tokens: 16000,
@@ -84,7 +80,7 @@ export async function runAnthropicReviewer(input: ReviewerInput): Promise<Review
     return {
       ...baseResult,
       rawResponse: null,
-      verdict: buildFailureVerdict(input, `Automated review failed: ${describeError(error)}`),
+      verdict: buildFailureVerdict(input, `Automated review failed: ${describeModelError(error)}`),
     };
   }
 }

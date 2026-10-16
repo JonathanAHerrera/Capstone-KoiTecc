@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { PracticeWorkspace, type PracticeWorkspaceEvidenceFile } from "@/components/practice/practice-workspace";
+import { getFramework } from "@/frameworks";
 import { getOrganization } from "@/lib/org";
 import { getPractice, getPracticesForFramework, getPracticesForLevel } from "@/lib/practices";
 import { frameworkForPractice, resolveGroup, type DerivedPracticeStatus, type Practice } from "@/lib/practice-types";
 import {
   deriveStatusFromSubmission,
   getSubmissionWithEvidence,
-  listPracticeStatuses,
   listPracticeStatusesForFramework,
 } from "@/lib/submissions";
 
@@ -42,13 +42,12 @@ export default async function PracticePage({ params }: PracticePageProps) {
   const framework = frameworkForPractice(practice);
   const [submissionWithEvidence, practiceStatuses] = await Promise.all([
     getSubmissionWithEvidence(practice.id),
-    framework === "cmmc" ? listPracticeStatuses() : listPracticeStatusesForFramework(framework),
+    listPracticeStatusesForFramework(framework),
   ]);
 
-  const practicesInScope =
-    framework === "cmmc"
-      ? getPracticesForLevel(organization.targetLevel)
-      : getPracticesForFramework(framework);
+  const practicesInScope = getFramework(framework).isLevelScoped
+    ? getPracticesForLevel(organization.targetLevel)
+    : getPracticesForFramework(framework);
   const currentGroupCode = resolveGroup(practice).code;
   const otherPracticesInScope = practicesInScope.filter((candidate) => candidate.id !== practice.id);
   const otherPracticesInFamily = otherPracticesInScope.filter(

@@ -1,7 +1,4 @@
-import { createReadStream } from "node:fs";
-import { stat } from "node:fs/promises";
-import { Readable } from "node:stream";
-import { readEvidenceFile } from "@/lib/evidence";
+import { readDecryptedEvidenceFile } from "@/lib/evidence";
 
 function buildContentDisposition(originalName: string): string {
   const asciiFallback = originalName.replace(/[^\x20-\x7E]/g, "_").replace(/"/g, "'");
@@ -10,28 +7,20 @@ function buildContentDisposition(originalName: string): string {
 
 export async function GET(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const readable = await readEvidenceFile(id);
-  if (!readable) {
+  // Evidence is encrypted at rest and scoped to the caller's org, so we decrypt into memory
+  // (files are capped at 25 MB) rather than streaming raw bytes off disk.
+  const decrypted = await readDecryptedEvidenceFile(id);
+  if (!decrypted) {
     return Response.json({ error: "File not found" }, { status: 404 });
   }
 
-  let fileSize: number;
-  try {
-    fileSize = (await stat(readable.absolutePath)).size;
-  } catch {
-    return Response.json({ error: "File is missing from storage" }, { status: 404 });
-  }
-
-  const nodeStream = createReadStream(readable.absolutePath);
-  const webStream = Readable.toWeb(nodeStream) as ReadableStream<Uint8Array>;
-
-  return new Response(webStream, {
+  return new Response(new Uint8Array(decrypted.bytes), {
     status: 200,
     headers: {
-      "Content-Type": readable.file.mimeType,
-      "Content-Length": String(fileSize),
-      "Content-Disposition": buildContentDisposition(readable.file.originalName),
-      "Cache-Control": "private, max-age=3600",
+      "Content-Type": decrypted.file.mimeType,
+      "Content-Length": String(decrypted.bytes.byteLength),
+      "Content-Disposition": buildContentDisposition(decrypted.file.originalName),
+      "Cache-Control": "private, no-store",
     },
   });
 }

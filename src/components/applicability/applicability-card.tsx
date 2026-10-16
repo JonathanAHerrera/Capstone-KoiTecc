@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Check, CircleHelp, MinusCircle, Sparkles } from "lucide-react";
 import { disableFrameworkAction, enableFrameworkAction } from "@/app/applicability/actions";
+import { getFramework } from "@/frameworks";
 import { FRAMEWORKS } from "@/lib/practice-types";
 import type { FrameworkApplicability } from "@/lib/applicability";
 
@@ -36,8 +37,9 @@ export function ApplicabilityCard({ applicability, isEnabled }: ApplicabilityCar
   const [isUpdating, startUpdating] = useTransition();
   const meta = FRAMEWORKS[applicability.framework];
   const presentation = VERDICT_PRESENTATION[applicability.verdict];
-  const isCmmc = applicability.framework === "cmmc";
-  const trackHref = isCmmc ? "/path" : `/track/${applicability.framework}`;
+  const definition = getFramework(applicability.framework);
+  const isAlwaysEnabled = !definition.canDisable;
+  const trackHref = definition.homeRoute;
 
   function handleToggle() {
     startUpdating(async () => {
@@ -80,7 +82,7 @@ export function ApplicabilityCard({ applicability, isEnabled }: ApplicabilityCar
       </ul>
 
       <div className="flex items-center gap-3 pt-1">
-        {isCmmc ? (
+        {isAlwaysEnabled ? (
           <Link
             href={trackHref}
             className="focus-outline inline-flex h-11 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-medium text-canvas"

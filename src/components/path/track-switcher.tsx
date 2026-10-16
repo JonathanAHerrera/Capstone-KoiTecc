@@ -1,6 +1,25 @@
 import Link from "next/link";
-import { ChevronRight, Compass } from "lucide-react";
+import { ChevronRight, Compass, ShieldCheck } from "lucide-react";
+import { getFramework } from "@/frameworks";
+import { sb2610Definition } from "@/frameworks/sb2610";
 import { FRAMEWORKS, type FrameworkId } from "@/lib/practice-types";
+
+// SB 2610 is engine-driven (not in the Practice-backed FrameworkId registry), so it gets its own
+// persistent link instead of a progress row in the tracks list above.
+function Sb2610Link() {
+  return (
+    <Link
+      href={sb2610Definition.homeRoute}
+      className="focus-outline flex items-center justify-between gap-3 rounded-card border border-border bg-surface px-4 py-3 text-left transition-colors hover:bg-surface-alt"
+    >
+      <span className="flex items-center gap-2.5">
+        <ShieldCheck className="size-5 text-primary-text" aria-hidden />
+        <span className="text-sm font-medium text-ink">Texas SB 2610 plan</span>
+      </span>
+      <ChevronRight className="size-5 text-muted" aria-hidden />
+    </Link>
+  );
+}
 
 export type TrackSwitcherEntry = {
   framework: FrameworkId;
@@ -18,16 +37,19 @@ export type TrackSwitcherProps = {
 export function TrackSwitcher({ entries }: TrackSwitcherProps) {
   if (entries.length <= 1) {
     return (
-      <Link
-        href="/applicability"
-        className="focus-outline flex items-center justify-between gap-3 rounded-card border border-border bg-surface px-4 py-3 text-left transition-colors hover:bg-surface-alt"
-      >
-        <span className="flex items-center gap-2.5">
-          <Compass className="size-5 text-primary-text" aria-hidden />
-          <span className="text-sm font-medium text-ink">What applies to me?</span>
-        </span>
-        <ChevronRight className="size-5 text-muted" aria-hidden />
-      </Link>
+      <div className="flex flex-col gap-2">
+        <Link
+          href="/applicability"
+          className="focus-outline flex items-center justify-between gap-3 rounded-card border border-border bg-surface px-4 py-3 text-left transition-colors hover:bg-surface-alt"
+        >
+          <span className="flex items-center gap-2.5">
+            <Compass className="size-5 text-primary-text" aria-hidden />
+            <span className="text-sm font-medium text-ink">What applies to me?</span>
+          </span>
+          <ChevronRight className="size-5 text-muted" aria-hidden />
+        </Link>
+        <Sb2610Link />
+      </div>
     );
   }
 
@@ -42,7 +64,7 @@ export function TrackSwitcher({ entries }: TrackSwitcherProps) {
       <ul className="flex flex-col gap-2">
         {entries.map((entry) => {
           const meta = FRAMEWORKS[entry.framework];
-          const href = entry.framework === "cmmc" ? "/path" : `/track/${entry.framework}`;
+          const href = getFramework(entry.framework).homeRoute;
           return (
             <li key={entry.framework}>
               <Link
@@ -69,6 +91,7 @@ export function TrackSwitcher({ entries }: TrackSwitcherProps) {
           );
         })}
       </ul>
+      <Sb2610Link />
     </section>
   );
 }

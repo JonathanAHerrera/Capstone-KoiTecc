@@ -10,7 +10,7 @@ import {
   type Organization,
   type TexasProfileInput,
 } from "@/lib/org";
-import { FRAMEWORK_ORDER, type FrameworkId } from "@/lib/practice-types";
+import { getFramework, parseFrameworkId } from "@/frameworks";
 import type { ActionResult } from "@/app/actions";
 
 function describeZodIssues(message: string): ActionResult<never> {
@@ -37,16 +37,13 @@ export async function saveTexasProfileAction(
   }
 }
 
-function isFrameworkId(value: string): value is FrameworkId {
-  return FRAMEWORK_ORDER.includes(value as FrameworkId);
-}
-
 export async function enableFrameworkAction(framework: string): Promise<ActionResult<Organization>> {
-  if (!isFrameworkId(framework)) return { ok: false, error: "Unknown framework." };
+  const frameworkId = parseFrameworkId(framework);
+  if (!frameworkId) return { ok: false, error: "Unknown framework." };
   try {
     const organization = await requireOrganization();
     const next = new Set(parseEnabledFrameworks(organization));
-    next.add(framework);
+    next.add(frameworkId);
     const updated = await setEnabledFrameworks([...next]);
     revalidatePath("/applicability");
     revalidatePath("/path");
@@ -58,12 +55,15 @@ export async function enableFrameworkAction(framework: string): Promise<ActionRe
 }
 
 export async function disableFrameworkAction(framework: string): Promise<ActionResult<Organization>> {
-  if (!isFrameworkId(framework)) return { ok: false, error: "Unknown framework." };
-  // CMMC is the baseline track and cannot be turned off.
-  if (framework === "cmmc") return { ok: false, error: "CMMC is always enabled." };
+  const frameworkId = parseFrameworkId(framework);
+  if (!frameworkId) return { ok: false, error: "Unknown framework." };
+  // Baseline tracks (CMMC) cannot be turned off.
+  if (!getFramework(frameworkId).canDisable) {
+    return { ok: false, error: `${getFramework(frameworkId).name} is always enabled.` };
+  }
   try {
     const organization = await requireOrganization();
-    const next = parseEnabledFrameworks(organization).filter((id) => id !== framework);
+    const next = parseEnabledFrameworks(organization).filter((id) => id !== frameworkId);
     const updated = await setEnabledFrameworks(next);
     revalidatePath("/applicability");
     revalidatePath("/path");

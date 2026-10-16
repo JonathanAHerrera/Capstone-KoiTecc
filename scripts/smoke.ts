@@ -60,13 +60,31 @@ async function main(): Promise<void> {
     await rm(process.env.CMMC_UPLOADS_DIR, { recursive: true, force: true });
   }
 
+  const { getDb } = await import("@/db/client");
+  const { user } = await import("@/db/auth-schema");
+  const { runWithSessionUser } = await import("@/lib/request-context");
+
+  // Seed one authenticated user and run the whole flow as them so the session-scoped DAL
+  // resolves this tenant without a live Better Auth cookie.
+  const database = await getDb();
+  const smokeUser = { id: "smoke-user", name: "Smoke Tester", email: "smoke@example.test" };
+  await database.insert(user).values(smokeUser).onConflictDoNothing();
+  await runWithSessionUser(smokeUser, () => runSmokeFlow());
+}
+
+async function runSmokeFlow(): Promise<void> {
   const { createOrganization, getOrganization } = await import("@/lib/org");
-  const { getAllPractices } = await import("@/lib/practices");
-  const { getOrCreateDraftSubmission, getSubmissionWithEvidence, listPracticeStatuses, saveSubmissionNote } =
-    await import("@/lib/submissions");
+  const { getAllPractices, getPracticesForFramework } = await import("@/lib/practices");
+  const {
+    getOrCreateDraftSubmission,
+    getSubmissionWithEvidence,
+    listPracticeStatuses,
+    listPracticeStatusesForFramework,
+    saveSubmissionNote,
+  } = await import("@/lib/submissions");
   const { storeEvidenceFile, readEvidenceFile } = await import("@/lib/evidence");
   const { reviewSubmission } = await import("@/lib/reviewer");
-  const { computeProgress } = await import("@/lib/progress");
+  const { computeProgress, computeProgressForFramework } = await import("@/lib/progress");
   const { buildReadinessPackage } = await import("@/lib/export");
 
 
@@ -142,6 +160,49 @@ async function main(): Promise<void> {
   printHeading("Readiness package (first 20 lines)");
   const markdown = await buildReadinessPackage();
   console.log(markdown.split("\n").slice(0, 20).join("\n"));
+
+  printHeading("TDPSA track (Texas framework reuse)");
+  const tdpsaPractices = getPracticesForFramework("tdpsa");
+  if (tdpsaPractices.length === 0) throw new Error("TDPSA catalog is empty");
+  const firstTdpsaPractice = tdpsaPractices[0];
+  if (firstTdpsaPractice.framework !== "tdpsa") {
+    throw new Error(`Expected a TDPSA practice, got framework=${firstTdpsaPractice.framework}`);
+  }
+  const tdpsaDraft = await getOrCreateDraftSubmission(firstTdpsaPractice.id);
+  await saveSubmissionNote(
+    firstTdpsaPractice.id,
+    "Our published privacy notice PDF describing the categories of Texas consumer data we collect and how to opt out.",
+  );
+  const tdpsaEvidenceKind = firstTdpsaPractice.evidenceTypes.includes("document")
+    ? "document"
+    : firstTdpsaPractice.evidenceTypes[0];
+  const tdpsaUpload = new File([new Uint8Array(buildTinyPng())], "tdpsa-evidence.png", { type: "image/png" });
+  const tdpsaEvidence = await storeEvidenceFile(tdpsaDraft.id, tdpsaEvidenceKind, tdpsaUpload);
+  const tdpsaReview = await reviewSubmission(tdpsaDraft.id);
+  console.log(`TDPSA ${firstTdpsaPractice.id} -> ${tdpsaReview.verdict} (evidence ${tdpsaEvidence.id})`);
+  const tdpsaStatuses = await listPracticeStatusesForFramework("tdpsa");
+  if (!(firstTdpsaPractice.id in tdpsaStatuses)) {
+    throw new Error("TDPSA status map is missing the reviewed practice");
+  }
+  if (firstTdpsaPractice.id in (await listPracticeStatuses())) {
+    throw new Error("TDPSA practice leaked into the CMMC status map");
+  }
+  const tdpsaProgress = await computeProgressForFramework("tdpsa");
+  if (tdpsaProgress.sprsScore !== undefined) {
+    throw new Error("TDPSA progress must not carry an SPRS score");
+  }
+  console.log(JSON.stringify(tdpsaProgress));
+
+  printHeading("TDPSA readiness summary (first 12 lines)");
+  const tdpsaMarkdown = await buildReadinessPackage("tdpsa");
+  console.log(tdpsaMarkdown.split("\n").slice(0, 12).join("\n"));
+  if (/SPRS/.test(tdpsaMarkdown)) throw new Error("TDPSA readiness summary must not mention SPRS");
+  if (/POA&M/.test(tdpsaMarkdown)) throw new Error("TDPSA readiness summary must not mention POA&M");
+
+  printHeading("CMMC export regression");
+  if (!markdown.startsWith("# CMMC Readiness Package")) {
+    throw new Error("CMMC readiness package header changed");
+  }
 
   printHeading("Done");
   console.log("smoke test passed");

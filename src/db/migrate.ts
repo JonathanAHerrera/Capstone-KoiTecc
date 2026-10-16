@@ -24,8 +24,68 @@ export async function ensureDataDirectoriesExist(): Promise<void> {
 }
 
 const CREATE_TABLE_STATEMENTS: readonly string[] = [
+  // Better Auth tables. Dates are millisecond epochs (timestamp_ms mode in the drizzle schema),
+  // so these columns are INTEGER. "user" must be created before anything that references it.
+  `CREATE TABLE IF NOT EXISTS user (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    email_verified INTEGER NOT NULL DEFAULT 0,
+    image TEXT,
+    created_at INTEGER NOT NULL DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)),
+    updated_at INTEGER NOT NULL DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)),
+    two_factor_enabled INTEGER DEFAULT 0
+  )`,
+  `CREATE TABLE IF NOT EXISTS session (
+    id TEXT PRIMARY KEY,
+    expires_at INTEGER NOT NULL,
+    token TEXT NOT NULL UNIQUE,
+    created_at INTEGER NOT NULL DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)),
+    updated_at INTEGER NOT NULL DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)),
+    ip_address TEXT,
+    user_agent TEXT,
+    user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE
+  )`,
+  `CREATE INDEX IF NOT EXISTS session_userId_idx ON session (user_id)`,
+  `CREATE TABLE IF NOT EXISTS account (
+    id TEXT PRIMARY KEY,
+    account_id TEXT NOT NULL,
+    provider_id TEXT NOT NULL,
+    user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE,
+    access_token TEXT,
+    refresh_token TEXT,
+    id_token TEXT,
+    access_token_expires_at INTEGER,
+    refresh_token_expires_at INTEGER,
+    scope TEXT,
+    password TEXT,
+    created_at INTEGER NOT NULL DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)),
+    updated_at INTEGER NOT NULL DEFAULT (cast(unixepoch('subsecond') * 1000 as integer))
+  )`,
+  `CREATE INDEX IF NOT EXISTS account_userId_idx ON account (user_id)`,
+  `CREATE TABLE IF NOT EXISTS verification (
+    id TEXT PRIMARY KEY,
+    identifier TEXT NOT NULL,
+    value TEXT NOT NULL,
+    expires_at INTEGER NOT NULL,
+    created_at INTEGER NOT NULL DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)),
+    updated_at INTEGER NOT NULL DEFAULT (cast(unixepoch('subsecond') * 1000 as integer))
+  )`,
+  `CREATE INDEX IF NOT EXISTS verification_identifier_idx ON verification (identifier)`,
+  `CREATE TABLE IF NOT EXISTS two_factor (
+    id TEXT PRIMARY KEY,
+    secret TEXT NOT NULL,
+    backup_codes TEXT NOT NULL,
+    user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE,
+    verified INTEGER DEFAULT 1,
+    failed_verification_count INTEGER DEFAULT 0,
+    locked_until INTEGER
+  )`,
+  `CREATE INDEX IF NOT EXISTS twoFactor_secret_idx ON two_factor (secret)`,
+  `CREATE INDEX IF NOT EXISTS twoFactor_userId_idx ON two_factor (user_id)`,
   `CREATE TABLE IF NOT EXISTS organizations (
     id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL REFERENCES user(id) ON DELETE CASCADE,
     name TEXT NOT NULL,
     target_level INTEGER NOT NULL,
     handles_cui INTEGER NOT NULL,
@@ -36,9 +96,13 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
     sells_to_state_of_texas INTEGER NOT NULL DEFAULT 0,
     texas_physical_presence INTEGER NOT NULL DEFAULT 0,
     processes_personal_data_at_scale INTEGER NOT NULL DEFAULT 0,
+    industry TEXT NOT NULL DEFAULT 'other',
+    takes_card_payments INTEGER NOT NULL DEFAULT 0,
     enabled_frameworks TEXT NOT NULL DEFAULT '["cmmc"]',
     created_at TEXT NOT NULL
   )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS organizations_user_unique
+    ON organizations (user_id)`,
   `CREATE TABLE IF NOT EXISTS submissions (
     id TEXT PRIMARY KEY,
     org_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
@@ -106,6 +170,49 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
   )`,
   `CREATE UNIQUE INDEX IF NOT EXISTS radar_decisions_org_item_unique
     ON radar_decisions (org_id, item_id)`,
+  `CREATE TABLE IF NOT EXISTS audit_log (
+    id TEXT PRIMARY KEY,
+    org_id TEXT REFERENCES organizations(id) ON DELETE CASCADE,
+    actor_user_id TEXT REFERENCES user(id) ON DELETE SET NULL,
+    action TEXT NOT NULL,
+    target_type TEXT,
+    target_id TEXT,
+    metadata TEXT,
+    ip_address TEXT,
+    created_at TEXT NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS audit_log_org_idx ON audit_log (org_id)`,
+  `CREATE INDEX IF NOT EXISTS audit_log_actor_idx ON audit_log (actor_user_id)`,
+  `CREATE TABLE IF NOT EXISTS framework_enrollments (
+    id TEXT PRIMARY KEY,
+    org_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    framework TEXT NOT NULL,
+    tier TEXT,
+    overlays TEXT NOT NULL DEFAULT '[]',
+    version TEXT,
+    enrolled_at TEXT NOT NULL
+  )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS framework_enrollments_org_framework_unique
+    ON framework_enrollments (org_id, framework)`,
+  `CREATE TABLE IF NOT EXISTS ledger_entries (
+    id TEXT PRIMARY KEY,
+    org_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    seq INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    control_id TEXT,
+    evidence_sha256 TEXT,
+    verdict TEXT,
+    actor TEXT NOT NULL,
+    model_id TEXT,
+    prompt_version TEXT,
+    metadata TEXT,
+    prev_hash TEXT NOT NULL,
+    entry_hash TEXT NOT NULL,
+    external_timestamp TEXT,
+    created_at TEXT NOT NULL
+  )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS ledger_entries_org_seq_unique
+    ON ledger_entries (org_id, seq)`,
 ];
 
 // Columns added after the first release; CREATE TABLE IF NOT EXISTS skips existing
@@ -130,6 +237,16 @@ const ADDED_COLUMNS: readonly { table: string; column: string; definition: strin
   {
     table: "organizations",
     column: "processes_personal_data_at_scale",
+    definition: "INTEGER NOT NULL DEFAULT 0",
+  },
+  {
+    table: "organizations",
+    column: "industry",
+    definition: "TEXT NOT NULL DEFAULT 'other'",
+  },
+  {
+    table: "organizations",
+    column: "takes_card_payments",
     definition: "INTEGER NOT NULL DEFAULT 0",
   },
   {
