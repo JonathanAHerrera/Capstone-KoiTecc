@@ -14,6 +14,8 @@ export const LEDGER_ENTRY_TYPES: readonly LedgerEntryType[] = [
   "restore_test_logged",
   "policy_signed",
   "framework_version_change",
+  "incident_logged",
+  "help_requested",
 ];
 
 // Prepended to the first entry in a chain: there is no previous hash, so the empty string anchors

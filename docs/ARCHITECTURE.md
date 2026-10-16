@@ -118,5 +118,33 @@ Per-framework behavior is declared as data in a single registry instead of scatt
 - **Path entry points:** `src/components/path/track-switcher.tsx` on `/path` lists enabled frameworks (mini progress each; each entry links to its registry `homeRoute`) and links to `/applicability`. The "44 of 110" Level 2 banner stays CMMC-only.
 - **Radar Texas enhancements:** `src/lib/radar/texas-playbook.ts` (static, disclaimered `TEXAS_BREACH_PLAYBOOK` — §521 steps/timelines: notify individuals without unreasonable delay/≤60 days; AG notice when ≥250 Texas residents/≤30 days; recordkeeping), rendered by `src/components/radar/breach-playbook.tsx` on `/radar` when `handlesTexasResidentData || texasOperations`. `sources.ts` `scoreItem` adds an additive Texas-topic bonus (`/texas|tdpsa|data privacy|breach|resident/`) for Texas-oriented profiles; the 4-source array and `getRadarFeed` are unchanged, so federal items still surface.
 
+## Scam checker and incident flows (Phase 8)
+
+### Scam checker (`src/ai/check-scam.ts`)
+- Same AI-layer conventions as the evidence scanner: zod schema `ScamAnalysisSchema` in `src/ai/scam-schema.ts` (`riskLevel` low|medium|high, `language` en|es, `summary`, `reasons[]`, `whatToDoNext[]`, `isPaymentChangeOrWire`), versioned prompt `src/ai/prompts/check-scam.v1.md`, result carries `model` + `promptVersion` (`SCAM_PROMPT_VERSION`), deterministic mock (`checkScamWithMock`) when `ANTHROPIC_API_KEY` is unset, Anthropic back end in `src/ai/check-scam-anthropic.ts` (`messages.parse` + `zodOutputFormat`, never throws), injectable `analyzer` seam for tests.
+- Redaction-first: `redactScamMessage` runs `redactSecrets` and defangs links (`hxxp://`, `www[.]`) before any analyzer sees the text. `looksLikeInjection` on the raw text forces `high`.
+- Deterministic enforcement the model cannot soften: `looksLikePaymentChangeOrWire` (bilingual phrase list) OR the model flag ⇒ `riskLevel = "high"` and `whatToDoNext` is prefixed with `PAYMENT_CALLBACK_RULE_STEP[lang]` then `ESCALATE_TO_KOITECC_STEP[lang]`. Language is detected by rule (`detectScamLanguage`, Spanish marker count ≥ 2) so the forced copy matches the reader even when the model is offline.
+- Surface: `POST /api/scam-check` (multipart `sourceKind`, `text`, optional `photo`; session required; per-user rate limit 30/hour; returns `{ result }` without `rawResponse`; stores nothing). Page `/scam-check` (`ScamCheckForm`). "Get help from KOITECC" calls `requestScamHelpAction` (`src/app/scam-check/actions.ts`), which stores only the redacted verdict as a reviewer task.
+
+### Reviewer tasks (`src/lib/reviewer-tasks.ts`)
+```
+reviewer_tasks: id (pk), orgId (fk cascade), kind ("incident_help" | "scam_escalation"), status ("open" | "in_progress" | "closed", default open),
+  summary, detail (JSON, redacted context only), relatedIncidentId (fk incidents, set null), requestedByUserId (fk user, set null), createdAt, updatedAt
+```
+`createReviewerTask(input)` is org-scoped, records the session user, and appends a `help_requested` ledger entry. There is no reviewer inbox UI yet; the row + ledger entry is the durable record. `listReviewerTasksForOrg(orgId)`, `listOpenReviewerTasks()`.
+
+### Incidents and the Texas breach clock (`src/lib/incident.ts`)
+```
+incidents: id (pk), orgId (fk cascade), kind ("wire_fraud" | "hacked_email" | "ransomware"), discoveredAt (YYYY-MM-DD determination date),
+  affectedTexasResidents (int, nullable), status ("open" | "contained" | "closed", default open), notes, createdAt, updatedAt
+```
+- `computeBreachClock(discoveryDate, affectedTexasResidents)` is pure: individual notice = determination + 60 calendar days (`TX521-NOTIFY-1`, §521.053(b)); Attorney General report = determination + 30 days only when residents ≥ 250 (`TX521-AG-1`, §521.053(i)), else `null`. Dates are reduced to UTC calendar days so time-of-day never shifts a deadline. The clock is derived at read time and never stored.
+- `getIncidentChecklist(kind)` — static guided steps per kind (wire fraud: bank call, IC3, callback-verify; hacked email: reset + MFA, forwarding rules, notify contacts; ransomware: isolate, preserve, offline restore, get help). Steps carry `relatedControlId` where an SB 2610 essential applies.
+- `buildDraftNotices(org, incident, clock)` — individual-notice letter and (at threshold) an AG worksheet, built from the stored TX521 requirement text via `getPractice`; bracketed placeholders for facts, `TODO_SOURCE` for anything the catalog does not spell out. Never invents statutory wording.
+- Persistence: `createIncident(input)` (zod `CreateIncidentInputSchema`; appends an `incident_logged` ledger entry against `TX521-RECORDS-1` with the computed deadlines), `listIncidents()`, `getIncidentById(id)` (org-scoped), `requestIncidentHelp(id)` → `createReviewerTask(kind: "incident_help")`.
+- Ledger type union gained `incident_logged` and `help_requested` (schema union + `LEDGER_ENTRY_TYPES`); existing chains are unaffected because the type string is hashed as-is.
+- Routes: `/incident` (`ReportIncidentForm` + recorded incidents list), `/incident/[incidentId]` (checklist, clock with days-remaining, draft notices with copy, `IncidentHelpButton`). Server actions in `src/app/incident/actions.ts`: `createIncidentAction(FormData)`, `requestIncidentHelpAction(incidentId)`.
+- `/path` links to both tools via `SafetyToolsLinks`. `resetAllData` clears `reviewer_tasks` then `incidents`.
+
 ## Non-goals (MVP)
 Auth, multi-tenant, cloud storage, real C3PAO workflow, policy document generation, Level 3, email, payments.

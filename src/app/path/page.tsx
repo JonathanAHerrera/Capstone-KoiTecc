@@ -8,6 +8,7 @@ import { PathFamilies } from "@/components/path/path-families";
 import { PathFooter } from "@/components/path/path-footer";
 import { PathHeroCard } from "@/components/path/path-hero-card";
 import { PathTopBar } from "@/components/path/path-top-bar";
+import { SafetyToolsLinks } from "@/components/path/safety-tools-links";
 import { selectNeedsAttention } from "@/components/path/select-needs-attention";
 import { TrackSwitcher, type TrackSwitcherEntry } from "@/components/path/track-switcher";
 import { getOrganization, parseEnabledFrameworks } from "@/lib/org";
@@ -58,6 +59,8 @@ export default async function PathHomePage({ searchParams }: PathHomePageProps) 
       <PathHeroCard progress={progress} />
 
       <TrackSwitcher entries={trackEntries} />
+
+      <SafetyToolsLinks />
 
       <NeedsAttentionList rows={needsAttention.rows} totalCount={needsAttention.totalCount} />
 

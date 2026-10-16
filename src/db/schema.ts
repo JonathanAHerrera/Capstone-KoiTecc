@@ -199,6 +199,8 @@ export const ledgerEntries = sqliteTable(
         | "restore_test_logged"
         | "policy_signed"
         | "framework_version_change"
+        | "incident_logged"
+        | "help_requested"
       >(),
     controlId: text("control_id"),
     evidenceSha256: text("evidence_sha256"),
@@ -213,6 +215,54 @@ export const ledgerEntries = sqliteTable(
     createdAt: text("created_at").notNull(),
   },
   (table) => [uniqueIndex("ledger_entries_org_seq_unique").on(table.orgId, table.seq)],
+);
+
+// Incident flows (Phase 8b). One row per reported incident; the Texas §521 breach clock is derived
+// from discoveredAt + affectedTexasResidents at read time and never stored, so a corrected count or
+// date recomputes every deadline.
+export const incidents = sqliteTable(
+  "incidents",
+  {
+    id: text("id").primaryKey(),
+    orgId: text("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull().$type<"wire_fraud" | "hacked_email" | "ransomware">(),
+    // Calendar date (YYYY-MM-DD) the business determined the incident occurred; the statutory
+    // clocks run from this date.
+    discoveredAt: text("discovered_at").notNull(),
+    affectedTexasResidents: integer("affected_texas_residents"),
+    status: text("status").notNull().$type<"open" | "contained" | "closed">().default("open"),
+    notes: text("notes"),
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (table) => [index("incidents_org_idx").on(table.orgId)],
+);
+
+// Human follow-up queue for KOITECC reviewers: the "get help" taps from the incident and scam
+// flows land here. detail is a JSON blob of redacted context only (never the raw message).
+export const reviewerTasks = sqliteTable(
+  "reviewer_tasks",
+  {
+    id: text("id").primaryKey(),
+    orgId: text("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    kind: text("kind").notNull().$type<"incident_help" | "scam_escalation">(),
+    status: text("status").notNull().$type<"open" | "in_progress" | "closed">().default("open"),
+    summary: text("summary").notNull(),
+    detail: text("detail"),
+    relatedIncidentId: text("related_incident_id").references(() => incidents.id, {
+      onDelete: "set null",
+    }),
+    requestedByUserId: text("requested_by_user_id").references(() => user.id, {
+      onDelete: "set null",
+    }),
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (table) => [index("reviewer_tasks_org_idx").on(table.orgId)],
 );
 
 export type OrganizationRow = typeof organizations.$inferSelect;
@@ -234,6 +284,14 @@ export type NewFrameworkEnrollmentRow = typeof frameworkEnrollments.$inferInsert
 export type LedgerEntryRow = typeof ledgerEntries.$inferSelect;
 export type NewLedgerEntryRow = typeof ledgerEntries.$inferInsert;
 export type LedgerEntryType = LedgerEntryRow["type"];
+export type IncidentRow = typeof incidents.$inferSelect;
+export type NewIncidentRow = typeof incidents.$inferInsert;
+export type IncidentKind = IncidentRow["kind"];
+export type IncidentStatus = IncidentRow["status"];
+export type ReviewerTaskRow = typeof reviewerTasks.$inferSelect;
+export type NewReviewerTaskRow = typeof reviewerTasks.$inferInsert;
+export type ReviewerTaskKind = ReviewerTaskRow["kind"];
+export type ReviewerTaskStatus = ReviewerTaskRow["status"];
 
 export type SubmissionStatus = SubmissionRow["status"];
 export type ReviewVerdictValue = ReviewRow["verdict"];

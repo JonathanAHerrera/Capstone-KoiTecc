@@ -4,9 +4,11 @@ import { getDb } from "@/db/client";
 import { resolveUploadsDirectoryPath } from "@/db/migrate";
 import {
   evidenceFiles,
+  incidents,
   organizations,
   radarDecisions,
   radarProfiles,
+  reviewerTasks,
   reviews,
   submissions,
 } from "@/db/schema";
@@ -29,6 +31,8 @@ export async function resetAllData(): Promise<void> {
     }
   }
 
+  await db.delete(reviewerTasks);
+  await db.delete(incidents);
   await db.delete(radarDecisions);
   await db.delete(radarProfiles);
   await db.delete(reviews);

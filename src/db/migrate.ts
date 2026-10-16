@@ -213,6 +213,31 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
   )`,
   `CREATE UNIQUE INDEX IF NOT EXISTS ledger_entries_org_seq_unique
     ON ledger_entries (org_id, seq)`,
+  `CREATE TABLE IF NOT EXISTS incidents (
+    id TEXT PRIMARY KEY,
+    org_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    kind TEXT NOT NULL,
+    discovered_at TEXT NOT NULL,
+    affected_texas_residents INTEGER,
+    status TEXT NOT NULL DEFAULT 'open',
+    notes TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS incidents_org_idx ON incidents (org_id)`,
+  `CREATE TABLE IF NOT EXISTS reviewer_tasks (
+    id TEXT PRIMARY KEY,
+    org_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    kind TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'open',
+    summary TEXT NOT NULL,
+    detail TEXT,
+    related_incident_id TEXT REFERENCES incidents(id) ON DELETE SET NULL,
+    requested_by_user_id TEXT REFERENCES user(id) ON DELETE SET NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS reviewer_tasks_org_idx ON reviewer_tasks (org_id)`,
 ];
 
 // Columns added after the first release; CREATE TABLE IF NOT EXISTS skips existing
