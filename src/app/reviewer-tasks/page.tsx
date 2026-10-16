@@ -25,6 +25,20 @@ function formatTaskDate(timestamp: string): string {
   }).format(new Date(timestamp));
 }
 
+function parseTaskDetail(detail: string | null): Array<[string, string]> {
+  if (!detail) return [];
+  try {
+    const parsed: unknown = JSON.parse(detail);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) return [];
+    return Object.entries(parsed).map(([key, value]) => [
+      key,
+      typeof value === "string" ? value : JSON.stringify(value),
+    ]);
+  } catch {
+    return [];
+  }
+}
+
 export default async function ReviewerTasksPage() {
   await requireSessionUser();
   const tasks = await listOpenReviewerTasks();
@@ -59,7 +73,9 @@ export default async function ReviewerTasksPage() {
         </section>
       ) : (
         <ul className="flex flex-col gap-3">
-          {tasks.map((task) => (
+          {tasks.map((task) => {
+            const taskDetail = parseTaskDetail(task.detail);
+            return (
             <li key={task.id} className="rounded-card border border-border bg-surface p-4">
               <div className="flex items-start gap-3">
                 <ShieldAlert className="mt-0.5 size-5 shrink-0 text-warning-ink" aria-hidden />
@@ -79,6 +95,21 @@ export default async function ReviewerTasksPage() {
                   </Link>
                 ) : null}
               </div>
+              {taskDetail.length > 0 ? (
+                <details className="mt-4 rounded-card border border-border-subtle bg-surface-alt">
+                  <summary className="focus-outline cursor-pointer px-3 py-3 text-sm font-semibold text-primary-text">
+                    View redacted details
+                  </summary>
+                  <dl className="grid gap-2 border-t border-border-subtle px-3 py-3 text-sm">
+                    {taskDetail.map(([key, value]) => (
+                      <div key={key} className="grid gap-0.5 sm:grid-cols-[minmax(0,140px)_1fr] sm:gap-3">
+                        <dt className="font-medium text-muted">{key}</dt>
+                        <dd className="break-words text-text-secondary">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </details>
+              ) : null}
               <form action={updateReviewerTaskStatusAction.bind(null, task.id, task.status === "open" ? "in_progress" : "closed")} className="mt-4">
                 <button
                   type="submit"
@@ -88,7 +119,8 @@ export default async function ReviewerTasksPage() {
                 </button>
               </form>
             </li>
-          ))}
+            );
+          })}
         </ul>
       )}
     </div>
