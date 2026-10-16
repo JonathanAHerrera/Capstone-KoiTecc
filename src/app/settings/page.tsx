@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft, MonitorCog } from "lucide-react";
+import { ChevronLeft, Inbox, MonitorCog } from "lucide-react";
 import { ResetDataSetting } from "@/components/settings/reset-data-setting";
 import { SignOutSetting } from "@/components/settings/sign-out-setting";
 import { ThemeSetting } from "@/components/settings/theme-setting";
@@ -38,6 +38,23 @@ export default function SettingsPage() {
       <section aria-labelledby="data-heading" className="pb-6">
         <p id="data-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">Data</p>
         <div className="mt-3 rounded-card border border-border bg-surface p-4 shadow-float"><ResetDataSetting /></div>
+      </section>
+      <section aria-labelledby="support-heading" className="pb-6">
+        <p id="support-heading" className="font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-muted">
+          KOITECC workspace
+        </p>
+        <Link
+          href="/reviewer-tasks"
+          className="focus-outline mt-3 flex min-h-11 items-center gap-3 rounded-card border border-border bg-surface p-4 shadow-float transition-colors hover:bg-surface-alt"
+        >
+          <Inbox className="size-5 shrink-0 text-primary-text" aria-hidden />
+          <span className="min-w-0 flex-1">
+            <span className="block font-medium text-ink">Reviewer task inbox</span>
+            <span className="mt-0.5 block text-sm text-text-secondary">
+              Review and manage KOITECC help requests.
+            </span>
+          </span>
+        </Link>
       </section>
     </div>
   );
