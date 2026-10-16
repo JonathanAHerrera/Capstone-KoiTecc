@@ -25,7 +25,7 @@ export default async function IncidentPage() {
           <Link
             href="/path"
             aria-label="Back to home"
-            className="focus-outline flex size-10 shrink-0 items-center justify-center rounded-[10px] border border-border bg-surface text-text-secondary transition-colors hover:bg-surface-alt hover:text-ink"
+            className="focus-outline flex size-11 shrink-0 items-center justify-center rounded-[10px] border border-border bg-surface text-text-secondary transition-colors hover:bg-surface-alt hover:text-ink"
           >
             <ArrowLeft className="size-5" strokeWidth={2} aria-hidden />
           </Link>

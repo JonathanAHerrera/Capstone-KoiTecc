@@ -3,7 +3,8 @@
 import { useState, useTransition, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Banknote, Lock, MailWarning } from "lucide-react";
-import { createIncidentAction } from "@/app/incident/actions";
+import { createIncidentAction, updateIncidentAction } from "@/app/incident/actions";
+import type { Incident } from "@/lib/incident";
 import { BigButton } from "@/components/ui/big-button";
 import type { IncidentKind } from "@/db/schema";
 import { INCIDENT_KIND_DESCRIPTIONS, INCIDENT_KIND_LABELS, INCIDENT_KINDS } from "@/lib/incident-kinds";
@@ -15,12 +16,13 @@ const KIND_ICONS: Readonly<Record<IncidentKind, typeof Banknote>> = {
 };
 
 function todayIsoDate(): string {
-  return new Date().toISOString().slice(0, 10);
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 }
 
-export function ReportIncidentForm() {
+export function ReportIncidentForm({ incident }: { incident?: Incident }) {
   const router = useRouter();
-  const [selectedKind, setSelectedKind] = useState<IncidentKind>("wire_fraud");
+  const [selectedKind, setSelectedKind] = useState<IncidentKind>(incident?.kind ?? "wire_fraud");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [savingIncident, startSavingIncident] = useTransition();
 
@@ -30,11 +32,16 @@ export function ReportIncidentForm() {
     formData.set("kind", selectedKind);
     setErrorMessage(null);
     startSavingIncident(async () => {
-      const result = await createIncidentAction(formData);
-      if (result.ok) {
-        router.push(`/incident/${result.data.id}`);
-      } else {
-        setErrorMessage(result.error);
+      try {
+        const result = incident ? await updateIncidentAction(incident.id, formData) : await createIncidentAction(formData);
+        if (result.ok) {
+          router.push(`/incident/${result.data.id}`);
+          router.refresh();
+        } else {
+          setErrorMessage(result.error);
+        }
+      } catch {
+        setErrorMessage("Could not save the incident. Check your connection and try again.");
       }
     });
   }
@@ -73,7 +80,7 @@ export function ReportIncidentForm() {
           type="date"
           name="discoveredAt"
           required
-          defaultValue={todayIsoDate()}
+          defaultValue={incident?.discoveredAt ?? todayIsoDate()}
           max={todayIsoDate()}
           className="min-h-[44px] rounded-card border border-border bg-surface px-4 text-base text-ink focus:border-primary focus:outline-none"
         />
@@ -87,7 +94,9 @@ export function ReportIncidentForm() {
           name="affectedTexasResidents"
           inputMode="numeric"
           min={0}
+          max={100_000_000}
           step={1}
+          defaultValue={incident?.affectedTexasResidents ?? ""}
           placeholder="Leave blank if you don't know yet"
           className="min-h-[44px] rounded-card border border-border bg-surface px-4 text-base text-ink placeholder:text-muted focus:border-primary focus:outline-none"
         />
@@ -100,6 +109,7 @@ export function ReportIncidentForm() {
           name="notes"
           rows={3}
           maxLength={4000}
+          defaultValue={incident?.notes ?? ""}
           placeholder="What you know so far: amounts, accounts, who noticed, when."
           className="rounded-card border border-border bg-surface px-4 py-3 text-base text-ink placeholder:text-muted focus:border-primary focus:outline-none"
         />
@@ -111,8 +121,18 @@ export function ReportIncidentForm() {
         </p>
       ) : null}
 
+      {incident ? (
+        <label className="flex flex-col gap-2 text-sm font-medium text-ink">
+          Status
+          <select name="status" defaultValue={incident.status} className="min-h-11 rounded-card border border-border bg-surface px-4 text-base">
+            <option value="open">Open</option>
+            <option value="contained">Contained</option>
+            <option value="closed">Closed</option>
+          </select>
+        </label>
+      ) : null}
       <BigButton type="submit" fullWidth loading={savingIncident}>
-        Start the response plan
+        {incident ? "Save incident updates" : "Start the response plan"}
       </BigButton>
     </form>
   );

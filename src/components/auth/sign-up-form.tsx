@@ -6,9 +6,13 @@ import { AtSign, KeyRound, User } from "lucide-react";
 import { useState } from "react";
 import { AuthTextField } from "@/components/auth/auth-text-field";
 import { BigButton } from "@/components/ui/big-button";
-import { signUp } from "@/lib/auth-client";
 
 const MIN_PASSWORD_LENGTH = 12;
+const SIGN_UP_TIMEOUT_MS = 15_000;
+
+type SignUpErrorResponse = {
+  message?: string;
+};
 
 export function SignUpForm({ redirectTo }: { redirectTo: string }) {
   const router = useRouter();
@@ -18,21 +22,49 @@ export function SignUpForm({ redirectTo }: { redirectTo: string }) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [creatingAccount, setCreatingAccount] = useState(false);
 
-  const formIsComplete =
-    name.trim().length > 0 && email.trim().length > 0 && password.length >= MIN_PASSWORD_LENGTH;
-
   async function handleCreateAccount(): Promise<void> {
-    if (!formIsComplete || creatingAccount) return;
-    setCreatingAccount(true);
-    setErrorMessage(null);
-    const { error } = await signUp.email({ name: name.trim(), email: email.trim(), password });
-    if (error) {
-      setErrorMessage(error.message ?? "Could not create your account. Please try again.");
-      setCreatingAccount(false);
+    if (creatingAccount) return;
+    if (name.trim().length === 0) {
+      setErrorMessage("Enter your name.");
       return;
     }
-    router.push(redirectTo);
-    router.refresh();
+    if (email.trim().length === 0) {
+      setErrorMessage("Enter your work email.");
+      return;
+    }
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      setErrorMessage(`Use a password with at least ${MIN_PASSWORD_LENGTH} characters.`);
+      return;
+    }
+    setCreatingAccount(true);
+    setErrorMessage(null);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), SIGN_UP_TIMEOUT_MS);
+    try {
+      const response = await fetch("/api/auth/sign-up/email", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), password }),
+        signal: controller.signal,
+      });
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as SignUpErrorResponse | null;
+        setErrorMessage(payload?.message ?? "Could not create your account. Please try again.");
+        return;
+      }
+      router.push(redirectTo);
+      router.refresh();
+    } catch (error) {
+      setErrorMessage(
+        error instanceof DOMException && error.name === "AbortError"
+          ? "Account creation timed out. Check that the app server is running, then try again."
+          : "Could not reach the account service. Check your connection and try again.",
+      );
+    } finally {
+      window.clearTimeout(timeout);
+      setCreatingAccount(false);
+    }
   }
 
   return (
@@ -59,6 +91,7 @@ export function SignUpForm({ redirectTo }: { redirectTo: string }) {
           value={name}
           onChange={(event) => setName(event.target.value)}
           autoComplete="name"
+          required
           autoCapitalize="words"
           placeholder="Jordan Rivera"
           enterKeyHint="next"
@@ -72,6 +105,7 @@ export function SignUpForm({ redirectTo }: { redirectTo: string }) {
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           autoComplete="email"
+          required
           autoCapitalize="none"
           inputMode="email"
           placeholder="you@company.com"
@@ -86,6 +120,7 @@ export function SignUpForm({ redirectTo }: { redirectTo: string }) {
           value={password}
           onChange={(event) => setPassword(event.target.value)}
           autoComplete="new-password"
+          required
           placeholder="At least 12 characters"
           enterKeyHint="go"
           maxLength={128}
@@ -102,7 +137,7 @@ export function SignUpForm({ redirectTo }: { redirectTo: string }) {
           </p>
         ) : null}
 
-        <BigButton type="submit" fullWidth loading={creatingAccount} disabled={!formIsComplete}>
+        <BigButton type="submit" fullWidth loading={creatingAccount} disabled={creatingAccount}>
           Create account
         </BigButton>
       </form>

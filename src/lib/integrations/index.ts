@@ -133,9 +133,9 @@ export function evaluateDirectorySignals(
     id: "external-forwarding",
     verificationTag: `${prefix}.external-forwarding`,
     label: "External email auto-forwarding",
-    status: forwarders.length === 0 ? "pass" : "fail",
+    status: total === 0 ? "unknown" : forwarders.length === 0 ? "pass" : "fail",
     finding:
-      forwarders.length === 0
+      total === 0 ? "No accounts were returned, so forwarding could not be evaluated." : forwarders.length === 0
         ? "No mailboxes auto-forward to outside addresses."
         : `${forwarders.length} mailboxes auto-forward email to addresses outside your organization.`,
     fix:
@@ -145,7 +145,7 @@ export function evaluateDirectorySignals(
   };
 
   const inactive = accounts.filter(
-    (account) => account.lastActiveAt === null || daysSince(account.lastActiveAt, now) > INACTIVITY_LIMIT_DAYS,
+    (account) => account.lastActiveAt === null || !Number.isFinite(Date.parse(account.lastActiveAt)) || daysSince(account.lastActiveAt, now) >= INACTIVITY_LIMIT_DAYS,
   );
   const inactiveAccounts: IntegrationCheckResult = {
     id: "inactive-accounts",
@@ -169,9 +169,9 @@ export function evaluateDirectorySignals(
     id: "legacy-auth",
     verificationTag: `${prefix}.legacy-auth`,
     label: "Legacy authentication",
-    status: legacy.length === 0 ? "pass" : "fail",
+    status: total === 0 ? "unknown" : legacy.length === 0 ? "pass" : "fail",
     finding:
-      legacy.length === 0
+      total === 0 ? "No accounts were returned, so legacy authentication could not be evaluated." : legacy.length === 0
         ? "No accounts are signing in with legacy authentication."
         : `${legacy.length} accounts still sign in with legacy authentication, which bypasses MFA.`,
     fix:

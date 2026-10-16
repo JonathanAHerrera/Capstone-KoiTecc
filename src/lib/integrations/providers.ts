@@ -29,9 +29,11 @@ export type ProviderDocumentation = {
   endpoints: readonly ProviderEndpoint[];
   // Why each scope is the minimum needed.
   scopeRationale: string;
+  limitations: readonly string[];
+  sources: readonly string[];
 };
 
-// Microsoft Graph — all scopes are ".Read.All" application permissions (read-only). No write/
+// Microsoft Graph — read-only application permissions. No write/
 // mutate scope is requested. These cover: MFA registration + Conditional Access policy (enforcement),
 // directory roles (admin count), mailbox forwarding rules (external auto-forward), sign-in activity
 // (inactive 90+ day accounts), and legacy authentication (authentication methods / sign-in logs).
@@ -39,7 +41,6 @@ export const M365_DOCUMENTATION: ProviderDocumentation = {
   label: "Microsoft 365 (Microsoft Graph)",
   scopes: [
     "User.Read.All",
-    "UserAuthenticationMethod.Read.All",
     "Policy.Read.All",
     "RoleManagement.Read.Directory",
     "AuditLog.Read.All",
@@ -47,8 +48,8 @@ export const M365_DOCUMENTATION: ProviderDocumentation = {
   ],
   scopeRationale:
     "Read-only application permissions only. User.Read.All + AuditLog.Read.All give account " +
-    "inventory and last sign-in; UserAuthenticationMethod.Read.All + Policy.Read.All read MFA " +
-    "registration and Conditional Access enforcement; RoleManagement.Read.Directory counts admins; " +
+    "inventory, last sign-in, and MFA registration reports; Policy.Read.All reads " +
+    "Conditional Access policies; RoleManagement.Read.Directory counts admins; " +
     "MailboxSettings.Read reads forwarding rules. Nothing requested can change tenant state.",
   endpoints: [
     {
@@ -74,13 +75,23 @@ export const M365_DOCUMENTATION: ProviderDocumentation = {
     {
       purpose: "Mailbox forwarding rules (external auto-forwarding)",
       method: "GET",
-      path: "/v1.0/users/{id}/mailboxSettings",
+      path: "/v1.0/users/{id}/mailFolders/inbox/messageRules",
     },
     {
       purpose: "Legacy (basic) authentication sign-ins",
       method: "GET",
       path: "/v1.0/auditLogs/signIns?$filter=clientAppUsed in ('IMAP4','POP3','SMTP','Other clients')",
     },
+  ],
+  limitations: [
+    "Inbox messageRules exposes rule-based forwarding, not Exchange mailbox-level forwarding or transport rules. Missing coverage must remain unknown, never pass.",
+    "MFA registration is not enforcement. Evaluate enabled Conditional Access policies, assignments and exclusions; licenses and API coverage may prevent a tenant-wide conclusion.",
+    "Follow every nextLink; failed pages, permissions, and unavailable sign-in history must produce unknown signals. Sign-in history only establishes activity in its retention window.",
+  ],
+  sources: [
+    "https://learn.microsoft.com/en-us/graph/api/mailfolder-list-messagerules?view=graph-rest-1.0",
+    "https://learn.microsoft.com/en-us/graph/api/authenticationmethodsroot-list-userregistrationdetails?view=graph-rest-1.0",
+    "https://learn.microsoft.com/en-us/graph/api/conditionalaccesspolicy-list?view=graph-rest-1.0",
   ],
 };
 
@@ -92,13 +103,14 @@ export const GOOGLE_DOCUMENTATION: ProviderDocumentation = {
   scopes: [
     "https://www.googleapis.com/auth/admin.directory.user.readonly",
     "https://www.googleapis.com/auth/admin.reports.audit.readonly",
-    "https://www.googleapis.com/auth/gmail.settings.basic", // read of forwarding settings
+    "https://www.googleapis.com/auth/gmail.readonly",
   ],
   scopeRationale:
     "Read-only Admin SDK scopes. directory.user.readonly gives account inventory, admin flag, " +
     "2-Step Verification enrollment, and last-login; reports.audit.readonly reads sign-in activity " +
-    "for legacy-auth and inactivity; gmail.settings.basic reads forwarding settings. No write scope " +
-    "(no admin.directory.user, no gmail.settings.sharing beyond read) is requested.",
+    "for legacy-auth and inactivity; gmail.readonly is the read-only option for autoForwarding " +
+    "and filters. It also permits reading mailbox content, a significant approval tradeoff. " +
+    "gmail.settings.basic is NOT read-only and is excluded. No scope is authorized until approval.",
   endpoints: [
     {
       purpose: "Account inventory, admin flag, 2SV enrollment, last login",
@@ -113,8 +125,19 @@ export const GOOGLE_DOCUMENTATION: ProviderDocumentation = {
     {
       purpose: "Per-user email forwarding (external auto-forwarding)",
       method: "GET",
-      path: "/gmail/v1/users/{userId}/settings/forwardingAddresses",
+      path: "/gmail/v1/users/{userId}/settings/autoForwarding",
     },
+    { purpose: "Filter-based forwarding destinations", method: "GET", path: "/gmail/v1/users/{userId}/settings/filters" },
+  ],
+  limitations: [
+    "There is no settings-only read-only Gmail scope for these endpoints. Approve broad gmail.readonly separately, or omit Gmail checks and report forwarding as unknown.",
+    "Directory isAdmin alone misses delegated administrators; include isDelegatedAdmin. isEnrolledIn2Sv and isEnforcedIn2Sv are distinct signals.",
+    "Follow nextPageToken. Domain-wide delegation and user impersonation require administrator approval; missing logs or settings must remain unknown.",
+  ],
+  sources: [
+    "https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.settings/getAutoForwarding",
+    "https://developers.google.com/workspace/gmail/api/reference/rest/v1/users.settings.filters/list",
+    "https://developers.google.com/workspace/admin/directory/reference/rest/v1/users",
   ],
 };
 

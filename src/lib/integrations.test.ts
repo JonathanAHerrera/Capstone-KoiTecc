@@ -1,5 +1,4 @@
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdtempSync } from "node:fs";
 import path from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
 import {
@@ -11,7 +10,7 @@ import {
 } from "@/lib/integrations";
 
 // Env must be set before any module resolves the SQLite path via getDb().
-const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "integrations-test-"));
+const temporaryDirectory = mkdtempSync(path.join(process.env.CMMC_TEST_TEMP_ROOT!, "integrations-test-"));
 process.env.CMMC_DB_PATH = path.join(temporaryDirectory, "integrations-test.db");
 process.env.CMMC_UPLOADS_DIR = path.join(temporaryDirectory, "uploads");
 
@@ -51,6 +50,16 @@ function statusFor(results: IntegrationCheckResult[], tag: string) {
 }
 
 describe("evaluateDirectorySignals", () => {
+  test("an empty directory never passes checks", () => {
+    expect(evaluateDirectorySignals(signals({ accounts: [] }), NOW).every((check) => check.status === "unknown")).toBe(true);
+  });
+  test("the 90-day boundary and invalid activity dates require attention", () => {
+    for (const lastActiveAt of [new Date(NOW.getTime() - 90 * 86400000).toISOString(), "invalid"]) {
+      const input = signals();
+      input.accounts[0].lastActiveAt = lastActiveAt;
+      expect(statusFor(evaluateDirectorySignals(input, NOW), "m365.inactive-accounts")).toBe("warn");
+    }
+  });
   test("a clean tenant passes every check", () => {
     const results = evaluateDirectorySignals(signals(), NOW);
     expect(results.every((check) => check.status === "pass")).toBe(true);
@@ -131,6 +140,7 @@ describe("runIntegrationChecks", () => {
   });
 });
 
-afterAll(() => {
-  rmSync(temporaryDirectory, { recursive: true, force: true });
+afterAll(async () => {
+  const { closeDb } = await import("@/db/client");
+  await closeDb();
 });

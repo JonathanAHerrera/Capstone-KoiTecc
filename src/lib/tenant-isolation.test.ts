@@ -1,12 +1,11 @@
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdtempSync } from "node:fs";
 import path from "node:path";
 import { afterAll, beforeAll, expect, test } from "vitest";
 
 // Proves multi-tenant isolation: two users each own an org + submission, and neither can read
 // or mutate the other's data through the session-scoped DAL. Env must be set before any module
 // resolves the SQLite path via getDb().
-const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "tenant-isolation-test-"));
+const temporaryDirectory = mkdtempSync(path.join(process.env.CMMC_TEST_TEMP_ROOT!, "tenant-isolation-test-"));
 process.env.CMMC_DB_PATH = path.join(temporaryDirectory, "isolation-test.db");
 process.env.CMMC_UPLOADS_DIR = path.join(temporaryDirectory, "uploads");
 
@@ -69,8 +68,9 @@ beforeAll(async () => {
   await seedTenant("bob", { id: "bob", email: "bob@example.test", name: "Bob" });
 });
 
-afterAll(() => {
-  rmSync(temporaryDirectory, { recursive: true, force: true });
+afterAll(async () => {
+  const { closeDb } = await import("@/db/client");
+  await closeDb();
 });
 
 test("each user resolves only their own organization", async () => {

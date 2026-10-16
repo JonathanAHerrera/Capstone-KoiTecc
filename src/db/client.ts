@@ -47,6 +47,18 @@ export async function getDb(): Promise<Database> {
   return singleton.database;
 }
 
+// Release file handles before test cleanup or an orderly shutdown (required on Windows).
+export async function closeDb(): Promise<void> {
+  const singleton = globalWithDatabase.__cmmcDatabaseSingleton;
+  if (!singleton) return;
+  try {
+    await singleton.schemaReady;
+  } finally {
+    singleton.libsqlClient.close();
+    delete globalWithDatabase.__cmmcDatabaseSingleton;
+  }
+}
+
 // Better Auth's drizzle adapter needs the drizzle instance synchronously at config time.
 // Schema creation is kicked off by getDatabaseSingleton(); awaitSchemaReady() lets the auth
 // route handler block on it before serving the first request against a fresh database.
