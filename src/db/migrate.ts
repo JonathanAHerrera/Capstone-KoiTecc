@@ -243,6 +243,14 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
 // Columns added after the first release; CREATE TABLE IF NOT EXISTS skips existing
 // tables, so each one is back-filled with ALTER TABLE when absent.
 const ADDED_COLUMNS: readonly { table: string; column: string; definition: string }[] = [
+  // Databases created before auth have an organizations table with no owner column. SQLite cannot
+  // add a NOT NULL foreign-key column to an existing table, so legacy rows keep NULL here; no user
+  // can own them, and every tenant query filters by user_id, so they are simply unreachable.
+  {
+    table: "organizations",
+    column: "user_id",
+    definition: "TEXT REFERENCES user(id) ON DELETE CASCADE",
+  },
   { table: "evidence_files", column: "sha256", definition: "TEXT NOT NULL DEFAULT ''" },
   {
     table: "organizations",
@@ -285,6 +293,8 @@ const ADDED_COLUMNS: readonly { table: string; column: string; definition: strin
 async function addMissingColumns(client: Client): Promise<void> {
   for (const added of ADDED_COLUMNS) {
     const tableInfo = await client.execute(`PRAGMA table_info(${added.table})`);
+    // No rows means the table does not exist yet; CREATE TABLE creates it with the column included.
+    if (tableInfo.rows.length === 0) continue;
     const columnExists = tableInfo.rows.some((row) => row.name === added.column);
     if (!columnExists) {
       await client.execute(
@@ -298,8 +308,10 @@ export async function ensureSchema(client: Client): Promise<void> {
   await ensureDataDirectoriesExist();
   await client.execute("PRAGMA journal_mode = WAL");
   await client.execute("PRAGMA foreign_keys = ON");
+  // Back-fill columns before the CREATE statements: some of those are indexes over added columns
+  // (organizations_user_unique over user_id) and fail against a table created before the column.
+  await addMissingColumns(client);
   for (const statement of CREATE_TABLE_STATEMENTS) {
     await client.execute(statement);
   }
-  await addMissingColumns(client);
 }
