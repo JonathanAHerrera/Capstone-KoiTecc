@@ -131,7 +131,7 @@ Per-framework behavior is declared as data in a single registry instead of scatt
 reviewer_tasks: id (pk), orgId (fk cascade), kind ("incident_help" | "scam_escalation"), status ("open" | "in_progress" | "closed", default open),
   summary, detail (JSON, redacted context only), relatedIncidentId (fk incidents, set null), requestedByUserId (fk user, set null), createdAt, updatedAt
 ```
-`createReviewerTask(input)` is org-scoped, records the session user, and appends a `help_requested` ledger entry. There is no reviewer inbox UI yet; the row + ledger entry is the durable record. `listReviewerTasksForOrg(orgId)`, `listOpenReviewerTasks()`.
+`createReviewerTask(input)` is org-scoped, records the session user, and appends a `help_requested` ledger entry. `listReviewerTasksForOrg(orgId)`, `listOpenReviewerTasks()`, and `updateReviewerTaskStatus(taskId, status)` are also organization-scoped. The authenticated `/reviewer-tasks` page lists open and in-progress tasks and allows the reviewer workspace to move tasks from open to in progress or closed; the page uses server action `updateReviewerTaskStatusAction` and does not expose closed tasks in the inbox.
 
 ### Incidents and the Texas breach clock (`src/lib/incident.ts`)
 ```
@@ -143,8 +143,8 @@ incidents: id (pk), orgId (fk cascade), kind ("wire_fraud" | "hacked_email" | "r
 - `buildDraftNotices(org, incident, clock)` — individual-notice letter and (at threshold) an AG worksheet, built from the stored TX521 requirement text via `getPractice`; bracketed placeholders for facts, `TODO_SOURCE` for anything the catalog does not spell out. Never invents statutory wording.
 - Persistence: `createIncident(input)` (zod `CreateIncidentInputSchema`; appends an `incident_logged` ledger entry against `TX521-RECORDS-1` with the computed deadlines), `listIncidents()`, `getIncidentById(id)` (org-scoped), `requestIncidentHelp(id)` → `createReviewerTask(kind: "incident_help")`.
 - Ledger type union gained `incident_logged` and `help_requested` (schema union + `LEDGER_ENTRY_TYPES`); existing chains are unaffected because the type string is hashed as-is.
-- Routes: `/incident` (`ReportIncidentForm` + recorded incidents list), `/incident/[incidentId]` (checklist, clock with days-remaining, draft notices with copy, `IncidentHelpButton`). Server actions in `src/app/incident/actions.ts`: `createIncidentAction(FormData)`, `requestIncidentHelpAction(incidentId)`.
+- Routes: `/incident` (`ReportIncidentForm` + recorded incidents list), `/incident/[incidentId]` (checklist, clock with days-remaining, draft notices with copy, `IncidentHelpButton`), and authenticated `/reviewer-tasks` (open/in-progress reviewer task inbox). Server actions in `src/app/incident/actions.ts`: `createIncidentAction(FormData)`, `requestIncidentHelpAction(incidentId)`; reviewer status updates use `src/app/reviewer-tasks/actions.ts`.
 - `/path` links to both tools via `SafetyToolsLinks`. `resetAllData` clears `reviewer_tasks` then `incidents`.
 
 ## Non-goals (MVP)
-Auth, multi-tenant, cloud storage, real C3PAO workflow, policy document generation, Level 3, email, payments.
+Cloud storage, real C3PAO workflow, policy document generation, Level 3, email, payments, and live Microsoft 365/Google Workspace OAuth connectors.
