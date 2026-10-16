@@ -1,12 +1,11 @@
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdtempSync } from "node:fs";
 import path from "node:path";
 import { afterAll, beforeAll, expect, test } from "vitest";
 
 // Characterization test: locks the CMMC readiness package format so the framework-registry
 // refactor (and future ones) cannot silently change the historical SPRS + POA&M output.
 // Must be set before any module resolves the SQLite path via getDb().
-const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "cmmc-export-test-"));
+const temporaryDirectory = mkdtempSync(path.join(process.env.CMMC_TEST_TEMP_ROOT!, "cmmc-export-test-"));
 process.env.CMMC_DB_PATH = path.join(temporaryDirectory, "export-test.db");
 process.env.CMMC_UPLOADS_DIR = path.join(temporaryDirectory, "uploads");
 
@@ -36,8 +35,9 @@ beforeAll(async () => {
   });
 });
 
-afterAll(() => {
-  rmSync(temporaryDirectory, { recursive: true, force: true });
+afterAll(async () => {
+  const { closeDb } = await import("@/db/client");
+  await closeDb();
 });
 
 // The only non-deterministic lines are the generation timestamp and the onboarded date.

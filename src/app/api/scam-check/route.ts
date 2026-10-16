@@ -10,7 +10,8 @@ import { getSessionUser } from "@/lib/session";
 
 const PER_USER_RATE_LIMIT = { limit: 30, windowMs: 60 * 60 * 1000 };
 const MAX_TEXT_CHARACTERS = 20_000;
-const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+const PHOTO_TYPES = new Set(["image/jpeg", "image/png", "image/gif", "image/webp"]);
 
 export type ScamCheckResponse = Omit<CheckScamOutcome, "rawResponse">;
 
@@ -40,15 +41,21 @@ export async function POST(request: Request): Promise<Response> {
   }
 
   const sourceKindRaw = formData.get("sourceKind");
-  const sourceKind: ScamSourceKind = isScamSourceKind(sourceKindRaw) ? sourceKindRaw : "pasted_text";
+  if (!isScamSourceKind(sourceKindRaw)) {
+    return Response.json({ error: "Choose a supported message type." }, { status: 400 });
+  }
+  const sourceKind = sourceKindRaw;
   const textRaw = formData.get("text");
-  const text = typeof textRaw === "string" ? textRaw.slice(0, MAX_TEXT_CHARACTERS) : null;
+  if (typeof textRaw === "string" && textRaw.length > MAX_TEXT_CHARACTERS) {
+    return Response.json({ error: "Keep the message to 20,000 characters or fewer." }, { status: 413 });
+  }
+  const text = typeof textRaw === "string" ? textRaw : null;
   const photo = formData.get("photo");
 
   let image: { mimeType: string; bytes: Buffer } | null = null;
   if (photo instanceof File && photo.size > 0) {
-    if (!photo.type.startsWith("image/")) {
-      return Response.json({ error: "The photo must be an image file." }, { status: 415 });
+    if (!PHOTO_TYPES.has(photo.type)) {
+      return Response.json({ error: "Choose a JPEG, PNG, GIF, or WebP photo." }, { status: 415 });
     }
     if (photo.size > MAX_PHOTO_BYTES) {
       return Response.json({ error: "That photo is too large. Try a smaller one." }, { status: 413 });

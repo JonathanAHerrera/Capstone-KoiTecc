@@ -1,10 +1,9 @@
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdtempSync } from "node:fs";
 import path from "node:path";
 import { afterAll, beforeAll, expect, test } from "vitest";
 
 // Env must be set before any module resolves the SQLite path via getDb().
-const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "binder-test-"));
+const temporaryDirectory = mkdtempSync(path.join(process.env.CMMC_TEST_TEMP_ROOT!, "binder-test-"));
 process.env.CMMC_DB_PATH = path.join(temporaryDirectory, "binder-test.db");
 process.env.CMMC_UPLOADS_DIR = path.join(temporaryDirectory, "uploads");
 
@@ -78,8 +77,9 @@ beforeAll(async () => {
   });
 });
 
-afterAll(() => {
-  rmSync(temporaryDirectory, { recursive: true, force: true });
+afterAll(async () => {
+  const { closeDb } = await import("@/db/client");
+  await closeDb();
 });
 
 test("the binder renders every required section header", () => {

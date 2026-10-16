@@ -1,11 +1,11 @@
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdtempSync } from "node:fs";
 import path from "node:path";
 import { afterAll, describe, expect, test } from "vitest";
 import {
   ATTORNEY_GENERAL_REQUIREMENT_ID,
   buildDraftNotices,
   computeBreachClock,
+  CreateIncidentInputSchema,
   daysUntil,
   formatIsoDate,
   getIncidentChecklist,
@@ -13,11 +13,15 @@ import {
 } from "@/lib/incident";
 
 // Env must be set before any module resolves the SQLite path via getDb().
-const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "incident-test-"));
+const temporaryDirectory = mkdtempSync(path.join(process.env.CMMC_TEST_TEMP_ROOT!, "incident-test-"));
 process.env.CMMC_DB_PATH = path.join(temporaryDirectory, "incident-test.db");
 process.env.CMMC_UPLOADS_DIR = path.join(temporaryDirectory, "uploads");
 
 describe("computeBreachClock", () => {
+  test.each(["2026-02-29", "2026-02-31", "2026-13-01", "2026-00-01", "2026-01-00"])("rejects invalid calendar date %s", (date) => {
+    expect(() => computeBreachClock(date, 250)).toThrow();
+    expect(CreateIncidentInputSchema.safeParse({ kind: "wire_fraud", discoveredAt: date, affectedTexasResidents: 250 }).success).toBe(false);
+  });
   test("individual notice is due 60 days after the determination date", () => {
     const clock = computeBreachClock("2026-01-15", 10);
     expect(clock.determinationDate).toBe("2026-01-15");
@@ -127,6 +131,7 @@ describe("incident persistence", () => {
       expect((await listIncidents()).map((incident) => incident.id)).toContain(created.id);
 
       const task = await requestIncidentHelp(created.id);
+      expect((await requestIncidentHelp(created.id)).id).toBe(task.id);
       expect(task.kind).toBe("incident_help");
       expect(task.relatedIncidentId).toBe(created.id);
       expect(task.requestedByUserId).toBe(sessionUser.id);
@@ -143,6 +148,15 @@ describe("incident persistence", () => {
       });
       expect(entries.some((entry) => entry.type === "help_requested")).toBe(true);
       expect((await verifyLedger(organization.id)).valid).toBe(true);
+      const { updateIncident } = await import("@/lib/incident");
+      const updated = await updateIncident(created.id, {
+        kind: created.kind, discoveredAt: "2026-02-01", affectedTexasResidents: 249,
+        notes: "Count confirmed", status: "contained",
+      });
+      expect(updated.status).toBe("contained");
+      expect(computeBreachClock(updated.discoveredAt, updated.affectedTexasResidents!).attorneyGeneralDeadline).toBeNull();
+      const updatedEntries = await listLedgerEntriesForOrg(organization.id);
+      expect(updatedEntries.some((entry) => JSON.parse(entry.metadata ?? "{}").operation === "updated")).toBe(true);
     });
   });
 
@@ -166,10 +180,16 @@ describe("incident persistence", () => {
     await runWithSessionUser(outsider, async () => {
       await createOrganization({ name: "Outsider Co", ...base });
       expect(await getIncidentById(incidentId)).toBeNull();
+      const { requestIncidentHelp, updateIncident } = await import("@/lib/incident");
+      const { createReviewerTask } = await import("@/lib/reviewer-tasks");
+      await expect(requestIncidentHelp(incidentId)).rejects.toThrow("Incident not found");
+      await expect(createReviewerTask({ kind: "incident_help", summary: "test", relatedIncidentId: incidentId })).rejects.toThrow("Incident not found");
+      await expect(updateIncident(incidentId, { kind: "hacked_email", discoveredAt: "2026-03-01", affectedTexasResidents: 250, status: "closed" })).rejects.toThrow("Incident not found");
     });
   });
 });
 
-afterAll(() => {
-  rmSync(temporaryDirectory, { recursive: true, force: true });
+afterAll(async () => {
+  const { closeDb } = await import("@/db/client");
+  await closeDb();
 });

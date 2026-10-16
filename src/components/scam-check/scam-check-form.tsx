@@ -106,22 +106,27 @@ export function ScamCheckForm() {
   async function sendHelpRequest() {
     if (!checkResult || sendingHelpRequest) return;
     setSendingHelpRequest(true);
-    const result = await requestScamHelpAction({
-      sourceKind,
-      riskLevel: checkResult.analysis.riskLevel,
-      language: checkResult.analysis.language,
-      isPaymentChangeOrWire: checkResult.analysis.isPaymentChangeOrWire,
-      summary: checkResult.analysis.summary,
-      reasons: checkResult.analysis.reasons,
-      model: checkResult.model,
-      promptVersion: checkResult.promptVersion,
-    });
-    setSendingHelpRequest(false);
-    if (result.ok) {
-      setHelpRequestSent(true);
-      showToast({ tone: "success", message: "Help request sent to KOITECC." });
-    } else {
-      showToast({ tone: "danger", message: result.error });
+    try {
+      const result = await requestScamHelpAction({
+        sourceKind,
+        riskLevel: checkResult.analysis.riskLevel,
+        language: checkResult.analysis.language,
+        isPaymentChangeOrWire: checkResult.analysis.isPaymentChangeOrWire,
+        summary: checkResult.analysis.summary,
+        reasons: checkResult.analysis.reasons,
+        model: checkResult.model,
+        promptVersion: checkResult.promptVersion,
+      });
+      if (result.ok) {
+        setHelpRequestSent(true);
+        showToast({ tone: "success", message: "Help request recorded." });
+      } else {
+        showToast({ tone: "danger", message: result.error });
+      }
+    } catch {
+      showToast({ tone: "danger", message: "Could not save the request. Please try again." });
+    } finally {
+      setSendingHelpRequest(false);
     }
   }
 
@@ -155,6 +160,7 @@ export function ScamCheckForm() {
         <label className="flex flex-col gap-2">
           <span className="text-sm font-medium text-ink">The message</span>
           <textarea
+            maxLength={20_000}
             value={messageText}
             onChange={(event) => setMessageText(event.target.value)}
             placeholder={activeOption.placeholder}
@@ -169,7 +175,7 @@ export function ScamCheckForm() {
         <input
           ref={photoInputRef}
           type="file"
-          accept="image/*"
+          accept="image/jpeg,image/png,image/gif,image/webp"
           capture="environment"
           className="sr-only"
           tabIndex={-1}
@@ -296,6 +302,7 @@ function ScamCheckResultView({ result, helpRequestSent, sendingHelpRequest, onRe
       </BigButton>
 
       <p className="text-[12px] leading-snug text-muted">
+        Help requests are recorded in this app; contact your response team directly for urgent help. {" "}
         {result.isMock ? "Offline check (no model key set) using fixed rules. " : `Checked by ${result.model} (${result.promptVersion}). `}
         {result.redactedSecretCount > 0
           ? `${result.redactedSecretCount} account, card, or ID number${result.redactedSecretCount === 1 ? " was" : "s were"} hidden before analysis. `

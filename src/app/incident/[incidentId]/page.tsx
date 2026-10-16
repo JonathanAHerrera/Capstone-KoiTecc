@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 import { ArrowLeft, CalendarClock, ExternalLink, Info } from "lucide-react";
 import { CopyNoticeButton } from "@/components/incident/copy-notice-button";
 import { IncidentHelpButton } from "@/components/incident/incident-help-button";
+import { ReportIncidentForm } from "@/components/incident/report-incident-form";
 import {
   ATTORNEY_GENERAL_RESIDENT_THRESHOLD,
   buildDraftNotices,
@@ -64,7 +65,7 @@ export default async function IncidentDetailPage({ params }: IncidentDetailPageP
           <Link
             href="/incident"
             aria-label="Back to incidents"
-            className="focus-outline flex size-10 shrink-0 items-center justify-center rounded-[10px] border border-border bg-surface text-text-secondary transition-colors hover:bg-surface-alt hover:text-ink"
+            className="focus-outline flex size-11 shrink-0 items-center justify-center rounded-[10px] border border-border bg-surface text-text-secondary transition-colors hover:bg-surface-alt hover:text-ink"
           >
             <ArrowLeft className="size-5" strokeWidth={2} aria-hidden />
           </Link>
@@ -84,6 +85,11 @@ export default async function IncidentDetailPage({ params }: IncidentDetailPageP
       </header>
 
       <IncidentHelpButton incidentId={incident.id} helpAlreadyRequested={helpAlreadyRequested} />
+      <p className="text-sm text-text-secondary">Help requests are recorded in this app. They do not notify an external responder; contact your response team directly for urgent help.</p>
+      <details className="rounded-card border border-border bg-surface p-4">
+        <summary className="min-h-11 cursor-pointer text-sm font-semibold">Update incident details or resident count</summary>
+        <ReportIncidentForm incident={incident} />
+      </details>
 
       <section aria-labelledby="checklist-heading" className="flex flex-col gap-3">
         <h2 id="checklist-heading" className="text-sm font-semibold text-ink">

@@ -2,6 +2,7 @@ import { checkScamWithAnthropic } from "@/ai/check-scam-anthropic";
 import { looksLikeInjection } from "@/ai/injection";
 import { hasApiKey } from "@/ai/model";
 import { redactSecrets } from "@/ai/redaction";
+import { ScamAnalysisSchema } from "@/ai/scam-schema";
 import type {
   ScamAnalysis,
   ScamAnalyzerInput,
@@ -27,8 +28,8 @@ export const ESCALATE_TO_KOITECC_STEP: Readonly<Record<ScamLanguage, string>> = 
 };
 
 const PAYMENT_CHANGE_REASON: Readonly<Record<ScamLanguage, string>> = {
-  en: "The message asks you to send money or change where payments go. That is the single most common way Texas small businesses lose money to fraud.",
-  es: "El mensaje le pide enviar dinero o cambiar a dónde van los pagos. Esa es la forma más común en que las pequeñas empresas de Texas pierden dinero por fraude.",
+  en: "The message asks you to send money or change where payments go. Verify the request independently before acting.",
+  es: "El mensaje le pide enviar dinero o cambiar a dónde van los pagos. Verifique la solicitud por otro canal antes de actuar.",
 };
 
 const INJECTION_REASON: Readonly<Record<ScamLanguage, string>> = {
@@ -130,7 +131,18 @@ export type ScamRedactionResult = { text: string; redactedCount: number };
 
 export function redactScamMessage(text: string): ScamRedactionResult {
   const secretRedaction = redactSecrets(text);
-  return { text: defangLinks(secretRedaction.text), redactedCount: secretRedaction.redactedCount };
+  let redactedCount = secretRedaction.redactedCount;
+  const scrubbed = secretRedaction.text
+    .replace(/\b[A-Z0-9._%+-]+@([A-Z0-9.-]+\.[A-Z]{2,})\b/gi, (_match, domain: string) => {
+      redactedCount += 1;
+      return `[REDACTED-EMAIL]@${domain}`;
+    })
+    .replace(/(?:\+1[ .-]?)?\(?\b\d{3}\)?[ .-]\d{3}[ .-]\d{4}\b/g, () => {
+      redactedCount += 1;
+      return "[REDACTED-PHONE]";
+    })
+    .split("\n").map((line) => looksLikeInjection(line) ? "[UNTRUSTED INSTRUCTION REMOVED]" : line).join("\n");
+  return { text: defangLinks(scrubbed), redactedCount };
 }
 
 function countMatches(text: string, patterns: readonly RegExp[]): number {
@@ -284,6 +296,9 @@ export async function checkScam(
   options: CheckScamOptions = {},
 ): Promise<CheckScamOutcome> {
   const trimmedText = input.text?.trim() ?? "";
+  if (trimmedText.length > 20_000) {
+    throw new ScamCheckInputError("Keep the message to 20,000 characters or fewer.");
+  }
   if (trimmedText.length === 0 && !input.image) {
     throw new ScamCheckInputError("Paste the message text or add a photo of it.");
   }
@@ -310,9 +325,10 @@ export async function checkScam(
 
   // The model may disagree with the rule on language; the rule wins so forced copy stays consistent
   // with the reader's language when the model is offline or wrong.
-  const language = detectedLanguage;
+  const parsedAnalysis = ScamAnalysisSchema.parse(result.analysis);
+  const language = trimmedText ? detectedLanguage : parsedAnalysis.language;
   const analysis: ScamAnalysis = {
-    ...result.analysis,
+    ...parsedAnalysis,
     language,
     reasons: cleanStringList(result.analysis.reasons),
     whatToDoNext: cleanStringList(result.analysis.whatToDoNext),
@@ -322,6 +338,7 @@ export async function checkScam(
   if (isPaymentChangeOrWire) {
     analysis.isPaymentChangeOrWire = true;
     analysis.riskLevel = "high";
+    analysis.summary = PAYMENT_CHANGE_REASON[language];
     analysis.reasons = prependUnique(analysis.reasons, PAYMENT_CHANGE_REASON[language]);
     analysis.whatToDoNext = prependUnique(
       analysis.whatToDoNext,
@@ -347,6 +364,6 @@ export async function checkScam(
     redactedSecretCount,
     paymentChangeDetectedByRule,
     injectionDetected,
-    detectedLanguage,
+    detectedLanguage: language,
   };
 }

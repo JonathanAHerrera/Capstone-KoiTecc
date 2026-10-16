@@ -6,6 +6,8 @@ import {
   createIncident,
   CreateIncidentInputSchema,
   requestIncidentHelp,
+  updateIncident,
+  UpdateIncidentInputSchema,
   type Incident,
 } from "@/lib/incident";
 import type { ReviewerTask } from "@/lib/reviewer-tasks";
@@ -20,6 +22,23 @@ function incidentInputFromFormData(formData: FormData): unknown {
     affectedTexasResidents: residentsText.length === 0 ? null : Number(residentsText),
     notes: typeof notesRaw === "string" && notesRaw.trim().length > 0 ? notesRaw : null,
   };
+}
+
+export async function updateIncidentAction(incidentId: string, formData: FormData): Promise<ActionResult<Incident>> {
+  const parsed = UpdateIncidentInputSchema.safeParse({
+    ...(incidentInputFromFormData(formData) as Record<string, unknown>),
+    status: formData.get("status"),
+  });
+  if (!parsed.success) return { ok: false, error: parsed.error.issues.map((issue) => issue.message).join("; ") };
+  try {
+    const incident = await updateIncident(incidentId, parsed.data);
+    revalidatePath("/incident");
+    revalidatePath(`/incident/${incident.id}`);
+    return { ok: true, data: incident };
+  } catch (error) {
+    console.error("updateIncidentAction failed", error);
+    return { ok: false, error: "Could not update the incident. Please try again." };
+  }
 }
 
 export async function createIncidentAction(formData: FormData): Promise<ActionResult<Incident>> {

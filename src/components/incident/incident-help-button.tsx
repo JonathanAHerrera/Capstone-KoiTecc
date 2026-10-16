@@ -17,14 +17,20 @@ export function IncidentHelpButton({ incidentId, helpAlreadyRequested }: Inciden
   const [helpRequestSent, setHelpRequestSent] = useState(helpAlreadyRequested);
 
   async function sendHelpRequest() {
+    if (sendingHelpRequest || helpRequestSent) return;
     setSendingHelpRequest(true);
-    const result = await requestIncidentHelpAction(incidentId);
-    setSendingHelpRequest(false);
-    if (result.ok) {
-      setHelpRequestSent(true);
-      showToast({ tone: "success", message: "Help request sent to KOITECC." });
-    } else {
-      showToast({ tone: "danger", message: result.error });
+    try {
+      const result = await requestIncidentHelpAction(incidentId);
+      if (result.ok) {
+        setHelpRequestSent(true);
+        showToast({ tone: "success", message: "Help request recorded." });
+      } else {
+        showToast({ tone: "danger", message: result.error });
+      }
+    } catch {
+      showToast({ tone: "danger", message: "Could not save the request. Please try again." });
+    } finally {
+      setSendingHelpRequest(false);
     }
   }
 
@@ -37,7 +43,7 @@ export function IncidentHelpButton({ incidentId, helpAlreadyRequested }: Inciden
       disabled={helpRequestSent}
       onClick={sendHelpRequest}
     >
-      {helpRequestSent ? "Help requested — KOITECC will follow up" : "Get help from KOITECC"}
+      {helpRequestSent ? "Help request recorded" : "Get help from KOITECC"}
     </BigButton>
   );
 }

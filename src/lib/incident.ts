@@ -49,8 +49,11 @@ const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 // computed at UTC midnight; time-of-day and DST never shift a deadline by a day.
 function toUtcCalendarDate(value: Date | string): Date {
   if (typeof value === "string" && ISO_DATE_PATTERN.test(value)) {
-    const [year, month, day] = value.split("-").map(Number);
-    return new Date(Date.UTC(year, month - 1, day));
+    const date = new Date(`${value}T00:00:00.000Z`);
+    if (Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== value) {
+      throw new Error("Determination date is not a valid calendar date.");
+    }
+    return date;
   }
   const date = typeof value === "string" ? new Date(value) : value;
   if (Number.isNaN(date.getTime())) {
@@ -354,12 +357,36 @@ export const CreateIncidentInputSchema = z.object({
   discoveredAt: z
     .string()
     .regex(ISO_DATE_PATTERN, "Enter the date as YYYY-MM-DD")
-    .refine((value) => !Number.isNaN(toUtcCalendarDate(value).getTime()), "Enter a real date"),
+    .refine((value) => {
+      try { toUtcCalendarDate(value); return true; } catch { return false; }
+    }, "Enter a real date"),
   affectedTexasResidents: z.number().int().min(0).max(100_000_000).nullable(),
   notes: z.string().trim().max(4000).nullable().default(null),
 });
 
 export type CreateIncidentInput = z.input<typeof CreateIncidentInputSchema>;
+
+export const UpdateIncidentInputSchema = CreateIncidentInputSchema.extend({
+  status: z.enum(["open", "contained", "closed"]),
+});
+
+export async function updateIncident(incidentId: string, input: z.input<typeof UpdateIncidentInputSchema>): Promise<Incident> {
+  const validated = UpdateIncidentInputSchema.parse(input);
+  const organization = await requireOrganization();
+  const db = await getDb();
+  const [updated] = await db.update(incidents).set({ ...validated, updatedAt: nowIsoTimestamp() })
+    .where(and(eq(incidents.id, incidentId), eq(incidents.orgId, organization.id))).returning();
+  if (!updated) throw new Error("Incident not found.");
+  const clock = computeBreachClock(updated.discoveredAt, updated.affectedTexasResidents ?? 0);
+  await appendLedgerEntryBestEffort({
+    orgId: organization.id, type: "incident_logged", controlId: BREACH_RECORDS_REQUIREMENT_ID,
+    metadata: { incidentId, operation: "updated", status: updated.status,
+      discoveredAt: updated.discoveredAt, affectedTexasResidents: updated.affectedTexasResidents,
+      individualNoticeDeadline: formatIsoDate(clock.individualNoticeDeadline),
+      attorneyGeneralDeadline: clock.attorneyGeneralDeadline ? formatIsoDate(clock.attorneyGeneralDeadline) : null },
+  });
+  return updated;
+}
 
 export async function createIncident(input: CreateIncidentInput): Promise<Incident> {
   const validated = CreateIncidentInputSchema.parse(input);

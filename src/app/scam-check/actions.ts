@@ -33,7 +33,12 @@ export async function requestScamHelpAction(
       summary: parsed.data.isPaymentChangeOrWire
         ? "Payment-change or wire request flagged by the scam checker."
         : `Suspicious message rated ${parsed.data.riskLevel} risk by the scam checker.`,
-      detail: parsed.data,
+      // Store categorical metadata only. Model prose can echo private message content.
+      detail: {
+        sourceKind: parsed.data.sourceKind, riskLevel: parsed.data.riskLevel,
+        language: parsed.data.language, isPaymentChangeOrWire: parsed.data.isPaymentChangeOrWire,
+        model: parsed.data.model, promptVersion: parsed.data.promptVersion,
+      },
     });
     return { ok: true, data: task };
   } catch (error) {

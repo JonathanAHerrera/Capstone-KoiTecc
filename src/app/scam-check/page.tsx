@@ -20,7 +20,7 @@ export default async function ScamCheckPage() {
           <Link
             href="/path"
             aria-label="Back to home"
-            className="focus-outline flex size-10 shrink-0 items-center justify-center rounded-[10px] border border-border bg-surface text-text-secondary transition-colors hover:bg-surface-alt hover:text-ink"
+            className="focus-outline flex size-11 shrink-0 items-center justify-center rounded-[10px] border border-border bg-surface text-text-secondary transition-colors hover:bg-surface-alt hover:text-ink"
           >
             <ArrowLeft className="size-5" strokeWidth={2} aria-hidden />
           </Link>
@@ -34,7 +34,9 @@ export default async function ScamCheckPage() {
         </div>
         <p className="mt-3 text-sm text-text-secondary">
           Paste a text, forward an email, or snap a photo. You get a plain-English risk level, why, and
-          what to do next. Nothing you paste is stored.
+          what to do next. Messages are not saved in this app. With an AI provider configured,
+          redacted text and photos are sent for analysis. Hide sensitive information in photos first;
+          text inside images is not automatically redacted.
         </p>
       </header>
 

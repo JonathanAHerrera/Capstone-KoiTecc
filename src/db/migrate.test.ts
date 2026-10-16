@@ -1,11 +1,10 @@
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdtempSync } from "node:fs";
 import path from "node:path";
 import { createClient } from "@libsql/client";
 import { afterAll, describe, expect, test } from "vitest";
 
 // Env must be set before any module resolves the SQLite path.
-const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "migrate-test-"));
+const temporaryDirectory = mkdtempSync(path.join(process.env.CMMC_TEST_TEMP_ROOT!, "migrate-test-"));
 process.env.CMMC_DB_PATH = path.join(temporaryDirectory, "legacy.db");
 process.env.CMMC_UPLOADS_DIR = path.join(temporaryDirectory, "uploads");
 
@@ -73,6 +72,7 @@ describe("ensureSchema against a pre-auth database", () => {
   });
 });
 
-afterAll(() => {
-  rmSync(temporaryDirectory, { recursive: true, force: true });
+afterAll(async () => {
+  const { closeDb } = await import("@/db/client");
+  await closeDb();
 });

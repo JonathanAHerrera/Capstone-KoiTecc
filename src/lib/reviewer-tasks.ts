@@ -1,7 +1,7 @@
-import { desc, eq } from "drizzle-orm";
+import { and, desc, eq, ne } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { getDb, nowIsoTimestamp } from "@/db/client";
-import { reviewerTasks, type ReviewerTaskKind, type ReviewerTaskRow } from "@/db/schema";
+import { incidents, reviewerTasks, type ReviewerTaskKind, type ReviewerTaskRow } from "@/db/schema";
 import { appendLedgerEntryBestEffort } from "@/lib/ledger";
 import { requireOrganization } from "@/lib/org";
 import { getSessionUser } from "@/lib/session";
@@ -29,6 +29,17 @@ export async function createReviewerTask(input: CreateReviewerTaskInput): Promis
   const sessionUser = await getSessionUser();
   const db = await getDb();
   const timestamp = nowIsoTimestamp();
+
+  if (input.relatedIncidentId) {
+    const [incident] = await db.select({ id: incidents.id }).from(incidents)
+      .where(and(eq(incidents.id, input.relatedIncidentId), eq(incidents.orgId, organization.id))).limit(1);
+    if (!incident) throw new Error("Incident not found.");
+    const [existing] = await db.select().from(reviewerTasks).where(and(
+      eq(reviewerTasks.orgId, organization.id), eq(reviewerTasks.relatedIncidentId, incident.id),
+      eq(reviewerTasks.kind, input.kind), ne(reviewerTasks.status, "closed"),
+    )).limit(1);
+    if (existing) return existing;
+  }
 
   const task: ReviewerTask = {
     id: nanoid(),
@@ -59,6 +70,8 @@ export async function createReviewerTask(input: CreateReviewerTaskInput): Promis
 }
 
 export async function listReviewerTasksForOrg(orgId: string): Promise<ReviewerTask[]> {
+  const organization = await requireOrganization();
+  if (organization.id !== orgId) throw new Error("Organization not found.");
   const db = await getDb();
   return db
     .select()
