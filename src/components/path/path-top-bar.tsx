@@ -14,7 +14,7 @@ export function PathTopBar({ organizationName, targetLevel }: PathTopBarProps) {
         <div className="min-w-0 flex-1">
           <h1 className="truncate text-[20px] font-semibold tracking-[-0.02em] text-ink">{organizationName}</h1>
         </div>
-        <nav aria-label="Workspace tools" className="flex shrink-0 items-center gap-1.5">
+        <nav aria-label="Workspace tools" className="flex shrink-0 items-center gap-1.5 lg:hidden">
           <Link href="/radar" aria-label="Open standards and policy radar" className="focus-outline flex size-10 items-center justify-center rounded-[10px] border border-border bg-surface text-text-secondary transition-colors hover:bg-surface-alt hover:text-ink">
             <RadioTower className="size-5" strokeWidth={2} aria-hidden />
           </Link>

@@ -50,7 +50,7 @@ const STATE_PRESENTATION: Record<
   },
 };
 
-const SHINE_RAINBOW = ["#00e676", "#35d7ff", "#7aaaff"];
+const SHINE_RAINBOW = ["#2dd4bf", "#38bdf8", "#818cf8"];
 const CURRENT_RING_INSET_PX = -6;
 const POP_EASE: [number, number, number, number] = [0.34, 1.56, 0.64, 1];
 

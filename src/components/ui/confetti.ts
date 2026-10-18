@@ -1,6 +1,6 @@
 export type CelebrationConfettiIntensity = "family" | "complete";
 
-const GUSTO_RAINBOW = ["#3fa199", "#ce63de", "#ff5765", "#ff8316", "#eca4f7"];
+const GUSTO_RAINBOW = ["#2dd4bf", "#38bdf8", "#818cf8", "#fbbf24", "#a5b4fc"];
 
 export async function fireCelebrationConfetti({
   intensity,

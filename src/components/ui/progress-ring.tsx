@@ -16,9 +16,9 @@ export type ProgressRingProps = {
 };
 
 const RAINBOW_RING_STOPS = [
-  { offset: "0%", color: "#00e676" },
-  { offset: "50%", color: "#35d7ff" },
-  { offset: "100%", color: "#7aaaff" },
+  { offset: "0%", color: "#2dd4bf" },
+  { offset: "50%", color: "#38bdf8" },
+  { offset: "100%", color: "#818cf8" },
 ];
 
 export function ProgressRing({

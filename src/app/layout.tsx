@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
+import { AppShell } from "@/components/nav/app-shell";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
 
@@ -32,33 +33,31 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
-  themeColor: "#0B0F19",
-  colorScheme: "dark",
+  themeColor: "#F3F7F8",
+  colorScheme: "light",
 };
 
 const themeBootstrapScript = `
   try {
     var savedTheme = localStorage.getItem("cmmc-ready-theme");
-    var theme = savedTheme === "light" ? "light" : "dark";
+    var theme = savedTheme === "dark" ? "dark" : "light";
     document.documentElement.dataset.theme = theme;
     document.documentElement.style.colorScheme = theme;
     var themeMeta = document.querySelector('meta[name="theme-color"]');
-    if (themeMeta) themeMeta.setAttribute("content", theme === "light" ? "#F8FAFC" : "#0B0F19");
+    if (themeMeta) themeMeta.setAttribute("content", theme === "light" ? "#F3F7F8" : "#0A0F1C");
   } catch (_) {}
 `;
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}>
+    <html lang="en" data-theme="light" suppressHydrationWarning className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
       </head>
       <body className="min-h-full flex flex-col font-sans">
         <ToastProvider>
-          <main className="mx-auto flex w-full max-w-[640px] flex-1 flex-col min-h-dvh">
-            {children}
-          </main>
+          <AppShell>{children}</AppShell>
         </ToastProvider>
       </body>
     </html>

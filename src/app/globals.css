@@ -5,76 +5,76 @@
   --font-display: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
 
-  --color-canvas: #0b0f19;
-  --color-surface: #161c2a;
-  --color-surface-alt: #202839;
-  --color-border: #354156;
-  --color-border-subtle: #273247;
+  --color-canvas: #0a0f1c;
+  --color-surface: #121a2b;
+  --color-surface-alt: #1a2438;
+  --color-border: #2e3a52;
+  --color-border-subtle: #212c42;
 
   --color-ink: #ffffff;
-  --color-text: #f8fafc;
-  --color-text-secondary: #b4bfd1;
-  --color-muted: #8e9bb0;
-  --color-disabled: #5b687c;
+  --color-text: #eef2f8;
+  --color-text-secondary: #aab6c9;
+  --color-muted: #8493aa;
+  --color-disabled: #566379;
 
-  --color-primary: #00e676;
-  --color-primary-text: #39f28e;
-  --color-primary-deep: #00b85c;
-  --color-primary-lip: #008f48;
-  --color-primary-hover: #24ee89;
-  --color-primary-pressed: #00c867;
-  --color-primary-pale: #102b22;
-  --color-primary-edge: #167d51;
-  --color-selected: #123126;
-  --color-primary-contrast: #06140d;
-  --shadow-primary-glow: 0 0 24px rgba(0, 230, 118, 0.18);
+  --color-primary: #2dd4bf;
+  --color-primary-text: #5eead4;
+  --color-primary-deep: #14b8a6;
+  --color-primary-lip: #0f766e;
+  --color-primary-hover: #3fe0cb;
+  --color-primary-pressed: #14b8a6;
+  --color-primary-pale: #0c2b2a;
+  --color-primary-edge: #1a7d74;
+  --color-selected: #0e2a29;
+  --color-primary-contrast: #042420;
+  --shadow-primary-glow: 0 0 20px rgba(45, 212, 191, 0.16);
 
-  --color-success: #00e676;
-  --color-success-lip: #00b85c;
-  --color-success-pale: #102b22;
-  --color-success-ink: #39f28e;
-  --color-success-edge: #167d51;
+  --color-success: #34d399;
+  --color-success-lip: #0f9d6b;
+  --color-success-pale: #0d2a22;
+  --color-success-ink: #6ee7b7;
+  --color-success-edge: #1a7d5c;
 
-  --color-warning: #ff9100;
-  --color-warning-lip: #d97900;
-  --color-warning-pale: #322313;
-  --color-warning-ink: #ffad3d;
-  --color-warning-edge: #8f5b19;
+  --color-warning: #fbbf24;
+  --color-warning-lip: #d79310;
+  --color-warning-pale: #2e2512;
+  --color-warning-ink: #fcd34d;
+  --color-warning-edge: #8a6b1d;
 
-  --color-danger: #ff1744;
-  --color-danger-lip: #cc1236;
-  --color-danger-pale: #35151f;
-  --color-danger-ink: #ff5c7c;
-  --color-danger-edge: #8e2a3e;
+  --color-danger: #fb7185;
+  --color-danger-lip: #e11d48;
+  --color-danger-pale: #33141d;
+  --color-danger-ink: #fda4b1;
+  --color-danger-edge: #9b2c42;
 
-  --color-info: #4d8dff;
-  --color-info-lip: #2868d8;
-  --color-info-pale: #172746;
-  --color-info-ink: #7aaaff;
-  --color-info-edge: #315b9d;
+  --color-info: #818cf8;
+  --color-info-lip: #4f46e5;
+  --color-info-pale: #1a1d3a;
+  --color-info-ink: #a5b4fc;
+  --color-info-edge: #3f3f9d;
 
-  --color-purple: #df85ed;
-  --color-purple-pale: #2d1c35;
-  --color-purple-ink: #df85ed;
+  --color-purple: #a5b4fc;
+  --color-purple-pale: #1b1d3b;
+  --color-purple-ink: #c7d0ff;
 
-  --color-orange: #ff9100;
-  --color-orange-lip: #d97900;
+  --color-orange: #fbbf24;
+  --color-orange-lip: #d79310;
 
-  --color-dark-surface: #101725;
-  --color-dark-eyebrow: #39f28e;
+  --color-dark-surface: #0e1525;
+  --color-dark-eyebrow: #5eead4;
 
-  --color-family-1: #00e676;
-  --color-family-2: #ff5c7c;
-  --color-family-3: #df85ed;
-  --color-family-4: #ffad3d;
-  --color-family-5: #7aaaff;
-  --color-family-6: #35d7ff;
-  --color-family-1-pale: #102b22;
-  --color-family-2-pale: #35151f;
-  --color-family-3-pale: #2d1c35;
-  --color-family-4-pale: #322313;
-  --color-family-5-pale: #172746;
-  --color-family-6-pale: #102a33;
+  --color-family-1: #2dd4bf;
+  --color-family-2: #fb7185;
+  --color-family-3: #a5b4fc;
+  --color-family-4: #fcd34d;
+  --color-family-5: #818cf8;
+  --color-family-6: #38bdf8;
+  --color-family-1-pale: #0c2b2a;
+  --color-family-2-pale: #33141d;
+  --color-family-3-pale: #1b1d3b;
+  --color-family-4-pale: #2e2512;
+  --color-family-5-pale: #1a1d3a;
+  --color-family-6-pale: #0c2838;
 
   --radius-card: 14px;
   --radius-btn: 12px;
@@ -86,11 +86,11 @@
 
   --ease-pop: cubic-bezier(0.34, 1.56, 0.64, 1);
 
-  --gradient-rainbow: linear-gradient(90deg, #00e676, #35d7ff, #7aaaff);
-  --gradient-ring: linear-gradient(135deg, #00e676, #35d7ff);
-  --gradient-card-ring: linear-gradient(135deg, #00e676, #35d7ff 55%, #7aaaff);
-  --gradient-progress: linear-gradient(90deg, #00b85c, #00e676, #39f28e);
-  --gradient-text: linear-gradient(90deg, #ffffff, #87fbb9 55%, #00e676);
+  --gradient-rainbow: linear-gradient(90deg, #2dd4bf, #38bdf8, #818cf8);
+  --gradient-ring: linear-gradient(135deg, #2dd4bf, #818cf8);
+  --gradient-card-ring: linear-gradient(135deg, #2dd4bf, #38bdf8 55%, #818cf8);
+  --gradient-progress: linear-gradient(90deg, #14b8a6, #2dd4bf, #5eead4);
+  --gradient-text: linear-gradient(90deg, #ffffff, #99f6e4 55%, #2dd4bf);
 
   --animate-shine: shine var(--duration) infinite linear;
   @keyframes shine {
@@ -107,85 +107,85 @@
 }
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
   --btn-lip: 2px;
 }
 
 html[data-theme="light"] {
   color-scheme: light;
 
-  --color-canvas: #f8fafc;
+  --color-canvas: #f3f7f8;
   --color-surface: #ffffff;
-  --color-surface-alt: #f1f5f9;
-  --color-border: #cbd5e1;
-  --color-border-subtle: #e2e8f0;
-  --color-ink: #0f172a;
-  --color-text: #0f172a;
-  --color-text-secondary: #475569;
-  --color-muted: #64748b;
-  --color-disabled: #94a3b8;
+  --color-surface-alt: #eef4f5;
+  --color-border: #cdd9dd;
+  --color-border-subtle: #e2eaed;
+  --color-ink: #0f1f2e;
+  --color-text: #15293a;
+  --color-text-secondary: #46606f;
+  --color-muted: #637c89;
+  --color-disabled: #9bb0b9;
 
-  --color-primary: #0f62fe;
-  --color-primary-text: #0b55df;
-  --color-primary-deep: #0043ce;
-  --color-primary-lip: #0043ce;
-  --color-primary-hover: #0353e9;
-  --color-primary-pressed: #002d9c;
-  --color-primary-pale: #e8f0ff;
-  --color-primary-edge: #9dbdff;
-  --color-selected: #edf3ff;
+  --color-primary: #0d9488;
+  --color-primary-text: #0b7d73;
+  --color-primary-deep: #0f766e;
+  --color-primary-lip: #0b5f59;
+  --color-primary-hover: #0ca89a;
+  --color-primary-pressed: #0b5f59;
+  --color-primary-pale: #e2f6f3;
+  --color-primary-edge: #99ded5;
+  --color-selected: #e8f7f4;
   --color-primary-contrast: #ffffff;
-  --shadow-primary-glow: 0 8px 20px rgba(15, 98, 254, 0.14);
+  --shadow-primary-glow: 0 8px 20px rgba(13, 148, 136, 0.14);
 
-  --color-success: #16803c;
-  --color-success-lip: #11662f;
-  --color-success-pale: #e9f7ee;
-  --color-success-ink: #116b33;
-  --color-success-edge: #a6d9b8;
-  --color-warning: #f57c00;
-  --color-warning-lip: #c86200;
-  --color-warning-pale: #fff4e5;
-  --color-warning-ink: #a84f00;
-  --color-warning-edge: #f4c17d;
-  --color-danger: #d32f2f;
-  --color-danger-lip: #a92222;
-  --color-danger-pale: #fdecec;
-  --color-danger-ink: #b32626;
-  --color-danger-edge: #efaaaa;
-  --color-info: #0f62fe;
-  --color-info-lip: #0043ce;
-  --color-info-pale: #e8f0ff;
-  --color-info-ink: #0b55df;
-  --color-info-edge: #9dbdff;
+  --color-success: #0f8a56;
+  --color-success-lip: #0b6e44;
+  --color-success-pale: #e5f6ee;
+  --color-success-ink: #0b6e44;
+  --color-success-edge: #a3dcc2;
+  --color-warning: #c2770a;
+  --color-warning-lip: #9a5d07;
+  --color-warning-pale: #fdf3e3;
+  --color-warning-ink: #8a5307;
+  --color-warning-edge: #efcf94;
+  --color-danger: #e11d48;
+  --color-danger-lip: #be123c;
+  --color-danger-pale: #fdeaef;
+  --color-danger-ink: #be123c;
+  --color-danger-edge: #f3b0c0;
+  --color-info: #4f46e5;
+  --color-info-lip: #3f38c7;
+  --color-info-pale: #ecebfd;
+  --color-info-ink: #4338ca;
+  --color-info-edge: #c0bdf7;
 
-  --color-purple: #8b5cf6;
-  --color-purple-pale: #f1edff;
-  --color-purple-ink: #6d3ed5;
-  --color-orange: #f57c00;
-  --color-orange-lip: #c86200;
-  --color-dark-surface: #172033;
-  --color-dark-eyebrow: #85a9ff;
+  --color-purple: #6366f1;
+  --color-purple-pale: #ecebfd;
+  --color-purple-ink: #4338ca;
+  --color-orange: #c2770a;
+  --color-orange-lip: #9a5d07;
+  --color-dark-surface: #11263a;
+  --color-dark-eyebrow: #5eead4;
 
-  --color-family-1: #0f62fe;
-  --color-family-2: #d32f2f;
-  --color-family-3: #7c3aed;
-  --color-family-4: #c86200;
-  --color-family-5: #2563eb;
-  --color-family-6: #087d8f;
-  --color-family-1-pale: #e8f0ff;
-  --color-family-2-pale: #fdecec;
-  --color-family-3-pale: #f1edff;
-  --color-family-4-pale: #fff4e5;
-  --color-family-5-pale: #eaf0ff;
-  --color-family-6-pale: #e4f6f8;
+  --color-family-1: #0d9488;
+  --color-family-2: #e11d48;
+  --color-family-3: #6366f1;
+  --color-family-4: #c2770a;
+  --color-family-5: #4f46e5;
+  --color-family-6: #0891b2;
+  --color-family-1-pale: #e2f6f3;
+  --color-family-2-pale: #fdeaef;
+  --color-family-3-pale: #ecebfd;
+  --color-family-4-pale: #fdf3e3;
+  --color-family-5-pale: #ecebfd;
+  --color-family-6-pale: #e2f4f8;
 
-  --shadow-float: 0 12px 28px rgba(15, 23, 42, 0.09), 0 1px 3px rgba(15, 23, 42, 0.05);
-  --shadow-sheet: 0 -12px 36px rgba(15, 23, 42, 0.12), 0 -1px 0 rgba(15, 23, 42, 0.05);
-  --gradient-rainbow: linear-gradient(90deg, #0f62fe, #087d8f, #16803c);
-  --gradient-ring: linear-gradient(135deg, #0f62fe, #087d8f);
-  --gradient-card-ring: linear-gradient(135deg, #0f62fe, #087d8f 55%, #16803c);
-  --gradient-progress: linear-gradient(90deg, #0043ce, #0f62fe, #5d8cff);
-  --gradient-text: linear-gradient(90deg, #0f172a, #0f62fe);
+  --shadow-float: 0 12px 28px rgba(15, 31, 46, 0.08), 0 1px 3px rgba(15, 31, 46, 0.05);
+  --shadow-sheet: 0 -12px 36px rgba(15, 31, 46, 0.1), 0 -1px 0 rgba(15, 31, 46, 0.05);
+  --gradient-rainbow: linear-gradient(90deg, #0d9488, #0891b2, #4f46e5);
+  --gradient-ring: linear-gradient(135deg, #0d9488, #0891b2);
+  --gradient-card-ring: linear-gradient(135deg, #0d9488, #0891b2 55%, #4f46e5);
+  --gradient-progress: linear-gradient(90deg, #0f766e, #0d9488, #14b8a6);
+  --gradient-text: linear-gradient(90deg, #0f1f2e, #0d9488);
 }
 
 html,
@@ -193,19 +193,30 @@ body {
   overscroll-behavior-y: none;
 }
 
+/* Fixed overlays (bottom action bar) read this to clear the desktop sidebar. */
+.app-shell {
+  --app-bar-left: 0px;
+}
+
+@media (min-width: 1024px) {
+  .app-shell[data-sidebar="true"] {
+    --app-bar-left: 16rem;
+  }
+}
+
 html[data-theme="light"] body {
   background-image:
-    radial-gradient(circle at 50% -10%, rgba(15, 98, 254, 0.08), transparent 34rem),
-    linear-gradient(rgba(15, 98, 254, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 98, 254, 0.025) 1px, transparent 1px);
+    radial-gradient(circle at 50% -10%, rgba(13, 148, 136, 0.07), transparent 34rem),
+    linear-gradient(rgba(13, 148, 136, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(13, 148, 136, 0.02) 1px, transparent 1px);
 }
 
 body {
   background-color: var(--color-canvas);
   background-image:
-    radial-gradient(circle at 50% -10%, rgba(0, 230, 118, 0.09), transparent 34rem),
-    linear-gradient(rgba(77, 141, 255, 0.025) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(77, 141, 255, 0.025) 1px, transparent 1px);
+    radial-gradient(circle at 50% -10%, rgba(45, 212, 191, 0.08), transparent 34rem),
+    linear-gradient(rgba(129, 140, 248, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(129, 140, 248, 0.03) 1px, transparent 1px);
   background-size: auto, 32px 32px, 32px 32px;
   background-attachment: fixed;
   color: var(--color-text);

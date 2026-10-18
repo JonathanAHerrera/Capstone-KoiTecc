@@ -25,7 +25,7 @@ function applyTheme(theme: Theme): void {
   window.localStorage.setItem(THEME_STORAGE_KEY, theme);
   document.documentElement.dataset.theme = theme;
   document.documentElement.style.colorScheme = theme;
-  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "light" ? "#F8FAFC" : "#0B0F19");
+  document.querySelector('meta[name="theme-color"]')?.setAttribute("content", theme === "light" ? "#F3F7F8" : "#0A0F1C");
   window.dispatchEvent(new Event(THEME_CHANGE_EVENT));
 }
 
