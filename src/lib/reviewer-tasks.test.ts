@@ -1,9 +1,8 @@
-import { mkdtempSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { mkdtempSync } from "node:fs";
 import path from "node:path";
 import { afterAll, beforeAll, expect, test } from "vitest";
 
-const temporaryDirectory = mkdtempSync(path.join(tmpdir(), "reviewer-tasks-test-"));
+const temporaryDirectory = mkdtempSync(path.join(process.env.CMMC_TEST_TEMP_ROOT!, "reviewer-tasks-test-"));
 process.env.CMMC_DB_PATH = path.join(temporaryDirectory, "reviewer-tasks-test.db");
 process.env.CMMC_UPLOADS_DIR = path.join(temporaryDirectory, "uploads");
 
@@ -53,12 +52,8 @@ beforeAll(async () => {
 
 afterAll(async () => {
   const { closeDb } = await import("@/db/client");
-  closeDb();
-  try {
-    rmSync(temporaryDirectory, { recursive: true, force: true });
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code !== "EBUSY") throw error;
-  }
+  await closeDb();
+  // Global teardown removes fixtures after native SQLite worker handles are released.
 });
 
 test("new reviewer tasks are open and visible to their organization", async () => {

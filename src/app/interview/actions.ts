@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import type { ActionResult } from "@/app/actions";
 import {
-  getActiveInterviewSnapshot,
+  getLatestInterviewSnapshot,
   InterviewInputError,
   startInterview,
   submitInterviewAnswer,
@@ -52,7 +52,7 @@ export async function getInterviewSnapshotAction(
     return { ok: false, error: "That control family could not be opened." };
   }
   try {
-    const snapshot = await getActiveInterviewSnapshot(parsed.data);
+    const snapshot = await getLatestInterviewSnapshot(parsed.data);
     return { ok: true, data: snapshot };
   } catch (error) {
     console.error(`getInterviewSnapshotAction failed for ${familyCode}`, error);
@@ -82,6 +82,7 @@ export async function sendInterviewAnswerAction(
     const snapshot = await submitInterviewAnswer(parsed.data.interviewId, parsed.data.answer);
     // The adaptive path reads interview findings, so refresh it once the answer is recorded.
     revalidatePath("/path");
+    revalidatePath("/coordinator");
     return { ok: true, data: snapshot };
   } catch (error) {
     console.error(`sendInterviewAnswerAction failed for ${interviewId}`, error);

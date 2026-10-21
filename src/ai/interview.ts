@@ -92,10 +92,21 @@ export async function runInterviewTurn(
   // finding against another control.
   const allowedPracticeIds = new Set(input.practices.map((practice) => practice.id));
   const findings = parsed.proposedFindings
+    .filter(() => latestUserAnswer !== null && !injectionDetected)
     .filter((finding) => allowedPracticeIds.has(finding.practiceId))
     .map(coerceFinding);
 
-  const turn: InterviewTurn = { ...parsed, proposedFindings: findings };
+  const covered = new Set([...input.findingsSoFar.map((finding) => finding.practiceId), ...findings.map((finding) => finding.practiceId)]);
+  const missingPractice = input.practices.find((practice) => !covered.has(practice.id));
+  const turn: InterviewTurn = {
+    ...parsed,
+    proposedFindings: findings,
+    isFamilyComplete: parsed.isFamilyComplete && !missingPractice,
+  };
+  if (parsed.isFamilyComplete && missingPractice) {
+    turn.assistantMessage = `We still need to cover ${missingPractice.title}. How is this handled in your business: ${missingPractice.plainEnglish}`;
+    turn.nextPracticeId = missingPractice.id;
+  }
 
   return {
     turn,

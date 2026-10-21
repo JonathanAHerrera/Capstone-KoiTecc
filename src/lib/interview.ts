@@ -1,4 +1,4 @@
-import { and, asc, desc, eq } from "drizzle-orm";
+import { and, asc, desc, eq, inArray } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import {
   InterviewInputError,
@@ -76,6 +76,7 @@ function getCmmcFamily(level: CmmcLevel, familyCode: string): PracticeFamily {
 async function getActiveInterview(
   orgId: string,
   familyCode: string,
+  includeCompleted = false,
 ): Promise<InterviewRow | null> {
   const db = await getDb();
   const rows = await db
@@ -86,7 +87,7 @@ async function getActiveInterview(
         eq(interviews.orgId, orgId),
         eq(interviews.framework, "cmmc"),
         eq(interviews.familyCode, familyCode),
-        eq(interviews.status, "active"),
+        includeCompleted ? inArray(interviews.status, ["active", "completed"]) : eq(interviews.status, "active"),
       ),
     )
     .orderBy(desc(interviews.createdAt))
@@ -298,6 +299,14 @@ export async function getActiveInterviewSnapshot(
   const family = getCmmcFamily(level, familyCode);
   const existing = await getActiveInterview(organization.id, familyCode);
   return existing ? buildSnapshot(existing, family) : null;
+}
+
+// Returning to a finished check should show its saved results, not an empty start screen.
+export async function getLatestInterviewSnapshot(familyCode: string): Promise<InterviewSnapshot | null> {
+  const organization = await requireOrganization();
+  const existing = await getActiveInterview(organization.id, familyCode, true);
+  if (!existing) return null;
+  return buildSnapshot(existing, getCmmcFamily(existing.level, familyCode));
 }
 
 export async function submitInterviewAnswer(

@@ -50,6 +50,32 @@ function statusFor(results: IntegrationCheckResult[], tag: string) {
 }
 
 describe("evaluateDirectorySignals", () => {
+  test.each(["m365", "google"] as const)("%s: realistic small-business risks, remediation, and regression are detected", (provider) => {
+    const risky: DirectorySignals = {
+      provider, tenantLabel: "Cedar Machining — fictional 18-person contractor", mfaEnforcedByPolicy: false,
+      accounts: Array.from({ length: 18 }, (_, index) => ({
+        id: `employee-${index + 1}`, displayName: index === 17 ? "Departed contractor" : `QA employee ${index + 1}`,
+        isAdmin: index < 5, mfaEnrolled: index < 16,
+        lastActiveAt: index === 17 ? "2024-12-01T00:00:00Z" : NOW.toISOString(),
+        hasExternalAutoForward: index === 8, usesLegacyAuth: index === 12,
+      })),
+    };
+    const findings = evaluateDirectorySignals(risky, NOW);
+    expect(findings.map((check) => check.status)).toEqual(["fail", "warn", "fail", "warn", "fail"]);
+    expect(findings.every((check) => Boolean(check.fix))).toBe(true);
+    expect(findings[0].finding).toContain("16 of 18");
+    const remediated: DirectorySignals = {
+      ...risky, mfaEnforcedByPolicy: true,
+      accounts: risky.accounts.slice(0, 17).map((account, index) => ({
+        ...account, isAdmin: index < 2, mfaEnrolled: true,
+        hasExternalAutoForward: false, usesLegacyAuth: false,
+      })),
+    };
+    const healthy = evaluateDirectorySignals(remediated, NOW);
+    expect(healthy.every((check) => check.status === "pass")).toBe(true);
+    expect(computeDrift(findings, healthy)).toEqual([]);
+    expect(computeDrift(healthy, findings)).toHaveLength(5);
+  });
   test("an empty directory never passes checks", () => {
     expect(evaluateDirectorySignals(signals({ accounts: [] }), NOW).every((check) => check.status === "unknown")).toBe(true);
   });

@@ -1,5 +1,9 @@
 # Phase 7–8 status
 
+> Current handoff (2026-10-16). This file supersedes the older “stopped after Phase 7” note.
+> Phase 8 is implemented in the current tree. The older 49-test count and “not started” list are
+> historical and should not be used as the current status.
+
 The repository already contained the Phase 8 implementations when this audit began. This pass
 completed incident editing and hardened the existing features rather than recreating them.
 
@@ -25,6 +29,27 @@ completed incident editing and hardened the existing features rather than recrea
 Validation: 88 tests in 13 files, TypeScript, ESLint, and production build. Tests use mocked AI;
 no paid model or tenant API calls were made. Browser/Safari interaction was not manually verified.
 
+## Other completed work that the older handoff omits
+
+- Phase 6 outside scan remains complete: seven passive DNS/HTTP/TLS checks, injectable probes,
+  weighted grading, top-three fixes, domain normalization, public rate-limited API, public mobile
+  page, and signup CTA. It does not perform active port scanning or exploitation.
+- The AI barrel (`src/ai/index.ts`) exports the scam checker and its schemas. The scam API is an
+  authenticated multipart route with per-user rate limiting, no-store responses, a 20,000-character
+  text limit, and JPEG/PNG/GIF/WebP photos capped at 5 MB.
+- Scam help requests create durable, organization-scoped `reviewer_tasks` records containing only
+  categorical verdict metadata. They do not store the original message, model prose, or image.
+- Incident help requests are idempotent while an existing task is open. Incident records support
+  status (`open`, `contained`, `closed`), notes, and later resident-count updates; updates recalculate
+  the Texas deadlines and append an audit ledger entry.
+- Signup now uses an explicit same-origin auth request with a 15-second timeout, visible server
+  errors, and guaranteed button recovery. The button validates on submit instead of silently staying
+  disabled. Passwords must be at least 12 characters, and login uses email rather than a username.
+- The SQLite test harness uses isolated worker processes and asynchronous cleanup for Windows file
+  handles. This is test infrastructure only and does not alter production data.
+- The current production route inventory includes `/scan`, `/scam-check`, `/incident`, and
+  `/incident/[incidentId]`, plus `/api/scan`, `/api/scam-check`, and the Better Auth API.
+
 ## Still gated or limited
 
 - Live Microsoft/Google OAuth, credentials, token storage, tenant calls, and scheduled weekly runs
@@ -37,6 +62,55 @@ no paid model or tenant API calls were made. Browser/Safari interaction was not 
   not automatically redacted; the upload page explicitly tells users to hide sensitive data first.
 - Notice drafts retain source-catalog text and TODO_SOURCE placeholders for counsel to review.
   They are not ready-to-send legal notices.
+- There is no production deployment configuration or migration runner beyond the startup schema
+  initializer. Before deployment, define a persistent `CMMC_DB_PATH` or managed libSQL/SQLite
+  strategy, persistent encrypted uploads storage, `BETTER_AUTH_SECRET`, and the evidence encryption
+  key in the hosting environment. Do not reuse development secrets.
+- The rate limiter is process-local. Multiple instances or restarts do not share limits; use a
+  shared store before relying on it for production abuse prevention.
+- There is no email delivery, password-reset email, reviewer notification, task assignment, or
+  reviewer inbox. Account creation is immediately usable because email verification is intentionally
+  disabled until delivery is implemented.
+- No automated end-to-end browser test currently covers typing into the signup form, receiving the
+  auth cookie, redirecting after signup, camera/photo selection, or Safari viewport behavior. The
+  unit and route tests do not replace that QA.
+- AI provider failures fall back to a medium-risk human-review response. The Anthropic integration
+  has not been exercised with a live API key in CI; configure and test it separately before enabling
+  paid requests.
+- The in-process database schema initializer has no backup, restore, rollback, or migration-history
+  UI. Back up the database and uploads before schema changes.
+
+## Security and product decisions to preserve
+
+- Keep `BETTER_AUTH_SECRET` and `EVIDENCE_ENCRYPTION_KEY` out of source control and rotate them with
+  a documented recovery plan. Rotating the evidence key without re-encryption makes old uploads
+  unreadable.
+- Keep OAuth disabled until the provider review is complete. Microsoft inbox rules cover rule-based
+  forwarding, not every Exchange transport or mailbox-level forwarding path. Google forwarding
+  checks require broad `gmail.readonly` access; omitting that scope must produce `unknown`, never a
+  passing result.
+- Keep missing pages, unavailable logs, invalid activity dates, and empty directories as `unknown`.
+  Do not turn missing integration data into a pass.
+- Keep legal copy framed as educational, documented, or aligned with a requirement. Do not claim
+  compliance, protection, guarantees, or that a safe harbor has been achieved.
+- Keep raw message text, photos, account numbers, and model responses out of reviewer-task metadata
+  and the ledger. The current scam pipeline redacts text identifiers but does not redact pixels
+  inside images.
+
+## Recommended next work, in order
+
+1. Approve or reject the provider scopes in `src/lib/integrations/providers.ts`; if approved, build
+   token storage, consent/revocation, pagination, retries, tenant isolation, and a scheduled job for
+   the `IntegrationConnector` seam.
+2. Add a real reviewer workflow: inbox, assignment, status transitions, notification delivery,
+   acknowledgement, and retention policy for help requests.
+3. Add password-reset/email delivery and decide whether email verification should be enabled.
+4. Add browser end-to-end coverage on Chromium and iPhone/iPad Safari, including signup and the
+   upload/camera flows.
+5. Add production operations: shared rate limiting, database/upload backups, migration history,
+   health checks, structured logs, error monitoring, and secret rotation procedures.
+6. Add OCR or a local image-redaction step before sending photos to an AI provider, or require users
+   to confirm that a photo contains no sensitive identifiers.
 
 ## Source checks
 
