@@ -1,11 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
+import { Hanken_Grotesk, Inter, JetBrains_Mono } from "next/font/google";
 import { AppShell } from "@/components/nav/app-shell";
 import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Loaded globally so Next can optimize it, but only referenced inside `.agent-surface`
+// (the coordinator and interview screens); no other screen's type changes.
+const hankenGrotesk = Hanken_Grotesk({
+  variable: "--font-hanken",
   subsets: ["latin"],
   display: "swap",
 });
@@ -50,7 +58,7 @@ const themeBootstrapScript = `
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" data-theme="light" suppressHydrationWarning className={`${inter.variable} ${jetBrainsMono.variable} h-full antialiased`}>
+    <html lang="en" data-theme="light" suppressHydrationWarning className={`${inter.variable} ${jetBrainsMono.variable} ${hankenGrotesk.variable} h-full antialiased`}>
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />

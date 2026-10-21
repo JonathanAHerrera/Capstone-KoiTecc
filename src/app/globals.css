@@ -448,3 +448,54 @@ strong {
     transition-duration: 1ms;
   }
 }
+
+/* "Readiness green" — a scoped skin for the agent screens only (the coordinator and the interview
+   chat). It redefines the primary family, the neutral surfaces, and the type to Hanken Grotesk by
+   overriding the custom properties the utilities already read, so everything inside .agent-surface
+   adopts it and no other screen is touched. The rest of the app keeps its teal identity. */
+.agent-surface {
+  --font-sans: var(--font-hanken), "Hanken Grotesk", system-ui, sans-serif;
+  --font-display: var(--font-hanken), "Hanken Grotesk", system-ui, sans-serif;
+
+  --color-canvas: #f3f6f1;
+  --color-surface: #ffffff;
+  --color-surface-alt: #ecf2e7;
+  --color-border: #d7e1d2;
+  --color-border-subtle: #e6ece0;
+  --color-ink: #12241a;
+  --color-text: #1b3024;
+  --color-text-secondary: #4c6555;
+  --color-muted: #6f8777;
+
+  --color-primary: #1e8e53;
+  --color-primary-text: #166b3e;
+  --color-primary-deep: #166b3e;
+  --color-primary-lip: #0f5231;
+  --color-primary-hover: #249a5c;
+  --color-primary-pressed: #0f5231;
+  --color-primary-pale: #e4f2e8;
+  --color-primary-edge: #b7ddc4;
+  --color-selected: #e4f2e8;
+  --color-primary-contrast: #ffffff;
+
+  /* The one warm note — honey, for a single "on track / streak" highlight. Used sparingly and
+     referenced directly (no global token exists for it). */
+  --agent-accent: #c77f1a;
+  --agent-accent-pale: #fbf0da;
+  --agent-accent-edge: #ecd6a3;
+
+  background-color: var(--color-canvas);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+/* A quiet section label for the agent screens — sentence case, not the tracked-out uppercase mono
+   used elsewhere, so these screens don't carry the generic eyebrow tell. */
+.agent-label {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--color-muted);
+}

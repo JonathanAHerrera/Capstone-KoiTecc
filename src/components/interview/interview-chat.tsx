@@ -135,7 +135,7 @@ export function InterviewChat({
 
           {snapshot.findings.length > 0 ? (
             <section aria-label="What you've told me so far" className="flex flex-col gap-2">
-              <h2 className="caption text-text-secondary">What you&apos;ve told me so far</h2>
+              <h2 className="agent-label">What you&apos;ve told me so far</h2>
               <ul className="flex flex-col gap-2">
                 {snapshot.findings.map((finding) => (
                   <FindingRow key={finding.practiceId} finding={finding} />

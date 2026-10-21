@@ -28,7 +28,7 @@ export default async function InterviewPage({ params }: InterviewPageProps) {
   const initialSnapshot = await getActiveInterviewSnapshot(familyCode);
 
   return (
-    <div className="flex min-h-dvh flex-col px-4 pb-[calc(96px+env(safe-area-inset-bottom))] pt-[calc(16px+env(safe-area-inset-top))]">
+    <div className="agent-surface flex min-h-dvh flex-col px-4 pb-[calc(96px+env(safe-area-inset-bottom))] pt-[calc(16px+env(safe-area-inset-top))]">
       <InterviewChat
         familyCode={family.code}
         familyName={family.name}
