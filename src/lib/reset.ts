@@ -5,6 +5,9 @@ import { resolveUploadsDirectoryPath } from "@/db/migrate";
 import {
   evidenceFiles,
   incidents,
+  interviewFindings,
+  interviews,
+  interviewTurns,
   organizations,
   radarDecisions,
   radarProfiles,
@@ -31,6 +34,9 @@ export async function resetAllData(): Promise<void> {
     }
   }
 
+  await db.delete(interviewFindings);
+  await db.delete(interviewTurns);
+  await db.delete(interviews);
   await db.delete(reviewerTasks);
   await db.delete(incidents);
   await db.delete(radarDecisions);

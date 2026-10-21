@@ -238,6 +238,39 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
     updated_at TEXT NOT NULL
   )`,
   `CREATE INDEX IF NOT EXISTS reviewer_tasks_org_idx ON reviewer_tasks (org_id)`,
+  `CREATE TABLE IF NOT EXISTS interviews (
+    id TEXT PRIMARY KEY,
+    org_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    framework TEXT NOT NULL DEFAULT 'cmmc',
+    family_code TEXT NOT NULL,
+    level INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'active',
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS interviews_org_idx ON interviews (org_id)`,
+  `CREATE TABLE IF NOT EXISTS interview_turns (
+    id TEXT PRIMARY KEY,
+    interview_id TEXT NOT NULL REFERENCES interviews(id) ON DELETE CASCADE,
+    seq INTEGER NOT NULL,
+    role TEXT NOT NULL,
+    content TEXT NOT NULL,
+    proposed_findings TEXT,
+    created_at TEXT NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS interview_turns_interview_idx ON interview_turns (interview_id)`,
+  `CREATE TABLE IF NOT EXISTS interview_findings (
+    id TEXT PRIMARY KEY,
+    interview_id TEXT NOT NULL REFERENCES interviews(id) ON DELETE CASCADE,
+    org_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    practice_id TEXT NOT NULL,
+    status TEXT NOT NULL,
+    source TEXT NOT NULL,
+    rationale TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS interview_findings_org_idx ON interview_findings (org_id)`,
+  `CREATE INDEX IF NOT EXISTS interview_findings_interview_idx ON interview_findings (interview_id)`,
 ];
 
 // Columns added after the first release; CREATE TABLE IF NOT EXISTS skips existing

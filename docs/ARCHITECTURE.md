@@ -146,5 +146,51 @@ incidents: id (pk), orgId (fk cascade), kind ("wire_fraud" | "hacked_email" | "r
 - Routes: `/incident` (`ReportIncidentForm` + recorded incidents list), `/incident/[incidentId]` (checklist, clock with days-remaining, draft notices with copy, `IncidentHelpButton`), and authenticated `/reviewer-tasks` (open/in-progress reviewer task inbox). Server actions in `src/app/incident/actions.ts`: `createIncidentAction(FormData)`, `requestIncidentHelpAction(incidentId)`; reviewer status updates use `src/app/reviewer-tasks/actions.ts`.
 - `/path` links to both tools via `SafetyToolsLinks`. `resetAllData` clears `reviewer_tasks` then `incidents`.
 
+## Conversational gap-assessment interviewer (Phase 9)
+
+A conversational agent that walks the owner through one CMMC control family at a time and records a per-practice readiness finding — the first multi-turn AI feature (every earlier call is a single `messages.parse`). It is **additive and CMMC-only**; it never writes to `submissions`/`reviews`, so the evidence reviewer stays the sole authority for `accepted`.
+
+### State (DB-persisted, turn-based)
+Three tables (`src/db/schema.ts`, created in `src/db/migrate.ts`):
+```
+interviews: id, orgId (fk cascade), framework (default "cmmc"), familyCode, level (1|2),
+  status ("active" | "completed" | "abandoned", default active), createdAt, updatedAt
+interview_turns: id, interviewId (fk cascade), seq (per-interview 1-based order — timestamps can
+  tie when the mock writes a user+assistant pair in one ms), role ("assistant"|"user"), content,
+  proposedFindings (JSON, nullable), createdAt
+interview_findings: id, interviewId (fk cascade), orgId (fk cascade), practiceId,
+  status ("met"|"not_met"|"unclear"), source ("attested"|"inferred"), rationale, createdAt
+```
+The transcript is the agent's durable state, so a session survives the app closing and resumes days later with no queue/cron/job infra. Each answer is one synchronous server-action round-trip (no new API route). `src/lib/reset.ts` clears all three (child-first).
+
+### AI layer (`src/ai/`, same conventions as the scam checker)
+- `interview-schema.ts` — zod `InterviewTurnSchema` (`assistantMessage`, `proposedFindings[]`, `isFamilyComplete`, `nextPracticeId?`) and the `InterviewerInput`/`InterviewTurnResult` types. `InterviewFinding` = `{ practiceId, status, source, rationale }`.
+- `prompts/interview.v1.md` — system prompt: readiness interviewer (NOT assessor/C3PAO), non-technical owner voice, and the attestation rule below.
+- `interview-anthropic.ts` — `messages.parse` + `zodOutputFormat`; rebuilds the conversation each turn as `[kickoff user briefing, …stored turns, latest answer]` (first message is always a user turn); checks `stop_reason === "refusal"`; never throws (degrades to a safe turn).
+- `interview-mock.ts` — deterministic walk of the family's practices used when `!hasApiKey()`; records every answer as `unclear`/`inferred`. Mock-safe, no spend.
+- `interview.ts` — `runInterviewTurn(input, { interviewer? })`: redacts secrets and strips injection lines from the answer (`redactSecrets`, `looksLikeInjection`) **before** the model sees it, runs the interviewer, then enforces guardrails and returns the processed answer for persistence.
+
+### Guardrails (enforced server-side, not only in the prompt)
+- Findings are `met`/`not_met`/`unclear` only — **never** `accepted`.
+- `coerceFinding`: a `met` finding survives only when `source === "attested"` (the owner's own explicit confirmation); an inferred `met` is downgraded to `unclear`, so a leading question can't manufacture a pass.
+- Findings whose `practiceId` is outside the family are dropped. Every finding cites its `practiceId`.
+- CMMC disclaimer (readiness prep, never certification) shown in UI and prompt.
+
+### Server + UI
+- `src/lib/interview.ts` (org-scoped via `requireOrganization`): `startInterview(familyCode)` (resumes the active interview or creates one and generates the opening question), `getActiveInterviewSnapshot`, `submitInterviewAnswer`, and `getInterviewFindingStatuses()` (latest finding per practice for the path). On completion it appends an `interview_completed` `ledgerEntries` row (new type, added to the schema union and `LEDGER_ENTRY_TYPES`).
+- `src/app/interview/actions.ts` — `startInterviewAction`, `getInterviewSnapshotAction`, `sendInterviewAnswerAction` (`ActionResult<InterviewSnapshot>`, per-user rate limit, `revalidatePath("/path")`).
+- `src/app/interview/[family]/page.tsx` + `src/components/interview/interview-chat.tsx` (client chat).
+
+### Adaptive-tutor rewiring (CMMC-only, additive)
+`buildPathViewModel(families, statuses, interviewFindings = {})` adds an optional `interviewFinding` per node; `selectNeedsAttention` surfaces a `not_started` practice the owner flagged `not_met`/`unclear` (ranked below any started practice; evidence status always wins; interview `met` is not surfaced). Behavior is byte-identical when no findings exist. `/path` passes `getInterviewFindingStatuses()`; each family section links to `/interview/[code]`.
+
+## Readiness coordinator (Phase 9b)
+
+An in-app "agent coordinator" that reads the org's live state and lines up the concrete next steps — the human-in-the-loop, synchronous core of the autonomous-agent vision, with **no OAuth, no async job runner, and no outbound messaging** (those stay non-goals). It also orchestrates the interviewer: a family with no activity surfaces a "take the 5-minute check" task instead of a wall of empty evidence to-dos.
+
+- **Deterministic planner (`src/lib/coordinator.ts`)** — `buildCoordinatorTasks(families, statuses, interviewFindings)` is pure and the single source of the plan, so the agent never invents a task, it works with no API key, and it is unit-tested without a DB. The to-do list is **derived live** from `listPracticeStatuses()` + `getInterviewFindingStatuses()` each load (no stored tasks to go stale; a task reflects open → in-progress → accepted automatically). Priority order: `fix_needs_work` (a review flagged gaps) → `finish_draft` → interview `not_met` → `unclear` → attested `met` needing proof → `no_evidence` in a checked family → `start_check` for an unchecked family; `under_review` is split into `awaiting` (shown as "with the reviewer", not a to-do); `accepted` is excluded and counts toward `doneCount`. Each task carries a concrete `action`, a `reason`, and an `evidenceHint` from the practice's first `evidenceExamples` entry ("Send me: …"), and an `href` into `/practice/[id]` or `/interview/[code]`.
+- **Narration (`src/ai/coordinator-narration.ts`)** — optional one/two-sentence "here's what I'd tackle first", added like `applicability/enrich.ts`: `messages.parse` + `zodOutputFormat` when `hasApiKey()`, **failing closed** to a deterministic line on no key / refusal / error (`isMockNarration` reports which). Grounded only in the tasks it is given; no certification claims.
+- **Surface** — `src/app/coordinator/page.tsx` (`/coordinator`, server component, force-dynamic) renders the narration (SpeechBubble), a progress bar, the ranked task cards (`src/components/coordinator/coordinator-task-card.tsx`), and the "with the reviewer" group. Entry points: a "What's next" item in the sidebar Workspace group and an "Ask your agent what's next" card on `/path`. Onboarding hands a brand-new org straight to `/coordinator` (not `/path`), so the agent's plan is a new user's first screen.
+
 ## Non-goals (MVP)
 Cloud storage, real C3PAO workflow, policy document generation, Level 3, email, payments, and live Microsoft 365/Google Workspace OAuth connectors.

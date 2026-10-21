@@ -204,6 +204,59 @@ async function runSmokeFlow(): Promise<void> {
     throw new Error("CMMC readiness package header changed");
   }
 
+  printHeading("Gap-assessment interview (mock interviewer)");
+  const { getFamilies } = await import("@/lib/practices");
+  const { startInterview, submitInterviewAnswer, getInterviewFindingStatuses } = await import(
+    "@/lib/interview"
+  );
+  const interviewFamily = getFamilies(organization.targetLevel as 1 | 2)[0];
+  let interview = await startInterview(interviewFamily.code);
+  if (interview.turns.length !== 1 || interview.turns[0].role !== "assistant") {
+    throw new Error("Interview did not open with a single assistant question");
+  }
+  let interviewGuard = 0;
+  while (!interview.isComplete && interviewGuard < 50) {
+    interview = await submitInterviewAnswer(
+      interview.interviewId,
+      "Each employee has their own login and we use a password manager.",
+    );
+    interviewGuard += 1;
+  }
+  if (!interview.isComplete) throw new Error("Interview never completed");
+  if (interview.findings.length !== interviewFamily.practices.length) {
+    throw new Error(
+      `Expected one finding per practice (${interviewFamily.practices.length}), got ${interview.findings.length}`,
+    );
+  }
+  for (const finding of interview.findings) {
+    if (finding.status !== "unclear") {
+      throw new Error(`Mock interview findings should be "unclear", got "${finding.status}"`);
+    }
+  }
+  const findingStatuses = await getInterviewFindingStatuses();
+  if (findingStatuses[interviewFamily.practices[0].id] !== "unclear") {
+    throw new Error("Interview finding did not surface for the adaptive path");
+  }
+  console.log(
+    `interview ${interview.interviewId} completed: ${interview.findings.length} findings across family ${interviewFamily.code}`,
+  );
+
+  printHeading("Coordinator plan");
+  const { computeCoordinatorPlan } = await import("@/lib/coordinator");
+  const plan = await computeCoordinatorPlan();
+  if (plan.totalCount === 0) throw new Error("Coordinator plan has no requirements");
+  if (plan.tasks.length === 0 && plan.awaiting.length === 0 && plan.doneCount !== plan.totalCount) {
+    throw new Error("Coordinator produced no next steps despite open requirements");
+  }
+  // The interviewed family now has findings, so it must not be re-offered as a 5-minute check.
+  if (plan.tasks.some((task) => task.kind === "start_check" && task.familyCode === interviewFamily.code)) {
+    throw new Error("Coordinator re-offered a check for an already-interviewed family");
+  }
+  console.log(
+    `plan: ${plan.tasks.length} next steps, ${plan.doneCount}/${plan.totalCount} accepted, mockNarration=${plan.isMockNarration}`,
+  );
+  console.log(`narration: ${plan.narration}`);
+
   printHeading("Done");
   console.log("smoke test passed");
 }

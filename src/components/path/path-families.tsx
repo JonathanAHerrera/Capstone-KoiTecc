@@ -1,7 +1,9 @@
 "use client";
 
 import { useCallback, useMemo, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { MessagesSquare } from "lucide-react";
 import { FamilyHeader } from "@/components/ui/family-header";
 import { JumpToCurrentButton } from "@/components/ui/jump-to-current-button";
 import { pathNodeElementId } from "@/components/ui/path-node-element-id";
@@ -77,6 +79,13 @@ export function PathFamilies({ families, currentPracticeId }: PathFamiliesProps)
               onSelect={handleNodeSelect}
               startHereText="Start here"
             />
+            <Link
+              href={`/interview/${family.code}`}
+              className="flex min-h-11 items-center justify-center gap-2 rounded-card border border-border bg-surface-alt px-3 text-sm font-semibold text-primary-text"
+            >
+              <MessagesSquare className="size-4 shrink-0" aria-hidden />
+              Not sure what you have? Take the 5-minute check
+            </Link>
           </section>
         ))}
       </div>

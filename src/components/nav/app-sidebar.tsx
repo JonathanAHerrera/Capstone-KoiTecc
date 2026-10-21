@@ -12,6 +12,7 @@ import {
   Settings,
   ShieldCheck,
   Siren,
+  Sparkles,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -31,6 +32,7 @@ const SIDEBAR_GROUPS: SidebarGroup[] = [
   {
     heading: "Workspace",
     items: [
+      { href: "/coordinator", label: "What's next", icon: Sparkles, matchPrefixes: ["/coordinator"] },
       { href: "/path", label: "Readiness path", icon: Map, matchPrefixes: ["/path", "/practice", "/track"] },
       { href: "/summary", label: "Summary", icon: ClipboardList, matchPrefixes: ["/summary"] },
       { href: "/radar", label: "Standards radar", icon: RadioTower, matchPrefixes: ["/radar"] },

@@ -1,5 +1,6 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Info } from "lucide-react";
+import { ChevronRight, Info, Sparkles } from "lucide-react";
 import { buildPathViewModel } from "@/components/path/build-path-view-model";
 import { NeedsAttentionList } from "@/components/path/needs-attention-list";
 import { parseCelebrationIntensity } from "@/components/path/parse-celebration-intensity";
@@ -11,6 +12,7 @@ import { PathTopBar } from "@/components/path/path-top-bar";
 import { SafetyToolsLinks } from "@/components/path/safety-tools-links";
 import { selectNeedsAttention } from "@/components/path/select-needs-attention";
 import { TrackSwitcher, type TrackSwitcherEntry } from "@/components/path/track-switcher";
+import { getInterviewFindingStatuses } from "@/lib/interview";
 import { getOrganization, parseEnabledFrameworks } from "@/lib/org";
 import { getFamilies, getPracticeCountForLevel } from "@/lib/practices";
 import type { CmmcLevel } from "@/lib/practice-types";
@@ -29,12 +31,16 @@ export default async function PathHomePage({ searchParams }: PathHomePageProps) 
   const organization = await getOrganization();
   if (!organization) redirect("/onboarding");
 
-  const [resolvedSearchParams, statuses] = await Promise.all([searchParams, listPracticeStatuses()]);
+  const [resolvedSearchParams, statuses, interviewFindings] = await Promise.all([
+    searchParams,
+    listPracticeStatuses(),
+    getInterviewFindingStatuses(),
+  ]);
   const celebrationIntensity = parseCelebrationIntensity(resolvedSearchParams.celebrate);
   const targetLevel = organization.targetLevel as CmmcLevel;
   const families = getFamilies(targetLevel);
   const progress = computeProgressFromStatuses(targetLevel, statuses);
-  const pathViewModel = buildPathViewModel(families, statuses);
+  const pathViewModel = buildPathViewModel(families, statuses, interviewFindings);
   const needsAttention = selectNeedsAttention(pathViewModel.families.flatMap((family) => family.nodes));
 
   const enabledFrameworks = parseEnabledFrameworks(organization);
@@ -57,6 +63,20 @@ export default async function PathHomePage({ searchParams }: PathHomePageProps) 
       <PathTopBar organizationName={organization.name} targetLevel={targetLevel} />
 
       <PathHeroCard progress={progress} />
+
+      <Link
+        href="/coordinator"
+        className="focus-outline flex items-center justify-between gap-3 rounded-card border border-primary-edge bg-primary-pale px-4 py-3 text-left transition-colors hover:bg-primary-pale/70"
+      >
+        <span className="flex items-center gap-2.5">
+          <Sparkles className="size-5 text-primary-text" aria-hidden />
+          <span className="flex flex-col">
+            <span className="text-sm font-semibold text-primary-text">Ask your agent what&apos;s next</span>
+            <span className="text-xs text-text-secondary">A prioritized plan built from where you stand</span>
+          </span>
+        </span>
+        <ChevronRight className="size-5 text-primary-text" aria-hidden />
+      </Link>
 
       <TrackSwitcher entries={trackEntries} />
 

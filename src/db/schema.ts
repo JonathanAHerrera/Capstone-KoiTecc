@@ -201,6 +201,7 @@ export const ledgerEntries = sqliteTable(
         | "framework_version_change"
         | "incident_logged"
         | "help_requested"
+        | "interview_completed"
       >(),
     controlId: text("control_id"),
     evidenceSha256: text("evidence_sha256"),
@@ -265,6 +266,74 @@ export const reviewerTasks = sqliteTable(
   (table) => [index("reviewer_tasks_org_idx").on(table.orgId)],
 );
 
+// Conversational gap-assessment interviews (Phase 9). An interview walks the owner through one
+// control family and records a per-practice readiness finding. Kept separate from submissions so
+// the evidence reviewer stays the only source of "accepted"; interview findings are self-reported
+// (attested) or inferred, never evidence-backed. The transcript in interview_turns is the agent's
+// durable state, so a session survives the owner closing the app and resumes days later.
+export const interviews = sqliteTable(
+  "interviews",
+  {
+    id: text("id").primaryKey(),
+    orgId: text("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    framework: text("framework")
+      .notNull()
+      .$type<"cmmc" | "tdpsa" | "tx521" | "tac202">()
+      .default("cmmc"),
+    familyCode: text("family_code").notNull(),
+    level: integer("level").notNull().$type<1 | 2>(),
+    status: text("status").notNull().$type<"active" | "completed" | "abandoned">().default("active"),
+    createdAt: text("created_at").notNull(),
+    updatedAt: text("updated_at").notNull(),
+  },
+  (table) => [index("interviews_org_idx").on(table.orgId)],
+);
+
+export const interviewTurns = sqliteTable(
+  "interview_turns",
+  {
+    id: text("id").primaryKey(),
+    interviewId: text("interview_id")
+      .notNull()
+      .references(() => interviews.id, { onDelete: "cascade" }),
+    // Per-interview 1-based order. Timestamps can tie when a user+assistant pair is written in the
+    // same millisecond (the mock has no model latency between them), so transcript order reads seq.
+    seq: integer("seq").notNull(),
+    role: text("role").notNull().$type<"assistant" | "user">(),
+    content: text("content").notNull(),
+    // JSON snapshot of the findings this assistant turn proposed; null on user turns.
+    proposedFindings: text("proposed_findings"),
+    createdAt: text("created_at").notNull(),
+  },
+  (table) => [index("interview_turns_interview_idx").on(table.interviewId)],
+);
+
+// Append-only: the latest finding per (org, practice) wins, so the history stays auditable. source
+// records whether the owner explicitly attested the control is in place or the finding was inferred.
+export const interviewFindings = sqliteTable(
+  "interview_findings",
+  {
+    id: text("id").primaryKey(),
+    interviewId: text("interview_id")
+      .notNull()
+      .references(() => interviews.id, { onDelete: "cascade" }),
+    orgId: text("org_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    practiceId: text("practice_id").notNull(),
+    status: text("status").notNull().$type<"met" | "not_met" | "unclear">(),
+    source: text("source").notNull().$type<"attested" | "inferred">(),
+    rationale: text("rationale").notNull(),
+    createdAt: text("created_at").notNull(),
+  },
+  (table) => [
+    index("interview_findings_org_idx").on(table.orgId),
+    index("interview_findings_interview_idx").on(table.interviewId),
+  ],
+);
+
 export type OrganizationRow = typeof organizations.$inferSelect;
 export type NewOrganizationRow = typeof organizations.$inferInsert;
 export type SubmissionRow = typeof submissions.$inferSelect;
@@ -292,6 +361,16 @@ export type ReviewerTaskRow = typeof reviewerTasks.$inferSelect;
 export type NewReviewerTaskRow = typeof reviewerTasks.$inferInsert;
 export type ReviewerTaskKind = ReviewerTaskRow["kind"];
 export type ReviewerTaskStatus = ReviewerTaskRow["status"];
+export type InterviewRow = typeof interviews.$inferSelect;
+export type NewInterviewRow = typeof interviews.$inferInsert;
+export type InterviewStatus = InterviewRow["status"];
+export type InterviewTurnRow = typeof interviewTurns.$inferSelect;
+export type NewInterviewTurnRow = typeof interviewTurns.$inferInsert;
+export type InterviewTurnRole = InterviewTurnRow["role"];
+export type InterviewFindingRow = typeof interviewFindings.$inferSelect;
+export type NewInterviewFindingRow = typeof interviewFindings.$inferInsert;
+export type InterviewFindingStatus = InterviewFindingRow["status"];
+export type InterviewFindingSource = InterviewFindingRow["source"];
 
 export type SubmissionStatus = SubmissionRow["status"];
 export type ReviewVerdictValue = ReviewRow["verdict"];

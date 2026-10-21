@@ -6,6 +6,31 @@ export {
   type AnalyzeEvidenceOutcome,
   type EvidenceAnalyzer,
 } from "@/ai/analyze-evidence";
+export {
+  coerceFinding,
+  INTERVIEW_PROMPT_VERSION,
+  InterviewInputError,
+  MAX_INTERVIEW_ANSWER_CHARACTERS,
+  MOCK_INTERVIEW_MODEL,
+  runInterviewTurn,
+  type Interviewer,
+  type RunInterviewTurnOptions,
+  type RunInterviewTurnOutcome,
+} from "@/ai/interview";
+export {
+  INTERVIEW_FINDING_SOURCES,
+  INTERVIEW_FINDING_STATUSES,
+  InterviewFindingSchema,
+  InterviewTurnSchema,
+  type InterviewerInput,
+  type InterviewFinding,
+  type InterviewFindingSourceValue,
+  type InterviewFindingStatusValue,
+  type InterviewPracticeContext,
+  type InterviewTranscriptEntry,
+  type InterviewTurn,
+  type InterviewTurnResult,
+} from "@/ai/interview-schema";
 export { DEFAULT_MODEL, hasApiKey, resolveModel } from "@/ai/model";
 export {
   clampConfidence,

@@ -174,7 +174,9 @@ export function OnboardingFlow({ levelEstimates, hasExistingPath, initialAnswers
       showToast({ tone: "danger", message: result.error });
       return;
     }
-    router.push("/path");
+    // Hand a brand-new org straight to the coordinator so the agent's "here's where to start" plan
+    // is the first thing they see, rather than an empty path.
+    router.push("/coordinator");
   }, [flowState.answers, router, showToast]);
 
   const currentStepId = ONBOARDING_STEP_ORDER[flowState.currentStepIndex];

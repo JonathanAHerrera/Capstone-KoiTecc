@@ -1,3 +1,4 @@
+import type { InterviewFindingStatusValue } from "@/ai/interview-schema";
 import type { PathNodeState } from "@/components/ui/path-node";
 import type { DerivedPracticeStatus, PracticeFamily } from "@/lib/practice-types";
 
@@ -10,6 +11,9 @@ export type PathNodeViewModel = {
   estimatedEffortMinutes: number;
   status: DerivedPracticeStatus;
   nodeState: PathNodeState;
+  // The latest gap-assessment interview finding for this practice, when one exists. Drives the
+  // adaptive path: a "not_met"/"unclear" finding surfaces an untouched practice in needs-attention.
+  interviewFinding?: InterviewFindingStatusValue | null;
 };
 
 export type PathFamilyViewModel = {
@@ -41,6 +45,7 @@ export function derivePathNodeState(
 export function buildPathViewModel(
   families: PracticeFamily[],
   statuses: Record<string, DerivedPracticeStatus>,
+  interviewFindings: Record<string, InterviewFindingStatusValue> = {},
 ): PathViewModel {
   const practicesInPathOrder = families.flatMap((family) => family.practices);
   const statusFor = (practiceId: string): DerivedPracticeStatus => statuses[practiceId] ?? "not_started";
@@ -65,6 +70,7 @@ export function buildPathViewModel(
         estimatedEffortMinutes: practice.estimatedEffortMinutes,
         status,
         nodeState,
+        interviewFinding: interviewFindings[practice.id] ?? null,
       };
     });
     return {
