@@ -250,7 +250,7 @@ export const reviewerTasks = sqliteTable(
     orgId: text("org_id")
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),
-    kind: text("kind").notNull().$type<"incident_help" | "scam_escalation">(),
+    kind: text("kind").notNull().$type<"incident_help" | "scam_escalation" | "general_help">(),
     status: text("status").notNull().$type<"open" | "in_progress" | "closed">().default("open"),
     summary: text("summary").notNull(),
     detail: text("detail"),

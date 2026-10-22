@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
+import { AskKoiTeccButton } from "./ask-koitecc-button";
 import { AppSidebar } from "./app-sidebar";
 
 const HIDDEN_ROUTE_PREFIXES = ["/sign-in", "/sign-up", "/onboarding", "/scan"];
@@ -24,6 +25,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       >
         {children}
       </main>
+      {showSidebar ? <AskKoiTeccButton /> : null}
     </div>
   );
 }

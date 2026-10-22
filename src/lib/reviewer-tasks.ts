@@ -13,6 +13,7 @@ export type ReviewerTaskStatus = (typeof REVIEWER_TASK_STATUSES)[number];
 export const REVIEWER_TASK_KIND_LABELS: Readonly<Record<ReviewerTaskKind, string>> = {
   incident_help: "Incident help request",
   scam_escalation: "Suspicious message escalation",
+  general_help: "KoiTecc help request",
 };
 
 export type CreateReviewerTaskInput = {
@@ -23,9 +24,7 @@ export type CreateReviewerTaskInput = {
   relatedIncidentId?: string | null;
 };
 
-// The one-tap "get help from KOITECC" behind both the incident page and the scam checker. There is
-// no reviewer inbox UI yet; the row plus the help_requested ledger entry is the durable record that
-// help was asked for and when, which is what the documented-program story needs.
+// The help actions create a durable reviewer task and ledger entry so requests are visible to KOITECC.
 export async function createReviewerTask(input: CreateReviewerTaskInput): Promise<ReviewerTask> {
   const organization = await requireOrganization();
   const sessionUser = await getSessionUser();

@@ -14,8 +14,35 @@ import {
   saveSubmissionNote,
   type Submission,
 } from "@/lib/submissions";
+import { createReviewerTask, type ReviewerTask } from "@/lib/reviewer-tasks";
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: string };
+
+export async function askKoiTeccHelpAction(
+  question: string,
+  pathname: string,
+): Promise<ActionResult<ReviewerTask>> {
+  const trimmedQuestion = typeof question === "string" ? question.trim() : "";
+  const trimmedPathname = typeof pathname === "string" ? pathname.trim() : "";
+  if (trimmedQuestion.length === 0 || trimmedQuestion.length > 2000) {
+    return { ok: false, error: "Please enter a question between 1 and 2,000 characters." };
+  }
+  if (!trimmedPathname.startsWith("/") || trimmedPathname.length > 500) {
+    return { ok: false, error: "We could not identify the current page. Please try again." };
+  }
+  try {
+    const task = await createReviewerTask({
+      kind: "general_help",
+      summary: "Client asked KoiTecc for help.",
+      detail: { question: trimmedQuestion, page: trimmedPathname },
+    });
+    revalidatePath("/reviewer-tasks");
+    return { ok: true, data: task };
+  } catch (error) {
+    console.error("askKoiTeccHelpAction failed", error);
+    return { ok: false, error: "Could not send your question. Please try again." };
+  }
+}
 
 function parseFormBoolean(value: FormDataEntryValue | null): boolean {
   if (typeof value !== "string") return false;

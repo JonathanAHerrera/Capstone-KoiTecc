@@ -61,7 +61,7 @@ export default async function ReviewerTasksPage() {
           <Inbox className="size-5 shrink-0 text-accent" aria-hidden />
         </div>
         <p className="mt-3 text-sm text-text-secondary">
-          Follow up on incident help requests and suspicious-message escalations for this organization.
+          Follow up on page-help requests, incident help requests, and suspicious-message escalations for this organization.
         </p>
       </header>
 
