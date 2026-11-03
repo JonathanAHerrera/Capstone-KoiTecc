@@ -7,10 +7,11 @@ import { NextResponse, type NextRequest } from "next/server";
 //
 // AUTH_PATHS are the sign-in/sign-up screens: reachable without a session, but pointless for an
 // already signed-in user, so we bounce them home. PUBLIC_PATHS are reachable by anyone regardless
-// of session state — the free outside scan (/scan page + /api/scan) is a no-login lead magnet that
-// signed-in users may also use, so it must NOT redirect them away.
+// of session state — the free outside scan (/scan page + /api/scan) is a no-login lead magnet, and
+// "/" is the public value landing; both must stay reachable without a session (and the home page
+// itself redirects a signed-in user onward, so "/" is intentionally not in AUTH_PATHS).
 const AUTH_PATHS = ["/sign-in", "/sign-up"];
-const PUBLIC_PATHS = [...AUTH_PATHS, "/scan", "/api/scan"];
+const PUBLIC_PATHS = [...AUTH_PATHS, "/", "/scan", "/api/scan"];
 
 function matchesPath(pathname: string, paths: string[]): boolean {
   return paths.some((path) => pathname === path || pathname.startsWith(`${path}/`));

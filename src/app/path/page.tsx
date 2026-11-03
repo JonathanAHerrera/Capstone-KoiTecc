@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChevronRight, Info, Sparkles } from "lucide-react";
+import { ChevronRight, Info, PiggyBank, Sparkles } from "lucide-react";
 import { buildPathViewModel } from "@/components/path/build-path-view-model";
 import { NeedsAttentionList } from "@/components/path/needs-attention-list";
 import { parseCelebrationIntensity } from "@/components/path/parse-celebration-intensity";
@@ -76,6 +76,20 @@ export default async function PathHomePage({ searchParams }: PathHomePageProps) 
           </span>
         </span>
         <ChevronRight className="size-5 text-primary-text" aria-hidden />
+      </Link>
+
+      <Link
+        href="/value"
+        className="focus-outline flex items-center justify-between gap-3 rounded-card border border-success-edge bg-success-pale px-4 py-3 text-left transition-colors hover:bg-success-pale/70"
+      >
+        <span className="flex items-center gap-2.5">
+          <PiggyBank className="size-5 text-success-ink" aria-hidden />
+          <span className="flex flex-col">
+            <span className="text-sm font-semibold text-success-ink">What this is worth to you</span>
+            <span className="text-xs text-text-secondary">The dollars this saves and the risk it takes off the table</span>
+          </span>
+        </span>
+        <ChevronRight className="size-5 text-success-ink" aria-hidden />
       </Link>
 
       <TrackSwitcher entries={trackEntries} />

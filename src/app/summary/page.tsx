@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
-import { ChevronLeft, Download, Info } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download, Info, PiggyBank } from "lucide-react";
 import { READINESS_DISCLAIMER } from "@/components/onboarding/readiness-disclaimer";
 import { buildSummaryText } from "@/components/summary/build-summary-text";
 import { CopySummaryButton } from "@/components/summary/copy-summary-button";
@@ -69,6 +69,20 @@ export default async function SummaryPage() {
       </header>
 
       <ReadinessOverview progress={progress} />
+
+      <Link
+        href="/value"
+        className="focus-outline flex items-center justify-between gap-3 rounded-card border border-success-edge bg-success-pale px-4 py-3 text-left transition-colors hover:bg-success-pale/70"
+      >
+        <span className="flex items-center gap-2.5">
+          <PiggyBank className="size-5 text-success-ink" aria-hidden />
+          <span className="flex flex-col">
+            <span className="text-sm font-semibold text-success-ink">What this is worth to you</span>
+            <span className="text-xs text-text-secondary">See the dollars this progress is saving you</span>
+          </span>
+        </span>
+        <ChevronRight className="size-5 shrink-0 text-success-ink" aria-hidden />
+      </Link>
 
       {level === 1 ? (
         <p className="flex items-start gap-3 rounded-card border border-border bg-surface px-4 py-3 text-sm text-text-secondary">

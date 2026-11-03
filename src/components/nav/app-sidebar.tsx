@@ -7,6 +7,7 @@ import {
   Compass,
   Inbox,
   Map,
+  PiggyBank,
   RadioTower,
   ScanSearch,
   Settings,
@@ -33,6 +34,7 @@ const SIDEBAR_GROUPS: SidebarGroup[] = [
     heading: "Workspace",
     items: [
       { href: "/coordinator", label: "What's next", icon: Sparkles, matchPrefixes: ["/coordinator"] },
+      { href: "/value", label: "What this is worth", icon: PiggyBank, matchPrefixes: ["/value"] },
       { href: "/path", label: "Readiness path", icon: Map, matchPrefixes: ["/path", "/practice", "/track"] },
       { href: "/summary", label: "Summary", icon: ClipboardList, matchPrefixes: ["/summary"] },
       { href: "/radar", label: "Standards radar", icon: RadioTower, matchPrefixes: ["/radar"] },

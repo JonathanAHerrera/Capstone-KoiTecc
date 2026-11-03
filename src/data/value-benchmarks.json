@@ -1,0 +1,61 @@
+[
+  {
+    "id": "cmmc_l1_consultant_engagement",
+    "label": "Outside CMMC Level 1 readiness engagement",
+    "low": 5000,
+    "high": 20000,
+    "unit": "usd",
+    "source": "Industry CMMC consulting estimates for small contractors",
+    "asOf": "2025",
+    "note": "Readiness/self-assessment preparation for a small contractor; excludes any C3PAO assessment."
+  },
+  {
+    "id": "cmmc_l2_consultant_engagement",
+    "label": "Outside CMMC Level 2 readiness & gap engagement",
+    "low": 25000,
+    "high": 100000,
+    "unit": "usd",
+    "source": "Industry CMMC consulting estimates for small contractors",
+    "asOf": "2025",
+    "note": "Gap assessment plus remediation guidance; excludes the separate C3PAO certification assessment."
+  },
+  {
+    "id": "consultant_hourly_rate",
+    "label": "Compliance / GRC consultant hourly rate",
+    "low": 150,
+    "high": 300,
+    "unit": "usd",
+    "source": "Typical U.S. GRC / cybersecurity consulting rates",
+    "asOf": "2025"
+  },
+  {
+    "id": "tdpsa_per_violation",
+    "label": "TDPSA civil penalty per violation",
+    "low": 7500,
+    "high": 7500,
+    "unit": "usd",
+    "source": "Tex. Bus. & Com. Code §541.155",
+    "asOf": "2024",
+    "note": "Each violation can be assessed separately, so exposure stacks with the number of unresolved obligations."
+  },
+  {
+    "id": "tx521_civil_penalty_max",
+    "label": "Ch. 521 breach-notification civil penalty cap",
+    "low": 0,
+    "high": 250000,
+    "unit": "usd",
+    "source": "Tex. Bus. & Com. Code §521.151",
+    "asOf": "2024",
+    "note": "Up to $100 per affected individual per day the notice is late, capped at $250,000 for a single breach."
+  },
+  {
+    "id": "bec_average_loss",
+    "label": "Average business-email-compromise / wire-fraud loss",
+    "low": 50000,
+    "high": 140000,
+    "unit": "usd",
+    "source": "FBI IC3 Internet Crime Report (business email compromise)",
+    "asOf": "2023",
+    "note": "Reported-loss average; individual incidents vary widely."
+  }
+]

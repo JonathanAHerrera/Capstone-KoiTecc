@@ -192,5 +192,39 @@ An in-app "agent coordinator" that reads the org's live state and lines up the c
 - **Narration (`src/ai/coordinator-narration.ts`)** — optional one/two-sentence "here's what I'd tackle first", added like `applicability/enrich.ts`: `messages.parse` + `zodOutputFormat` when `hasApiKey()`, **failing closed** to a deterministic line on no key / refusal / error (`isMockNarration` reports which). Grounded only in the tasks it is given; no certification claims.
 - **Surface** — `src/app/coordinator/page.tsx` (`/coordinator`, server component, force-dynamic) renders the narration (SpeechBubble), a progress bar, the ranked task cards (`src/components/coordinator/coordinator-task-card.tsx`), and the "with the reviewer" group. Entry points: a "What's next" item in the sidebar Workspace group and an "Ask your agent what's next" card on `/path`. Onboarding hands a brand-new org straight to `/coordinator` (not `/path`), so the agent's plan is a new user's first screen.
 
+## Value estimator (Phase 9c)
+
+A personalized, source-cited "what this is worth to your business" story for the two target
+audiences (DoD contractors, Texas small businesses). Same shape as the coordinator: a pure
+deterministic engine + a static cited-benchmark dataset + an optional fail-closed AI narration + a
+server orchestrator + UI. No DB tables, no API key required (mock-safe).
+
+- **Benchmarks (`src/data/value-benchmarks.json` + `src/lib/value-benchmarks.ts`)** — dollar figures
+  live only in the JSON, each with its own `source` + `asOf`; `getBenchmark(id)` is zod-validated on
+  load. Ranges only (illustrative estimates, never quotes). Entries: `cmmc_l1/l2_consultant_engagement`,
+  `consultant_hourly_rate`, `tdpsa_per_violation` (§541.155), `tx521_civil_penalty_max` (§521.151),
+  `bec_average_loss` (FBI IC3).
+- **Engine (`src/lib/value.ts`)** — `buildValueEstimate(input)` is pure/unit-tested and returns
+  `ValueDriver[]` plus the savings range. A driver's `status` (`locked`→`in_progress`→`realized`)
+  derives from the relevant framework's accepted percent, so the money story tracks live progress.
+  Gating is deterministic: `contract_eligibility` (DoD, access not $) only when `handlesCui`;
+  `fine_exposure` only when the TDPSA track is enabled; `breach_exposure` when the §521 track is
+  enabled **or** `handlesTexasResidentData`; `consultant_savings` and `insurance_posture` always.
+  **Only `consultant_savings` feeds the headline savings total** — exposure caps (fines, breach
+  losses) are shown per-driver and never summed, so the figure never implies you'll "save" a penalty
+  you were never going to pay. `computeValueEstimate()` is the async org-scoped orchestrator
+  (`requireOrganization` → `parseEnabledFrameworks` → `getPracticesForLevel` effort sum →
+  `computeProgressForFramework` per framework → `buildValueEstimate` → `narrateValueEstimate`).
+- **Narration (`src/ai/value-narration.ts`)** — optional one/two-sentence reason-it-pays-off, same
+  pattern as `coordinator-narration.ts`: grounded only in the drivers given, failing closed to a
+  deterministic line, and the prompt forbids guarantees, legal/financial advice, and certification
+  claims. `VALUE_DISCLAIMER` (in `value.ts`) states the estimates-only, not-advice framing.
+- **Surface** — `/value` (`src/app/value/page.tsx`, force-dynamic) with
+  `src/components/value/value-driver-card.tsx`; entry points mirror the coordinator (a card on
+  `/path`, a "What this is worth" item in the sidebar Workspace group, a callout on `/summary`). The
+  public signed-out landing at `/` (`src/components/value/value-landing.tsx`) reuses the same
+  benchmark table so the acquisition pitch and the in-app estimate never drift; `middleware.ts` keeps
+  `/` public and the home page redirects signed-in users onward as before.
+
 ## Non-goals (MVP)
 Cloud storage, real C3PAO workflow, policy document generation, Level 3, email, payments, and live Microsoft 365/Google Workspace OAuth connectors.
