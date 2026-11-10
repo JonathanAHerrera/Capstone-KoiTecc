@@ -31,6 +31,12 @@ export const auth = betterAuth({
     autoSignIn: true,
     // Email delivery is a later phase; until then accounts are usable immediately.
     requireEmailVerification: false,
+    sendResetPassword: async ({ user, url }) => {
+      if (process.env.NODE_ENV === "production") {
+        throw new Error("Password reset email delivery is not configured.");
+      }
+      console.info(`[password-reset] Reset link for ${user.email}: ${url}`);
+    },
   },
   // nextCookies() must stay last so it can set cookies after every other plugin's hooks run.
   plugins: [twoFactor({ issuer: APP_NAME }), nextCookies()],

@@ -11,7 +11,11 @@ const MIN_PASSWORD_LENGTH = 12;
 const SIGN_UP_TIMEOUT_MS = 15_000;
 
 type SignUpErrorResponse = {
+  code?: string;
   message?: string;
+  error?: {
+    message?: string;
+  };
 };
 
 export function SignUpForm({ redirectTo }: { redirectTo: string }) {
@@ -50,7 +54,15 @@ export function SignUpForm({ redirectTo }: { redirectTo: string }) {
       });
       if (!response.ok) {
         const payload = (await response.json().catch(() => null)) as SignUpErrorResponse | null;
-        setErrorMessage(payload?.message ?? "Could not create your account. Please try again.");
+        if (payload?.code === "USER_ALREADY_EXISTS_USE_ANOTHER_EMAIL") {
+          setErrorMessage("An account with this email already exists. Sign in instead.");
+        } else {
+          setErrorMessage(
+            payload?.message ??
+              payload?.error?.message ??
+              "Could not create your account. Please try again.",
+          );
+        }
         return;
       }
       router.push(redirectTo);

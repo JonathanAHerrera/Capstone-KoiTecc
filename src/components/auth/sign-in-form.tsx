@@ -165,6 +165,12 @@ export function SignInForm({ redirectTo }: { redirectTo: string }) {
         </BigButton>
       </form>
 
+      <p className="text-center text-sm text-text-secondary">
+        <Link href="/forgot-password" className="font-medium text-primary-text underline-offset-4 hover:underline">
+          Forgot your password?
+        </Link>
+      </p>
+
       <p className="mt-auto text-center text-sm text-text-secondary">
         New here?{" "}
         <Link href="/sign-up" className="font-medium text-primary-text underline-offset-4 hover:underline">
