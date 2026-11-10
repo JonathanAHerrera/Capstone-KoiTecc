@@ -30,6 +30,7 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
+    role TEXT NOT NULL DEFAULT 'client',
     email_verified INTEGER NOT NULL DEFAULT 0,
     image TEXT,
     created_at INTEGER NOT NULL DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)),
@@ -103,6 +104,24 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
   )`,
   `CREATE UNIQUE INDEX IF NOT EXISTS organizations_user_unique
     ON organizations (user_id)`,
+  `CREATE TABLE IF NOT EXISTS koitecc_associates (
+    id TEXT PRIMARY KEY,
+    name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    title TEXT NOT NULL,
+    active INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL
+  )`,
+  `CREATE TABLE IF NOT EXISTS organization_staff_assignments (
+    id TEXT PRIMARY KEY,
+    organization_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    associate_id TEXT NOT NULL REFERENCES koitecc_associates(id) ON DELETE CASCADE,
+    created_at TEXT NOT NULL
+  )`,
+  `CREATE UNIQUE INDEX IF NOT EXISTS organization_staff_assignment_unique
+    ON organization_staff_assignments (organization_id, associate_id)`,
+  `CREATE INDEX IF NOT EXISTS organization_staff_assignments_org_idx
+    ON organization_staff_assignments (organization_id)`,
   `CREATE TABLE IF NOT EXISTS submissions (
     id TEXT PRIMARY KEY,
     org_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
@@ -276,6 +295,7 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
 // Columns added after the first release; CREATE TABLE IF NOT EXISTS skips existing
 // tables, so each one is back-filled with ALTER TABLE when absent.
 const ADDED_COLUMNS: readonly { table: string; column: string; definition: string }[] = [
+  { table: "user", column: "role", definition: "TEXT NOT NULL DEFAULT 'client'" },
   // Databases created before auth have an organizations table with no owner column. SQLite cannot
   // add a NOT NULL foreign-key column to an existing table, so legacy rows keep NULL here; no user
   // can own them, and every tenant query filters by user_id, so they are simply unreachable.

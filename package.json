@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "smoke": "tsx scripts/smoke.ts"
+    "smoke": "tsx scripts/smoke.ts",
+    "koitecc:setup": "tsx scripts/setup-koitecc.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.131.0",

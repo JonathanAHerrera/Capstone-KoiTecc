@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { AskKoiTeccButton } from "./ask-koitecc-button";
 import { AppSidebar } from "./app-sidebar";
 
-const HIDDEN_ROUTE_PREFIXES = ["/sign-in", "/sign-up", "/onboarding", "/scan"];
+const HIDDEN_ROUTE_PREFIXES = ["/sign-in", "/sign-up", "/koitecc/sign-in", "/onboarding", "/scan"];
 
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();

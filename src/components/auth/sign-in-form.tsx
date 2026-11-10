@@ -10,7 +10,13 @@ import { signIn, twoFactor } from "@/lib/auth-client";
 
 type SignInStep = "credentials" | "two-factor";
 
-export function SignInForm({ redirectTo }: { redirectTo: string }) {
+export function SignInForm({
+  redirectTo,
+  audience = "your readiness workspace",
+}: {
+  redirectTo: string;
+  audience?: string;
+}) {
   const router = useRouter();
   const [step, setStep] = useState<SignInStep>("credentials");
   const [email, setEmail] = useState("");
@@ -113,7 +119,7 @@ export function SignInForm({ redirectTo }: { redirectTo: string }) {
     <div className="flex min-h-dvh flex-col gap-8 px-5 pt-[max(2rem,env(safe-area-inset-top))] pb-8">
       <header className="flex flex-col gap-2 pt-6">
         <h1 className="text-2xl font-semibold text-ink">Welcome back</h1>
-        <p className="text-base text-text-secondary">Sign in to your readiness workspace.</p>
+        <p className="text-base text-text-secondary">Sign in to {audience}.</p>
       </header>
 
       <form
@@ -171,12 +177,18 @@ export function SignInForm({ redirectTo }: { redirectTo: string }) {
         </Link>
       </p>
 
-      <p className="mt-auto text-center text-sm text-text-secondary">
-        New here?{" "}
-        <Link href="/sign-up" className="font-medium text-primary-text underline-offset-4 hover:underline">
-          Create an account
-        </Link>
-      </p>
+      {audience === "your readiness workspace" ? (
+        <p className="mt-auto text-center text-sm text-text-secondary">
+          New here?{" "}
+          <Link href="/sign-up" className="font-medium text-primary-text underline-offset-4 hover:underline">
+            Create an account
+          </Link>
+        </p>
+      ) : (
+        <p className="mt-auto text-center text-sm text-text-secondary">
+          Authorized KoiTecc administrator access only.
+        </p>
+      )}
     </div>
   );
 }

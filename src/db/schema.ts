@@ -45,6 +45,33 @@ export const organizations = sqliteTable(
   (table) => [uniqueIndex("organizations_user_unique").on(table.userId)],
 );
 
+export const koiteccAssociates = sqliteTable("koitecc_associates", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  title: text("title").notNull(),
+  active: integer("active", { mode: "boolean" }).notNull().default(true),
+  createdAt: text("created_at").notNull(),
+});
+
+export const organizationStaffAssignments = sqliteTable(
+  "organization_staff_assignments",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    associateId: text("associate_id")
+      .notNull()
+      .references(() => koiteccAssociates.id, { onDelete: "cascade" }),
+    createdAt: text("created_at").notNull(),
+  },
+  (table) => [
+    uniqueIndex("organization_staff_assignment_unique").on(table.organizationId, table.associateId),
+    index("organization_staff_assignments_org_idx").on(table.organizationId),
+  ],
+);
+
 export const submissions = sqliteTable(
   "submissions",
   {

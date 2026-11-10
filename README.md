@@ -43,6 +43,7 @@ Set `ANTHROPIC_API_KEY` in `.env.local` and restart. The reviewer and scanner us
 - **SB 2610 program** — tiers the expected security program by headcount and builds an evidence binder dossier (`/sb2610`).
 - **Standards & Policy Radar** — a relevance-scored feed of standards/policy updates for the org's profile (`/radar`).
 - **Reviewer task inbox** — durable in-app records of help requests from the scam checker and incident flows (`/reviewer-tasks`).
+- **KoiTecc administrator workspace** — separate staff sign-in (`/koitecc/sign-in`), organization portfolio, and associate assignment (`/koitecc`). Run `pnpm koitecc:setup -- your-account@example.com` after creating an account to promote that account and seed demo associates. No public KoiTecc staff sign-up is provided.
 - **Tamper-evident ledger** — a hash-chained audit ledger records evidence, verdicts, incidents, and help requests.
 
 Auth: email/password via Better Auth (`/sign-in`, `/sign-up`); each account owns one organization and all reads are tenant-scoped.
