@@ -122,6 +122,17 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
     ON organization_staff_assignments (organization_id, associate_id)`,
   `CREATE INDEX IF NOT EXISTS organization_staff_assignments_org_idx
     ON organization_staff_assignments (organization_id)`,
+  `CREATE TABLE IF NOT EXISTS associate_updates (
+    id TEXT PRIMARY KEY,
+    organization_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+    associate_id TEXT NOT NULL REFERENCES koitecc_associates(id) ON DELETE CASCADE,
+    message TEXT NOT NULL,
+    created_at TEXT NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS associate_updates_org_idx
+    ON associate_updates (organization_id)`,
+  `CREATE INDEX IF NOT EXISTS associate_updates_associate_idx
+    ON associate_updates (associate_id)`,
   `CREATE TABLE IF NOT EXISTS submissions (
     id TEXT PRIMARY KEY,
     org_id TEXT NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,

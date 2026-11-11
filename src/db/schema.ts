@@ -72,6 +72,25 @@ export const organizationStaffAssignments = sqliteTable(
   ],
 );
 
+export const associateUpdates = sqliteTable(
+  "associate_updates",
+  {
+    id: text("id").primaryKey(),
+    organizationId: text("organization_id")
+      .notNull()
+      .references(() => organizations.id, { onDelete: "cascade" }),
+    associateId: text("associate_id")
+      .notNull()
+      .references(() => koiteccAssociates.id, { onDelete: "cascade" }),
+    message: text("message").notNull(),
+    createdAt: text("created_at").notNull(),
+  },
+  (table) => [
+    index("associate_updates_org_idx").on(table.organizationId),
+    index("associate_updates_associate_idx").on(table.associateId),
+  ],
+);
+
 export const submissions = sqliteTable(
   "submissions",
   {

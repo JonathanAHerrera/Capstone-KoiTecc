@@ -10,6 +10,7 @@ const HIDDEN_ROUTE_PREFIXES = ["/sign-in", "/sign-up", "/koitecc/sign-in", "/onb
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const isAgentWorkspace = pathname === "/coordinator" || pathname.startsWith("/interview/");
+  const isKoiTeccWorkspace = pathname === "/koitecc" || pathname.startsWith("/koitecc/");
 
   const showSidebar =
     pathname !== "/" &&
@@ -25,7 +26,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       >
         {children}
       </main>
-      {showSidebar ? <AskKoiTeccButton /> : null}
+      {showSidebar && !isKoiTeccWorkspace ? <AskKoiTeccButton /> : null}
     </div>
   );
 }

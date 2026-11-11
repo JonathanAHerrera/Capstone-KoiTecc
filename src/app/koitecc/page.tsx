@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { assignKoiTeccAssociateAction } from "@/app/koitecc/actions";
+import Link from "next/link";
+import { X } from "lucide-react";
+import {
+  assignKoiTeccAssociateAction,
+  removeKoiTeccAssociateAction,
+} from "@/app/koitecc/actions";
 import { requireKoiTeccAdmin, listKoiTeccAssociates, listKoiTeccOrganizations } from "@/lib/koitecc";
 
 export const metadata: Metadata = { title: "KoiTecc administrator workspace — CMMC Ready" };
@@ -9,7 +14,12 @@ function formatDate(timestamp: string): string {
   return new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(timestamp));
 }
 
-export default async function KoiTeccAdminPage() {
+type KoiTeccAdminPageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function KoiTeccAdminPage({ searchParams }: KoiTeccAdminPageProps) {
+  const resolvedSearchParams = await searchParams;
   const administrator = await requireKoiTeccAdmin();
   const [organizations, associates] = await Promise.all([
     listKoiTeccOrganizations(),
@@ -25,6 +35,17 @@ export default async function KoiTeccAdminPage() {
           Signed in as {administrator.name}. Monitor client accounts and assign KoiTecc associates.
         </p>
       </header>
+
+      {resolvedSearchParams.assignment === "success" ? (
+        <p className="rounded-card border border-success/40 bg-success/10 px-4 py-3 text-sm text-success-ink">
+          Associate assignment saved. Refreshing this page will keep the assignment.
+        </p>
+      ) : null}
+      {resolvedSearchParams.assignment === "removed" ? (
+        <p className="rounded-card border border-border bg-surface-alt px-4 py-3 text-sm text-text-secondary">
+          Associate assignment removed.
+        </p>
+      ) : null}
 
       <section className="grid gap-3 sm:grid-cols-3">
         <div className="rounded-card border border-border bg-surface p-4">
@@ -78,12 +99,33 @@ export default async function KoiTeccAdminPage() {
                   </span>
                 </div>
                 <div className="mt-5 border-t border-border-subtle pt-4">
-                  <p className="caption text-muted">Assigned associates</p>
+                  <p className="text-sm font-semibold text-ink">Assigned associates</p>
                   {organization.associates.length > 0 ? (
-                    <ul className="mt-2 flex flex-wrap gap-2">
+                    <ul className="mt-3 flex flex-wrap gap-2">
                       {organization.associates.map((associate) => (
-                        <li key={associate.id} className="rounded-full bg-accent/10 px-3 py-1.5 text-sm text-primary-text">
-                          {associate.name} · {associate.title}
+                        <li
+                          key={associate.id}
+                          className="flex items-center gap-1 rounded-full border-2 border-accent bg-accent/10 pl-3 text-sm font-medium text-primary-text"
+                        >
+                          <span>{associate.name} · {associate.title}</span>
+                          <Link
+                            href={`/koitecc/associates/${associate.id}`}
+                            className="focus-outline rounded-full px-2 py-1 text-xs underline-offset-4 hover:underline"
+                          >
+                            View workspace
+                          </Link>
+                          <form action={removeKoiTeccAssociateAction}>
+                            <input type="hidden" name="organizationId" value={organization.id} />
+                            <input type="hidden" name="associateId" value={associate.id} />
+                            <button
+                              type="submit"
+                              aria-label={`Remove ${associate.name} from ${organization.name}`}
+                              title={`Remove ${associate.name}`}
+                              className="focus-outline flex size-8 items-center justify-center rounded-full text-primary-text transition-colors hover:bg-accent hover:text-white"
+                            >
+                              <X className="size-4" aria-hidden />
+                            </button>
+                          </form>
                         </li>
                       ))}
                     </ul>
@@ -103,7 +145,10 @@ export default async function KoiTeccAdminPage() {
                         ))}
                       </select>
                     </label>
-                    <button type="submit" className="min-h-11 rounded-button bg-accent px-4 text-sm font-semibold text-white">
+                    <button
+                      type="submit"
+                      className="focus-outline min-h-11 rounded-button border-2 border-accent bg-surface px-4 text-sm font-semibold text-accent transition-[background-color,box-shadow,color] hover:bg-success/10"
+                    >
                       Assign
                     </button>
                   </form>

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ChevronRight, Info, PiggyBank, Sparkles } from "lucide-react";
+import { Bell, ChevronRight, Info, PiggyBank, Sparkles } from "lucide-react";
 import { buildPathViewModel } from "@/components/path/build-path-view-model";
 import { NeedsAttentionList } from "@/components/path/needs-attention-list";
 import { parseCelebrationIntensity } from "@/components/path/parse-celebration-intensity";
@@ -18,6 +18,7 @@ import { getFamilies, getPracticeCountForLevel } from "@/lib/practices";
 import type { CmmcLevel } from "@/lib/practice-types";
 import { computeProgressForFramework, computeProgressFromStatuses } from "@/lib/progress";
 import { listPracticeStatuses } from "@/lib/submissions";
+import { listAssociateUpdatesForCurrentOrganization } from "@/lib/koitecc";
 
 const LEVEL_TWO_TOTAL_REQUIREMENT_COUNT = 110;
 
@@ -31,10 +32,11 @@ export default async function PathHomePage({ searchParams }: PathHomePageProps) 
   const organization = await getOrganization();
   if (!organization) redirect("/onboarding");
 
-  const [resolvedSearchParams, statuses, interviewFindings] = await Promise.all([
+  const [resolvedSearchParams, statuses, interviewFindings, associateUpdates] = await Promise.all([
     searchParams,
     listPracticeStatuses(),
     getInterviewFindingStatuses(),
+    listAssociateUpdatesForCurrentOrganization(),
   ]);
   const celebrationIntensity = parseCelebrationIntensity(resolvedSearchParams.celebrate);
   const targetLevel = organization.targetLevel as CmmcLevel;
@@ -63,6 +65,25 @@ export default async function PathHomePage({ searchParams }: PathHomePageProps) 
       <PathTopBar organizationName={organization.name} targetLevel={targetLevel} />
 
       <PathHeroCard progress={progress} />
+
+      {associateUpdates.length > 0 ? (
+        <section className="rounded-card border border-accent/30 bg-accent/5 px-4 py-4">
+          <div className="flex items-center gap-2">
+            <Bell className="size-5 text-accent" aria-hidden />
+            <h2 className="font-semibold text-ink">Updates from your KoiTecc associate</h2>
+          </div>
+          <ul className="mt-3 flex flex-col gap-3">
+            {associateUpdates.slice(0, 3).map((update) => (
+              <li key={update.id} className="border-t border-accent/15 pt-3 first:border-t-0 first:pt-0">
+                <p className="text-sm text-text-secondary">{update.message}</p>
+                <p className="caption mt-1.5 text-muted">
+                  {update.associateName} · {new Intl.DateTimeFormat("en", { dateStyle: "medium" }).format(new Date(update.createdAt))}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       <Link
         href="/coordinator"

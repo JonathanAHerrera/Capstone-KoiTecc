@@ -44,6 +44,7 @@ Set `ANTHROPIC_API_KEY` in `.env.local` and restart. The reviewer and scanner us
 - **Standards & Policy Radar** — a relevance-scored feed of standards/policy updates for the org's profile (`/radar`).
 - **Reviewer task inbox** — durable in-app records of help requests from the scam checker and incident flows (`/reviewer-tasks`).
 - **KoiTecc administrator workspace** — separate staff sign-in (`/koitecc/sign-in`), organization portfolio, and associate assignment (`/koitecc`). Run `pnpm koitecc:setup -- your-account@example.com` after creating an account to promote that account and seed demo associates. No public KoiTecc staff sign-up is provided.
+- **Associate workspace** — administrator-accessible assigned-company detail view (`/koitecc/associates/[associateId]`) with requirement progress, client notes, open concerns, and persisted announcements/updates.
 - **Tamper-evident ledger** — a hash-chained audit ledger records evidence, verdicts, incidents, and help requests.
 
 Auth: email/password via Better Auth (`/sign-in`, `/sign-up`); each account owns one organization and all reads are tenant-scoped.
