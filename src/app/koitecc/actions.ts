@@ -7,6 +7,7 @@ import {
   assignKoiTeccAssociate,
   createAssociateUpdate,
   removeKoiTeccAssociate,
+  resolveAssociateConcern,
 } from "@/lib/koitecc";
 
 const AssignmentInputSchema = z.object({
@@ -59,4 +60,27 @@ export async function createAssociateUpdateAction(formData: FormData): Promise<v
   );
   revalidatePath(`/koitecc/associates/${parsed.data.associateId}`);
   redirect(`/koitecc/associates/${parsed.data.associateId}?update=success`);
+}
+
+const ResolveConcernInputSchema = AssignmentInputSchema.extend({
+  concernId: z.string().trim().min(1),
+  concernKind: z.enum(["reviewer_task", "incident"]),
+});
+
+export async function resolveAssociateConcernAction(formData: FormData): Promise<void> {
+  const parsed = ResolveConcernInputSchema.safeParse({
+    associateId: formData.get("associateId"),
+    organizationId: formData.get("organizationId"),
+    concernId: formData.get("concernId"),
+    concernKind: formData.get("concernKind"),
+  });
+  if (!parsed.success) throw new Error("Could not identify this concern.");
+
+  await resolveAssociateConcern(
+    parsed.data.associateId,
+    parsed.data.organizationId,
+    parsed.data.concernId,
+    parsed.data.concernKind,
+  );
+  revalidatePath(`/koitecc/associates/${parsed.data.associateId}`);
 }

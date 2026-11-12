@@ -13,7 +13,7 @@ import {
   type OrganizationRow,
 } from "@/db/schema";
 import { computeProgressFromStatuses, type ProgressSummary } from "@/lib/progress";
-import { getPracticesForLevel, getPractice } from "@/lib/practices";
+import { getFamilies, getPracticesForLevel, getPractice } from "@/lib/practices";
 import type { DerivedPracticeStatus } from "@/lib/practice-types";
 import { requireOrganization } from "@/lib/org";
 import { getSessionUser } from "@/lib/session";
@@ -41,12 +41,33 @@ export type AssociateWorkspaceConcern = {
   detail: string;
   status: string;
   createdAt: string;
+  organizationId: string;
 };
 
 export type AssociateWorkspaceUpdate = typeof associateUpdates.$inferSelect;
 
+export type AssociateWorkspacePractice = {
+  id: string;
+  title: string;
+  familyCode: string;
+  familyName: string;
+  status: DerivedPracticeStatus;
+};
+
+export type AssociateWorkspaceFamily = {
+  code: string;
+  name: string;
+  completedCount: number;
+  totalCount: number;
+  completedPractices: AssociateWorkspacePractice[];
+  remainingPractices: AssociateWorkspacePractice[];
+};
+
 export type AssociateWorkspaceOrganization = KoiTeccOrganization & {
   progress: ProgressSummary;
+  currentFamily: { code: string; name: string } | null;
+  currentPractice: AssociateWorkspacePractice | null;
+  families: AssociateWorkspaceFamily[];
   notes: AssociateWorkspaceNote[];
   concerns: AssociateWorkspaceConcern[];
   updates: AssociateWorkspaceUpdate[];
@@ -240,6 +261,29 @@ export async function listAssociateWorkspaceOrganizations(
             updatedAt: submission.updatedAt,
           };
         });
+      const families = getFamilies(organization.targetLevel).map((family) => {
+        const familyPractices = family.practices.map((practice) => ({
+          id: practice.id,
+          title: practice.title,
+          familyCode: family.code,
+          familyName: family.name,
+          status: statuses[practice.id],
+        }));
+        return {
+          code: family.code,
+          name: family.name,
+          completedCount: familyPractices.filter((practice) => practice.status === "accepted").length,
+          totalCount: familyPractices.length,
+          completedPractices: familyPractices.filter((practice) => practice.status === "accepted"),
+          remainingPractices: familyPractices.filter((practice) => practice.status !== "accepted"),
+        };
+      });
+      const currentPractice = families
+        .flatMap((family) => family.remainingPractices)
+        .find((practice) => practice.status !== "accepted") ?? null;
+      const currentFamily = currentPractice
+        ? { code: currentPractice.familyCode, name: currentPractice.familyName }
+        : null;
       const concerns: AssociateWorkspaceConcern[] = [
         ...taskRows.map((task) => ({
           id: task.id,
@@ -248,6 +292,7 @@ export async function listAssociateWorkspaceOrganizations(
           detail: "Client help request requires follow-up.",
           status: task.status,
           createdAt: task.createdAt,
+          organizationId: organization.id,
         })),
         ...incidentRows.map((incident) => ({
           id: incident.id,
@@ -256,18 +301,65 @@ export async function listAssociateWorkspaceOrganizations(
           detail: incident.notes ?? "No additional incident notes were provided.",
           status: incident.status,
           createdAt: incident.createdAt,
+          organizationId: organization.id,
         })),
       ].sort((first, second) => second.createdAt.localeCompare(first.createdAt));
 
       return {
         ...organization,
         progress: computeProgressFromStatuses(organization.targetLevel, statuses),
+        currentFamily,
+        currentPractice,
+        families,
         notes,
         concerns,
         updates: updateRows,
       };
     }),
   );
+}
+
+export async function resolveAssociateConcern(
+  associateId: string,
+  organizationId: string,
+  concernId: string,
+  concernKind: AssociateWorkspaceConcern["kind"],
+): Promise<void> {
+  await requireKoiTeccAdmin();
+  const db = await getDb();
+  const [assignment] = await db
+    .select({ id: organizationStaffAssignments.id })
+    .from(organizationStaffAssignments)
+    .where(
+      and(
+        eq(organizationStaffAssignments.organizationId, organizationId),
+        eq(organizationStaffAssignments.associateId, associateId),
+      ),
+    )
+    .limit(1);
+  if (!assignment) throw new Error("This associate is not assigned to that organization.");
+
+  if (concernKind === "reviewer_task") {
+    const [task] = await db
+      .update(reviewerTasks)
+      .set({ status: "closed", updatedAt: nowIsoTimestamp() })
+      .where(
+        and(
+          eq(reviewerTasks.id, concernId),
+          eq(reviewerTasks.orgId, organizationId),
+        ),
+      )
+      .returning({ id: reviewerTasks.id });
+    if (!task) throw new Error("Reviewer concern not found.");
+    return;
+  }
+
+  const [incident] = await db
+    .update(incidents)
+    .set({ status: "closed", updatedAt: nowIsoTimestamp() })
+    .where(and(eq(incidents.id, concernId), eq(incidents.orgId, organizationId)))
+    .returning({ id: incidents.id });
+  if (!incident) throw new Error("Incident concern not found.");
 }
 
 export async function createAssociateUpdate(
