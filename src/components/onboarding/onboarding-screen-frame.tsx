@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { ChevronLeft } from "lucide-react";
+import Link from "next/link";
 import { ProgressBar } from "@/components/ui/progress-bar";
 
 export type OnboardingScreenFrameProps = {
@@ -24,6 +25,12 @@ export function OnboardingScreenFrame({
       className="flex min-h-dvh flex-col px-4 pt-[calc(8px+env(safe-area-inset-top))]"
       style={{ paddingBottom: `calc(${bottomPaddingPx}px + env(safe-area-inset-bottom))` }}
     >
+      <Link
+        href="/koitecc/sign-in"
+        className="focus-outline fixed right-4 top-[calc(12px+env(safe-area-inset-top))] z-40 flex min-h-11 items-center rounded-full border-2 border-accent bg-surface px-4 text-sm font-semibold text-primary-text shadow-float hover:bg-accent/10 sm:right-6"
+      >
+        Admin sign in
+      </Link>
       <div className="flex h-12 items-center gap-2">
         {onBack ? (
           <button

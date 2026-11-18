@@ -1,4 +1,5 @@
 import { Camera, ClipboardCheck, ListChecks, MapPin, ShieldCheck, Timer } from "lucide-react";
+import Link from "next/link";
 import { BigButton } from "@/components/ui/big-button";
 import { BottomActionBar } from "@/components/ui/bottom-action-bar";
 
@@ -19,6 +20,12 @@ export function WelcomeScreen({ hasExistingPath, onStart }: WelcomeScreenProps) 
       className="flex min-h-dvh flex-col px-4 pt-[calc(24px+env(safe-area-inset-top))]"
       style={{ paddingBottom: `calc(${hasExistingPath ? 176 : 112}px + env(safe-area-inset-bottom))` }}
     >
+      <Link
+        href="/koitecc/sign-in"
+        className="focus-outline fixed right-4 top-[calc(12px+env(safe-area-inset-top))] z-40 flex min-h-11 items-center rounded-full border-2 border-accent bg-surface px-4 text-sm font-semibold text-primary-text shadow-float hover:bg-accent/10 sm:right-6"
+      >
+        Admin sign in
+      </Link>
       <div className="flex flex-1 flex-col items-center justify-center gap-8 text-center">
         <span
           className="flex size-20 items-center justify-center rounded-full bg-primary text-canvas shadow-[var(--shadow-primary-glow)]"

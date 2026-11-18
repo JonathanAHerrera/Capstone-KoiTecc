@@ -3,6 +3,8 @@ import { nanoid } from "nanoid";
 import { getDb, nowIsoTimestamp } from "@/db/client";
 import {
   associateUpdates,
+  evidenceFiles,
+  reviews,
   incidents,
   koiteccAssociates,
   organizationStaffAssignments,
@@ -91,14 +93,268 @@ export async function requireKoiTeccAdmin(): Promise<{ id: string; name: string;
   return { id: staffUser.id, name: staffUser.name, email: staffUser.email };
 }
 
+export async function getKoiTeccAdminForCurrentUser(): Promise<{
+  id: string;
+  name: string;
+  email: string;
+} | null> {
+  const sessionUser = await getSessionUser();
+  if (!sessionUser) return null;
+
+  const db = await getDb();
+  const [staffUser] = await db
+    .select({ id: user.id, name: user.name, email: user.email, role: user.role })
+    .from(user)
+    .where(eq(user.id, sessionUser.id))
+    .limit(1);
+
+  return staffUser?.role === "admin"
+    ? { id: staffUser.id, name: staffUser.name, email: staffUser.email }
+    : null;
+}
+
+export async function linkKoiTeccAssociateForCurrentUser(): Promise<KoiTeccAssociate> {
+  const sessionUser = await getSessionUser();
+  if (!sessionUser) throw new Error("Not authenticated.");
+
+  const db = await getDb();
+  const [associate] = await db
+    .select()
+    .from(koiteccAssociates)
+    .where(
+      and(
+        eq(koiteccAssociates.active, true),
+        eq(koiteccAssociates.email, sessionUser.email.toLowerCase()),
+      ),
+    )
+    .limit(1);
+  if (!associate) {
+    throw new Error("No active KoiTecc associate record matches this account.");
+  }
+  if (associate.userId && associate.userId !== sessionUser.id) {
+    throw new Error("This associate record is already linked to another account.");
+  }
+
+  await db
+    .update(koiteccAssociates)
+    .set({ userId: sessionUser.id })
+    .where(eq(koiteccAssociates.id, associate.id));
+  await db
+    .update(user)
+    .set({ role: "associate" })
+    .where(eq(user.id, sessionUser.id));
+
+  return { ...associate, userId: sessionUser.id };
+}
+
+async function requireKoiTeccWorkspaceAccess(
+  associateId: string,
+): Promise<KoiTeccAssociate> {
+  const sessionUser = await getSessionUser();
+  if (!sessionUser) throw new Error("Not authenticated.");
+
+  const db = await getDb();
+  const [staffUser] = await db
+    .select({ id: user.id, email: user.email, role: user.role })
+    .from(user)
+    .where(eq(user.id, sessionUser.id))
+    .limit(1);
+  const [associate] = await db
+    .select()
+    .from(koiteccAssociates)
+    .where(and(eq(koiteccAssociates.id, associateId), eq(koiteccAssociates.active, true)))
+    .limit(1);
+
+  if (!associate) throw new Error("Associate not found.");
+  if (staffUser?.role === "admin") return associate;
+  if (
+    staffUser?.role !== "associate" ||
+    (associate.userId !== staffUser.id && associate.email.toLowerCase() !== staffUser.email.toLowerCase())
+  ) {
+    throw new Error("Associate workspace access is required.");
+  }
+  return associate;
+}
+
+export async function getAssociateWorkspaceForCurrentUser(): Promise<KoiTeccAssociate> {
+  const sessionUser = await getSessionUser();
+  if (!sessionUser) throw new Error("Not authenticated.");
+  const db = await getDb();
+  const [associate] = await db
+    .select()
+    .from(koiteccAssociates)
+    .where(
+      and(
+        eq(koiteccAssociates.active, true),
+        eq(koiteccAssociates.email, sessionUser.email),
+      ),
+    )
+    .limit(1);
+  if (!associate) throw new Error("No active associate profile is linked to this account.");
+  return requireKoiTeccWorkspaceAccess(associate.id);
+}
+
 export async function listKoiTeccAssociates(): Promise<KoiTeccAssociate[]> {
   await requireKoiTeccAdmin();
   const db = await getDb();
+  const legacyTaylor = await db
+    .select({ id: koiteccAssociates.id })
+    .from(koiteccAssociates)
+    .where(eq(koiteccAssociates.email, "taylor.brooks@koitecc.example"));
+  if (legacyTaylor.length > 0) {
+    await db
+      .delete(organizationStaffAssignments)
+      .where(inArray(
+        organizationStaffAssignments.associateId,
+        legacyTaylor.map((associate) => associate.id),
+      ));
+    await db
+      .delete(koiteccAssociates)
+      .where(inArray(
+        koiteccAssociates.id,
+        legacyTaylor.map((associate) => associate.id),
+      ));
+  }
+
+  await db
+    .update(koiteccAssociates)
+    .set({ name: "Jordan Lee (Example)", title: "Cybersecurity Associate", active: true })
+    .where(eq(koiteccAssociates.email, "jordan.lee@koitecc.example"));
+  await db
+    .update(koiteccAssociates)
+    .set({ name: "Morgan Patel (Example)", title: "Readiness Advisor", active: true })
+    .where(eq(koiteccAssociates.email, "morgan.patel@koitecc.example"));
+
   return db.select().from(koiteccAssociates).where(eq(koiteccAssociates.active, true)).orderBy(koiteccAssociates.name);
 }
 
 export async function listKoiTeccOrganizations(): Promise<KoiTeccOrganization[]> {
   await requireKoiTeccAdmin();
+  return listKoiTeccOrganizationsFromDatabase();
+}
+
+const DEMO_ORGANIZATION_IDS = [
+  "koitecc-demo-organization-cedar",
+  "koitecc-demo-organization-harbor",
+] as const;
+
+export async function hasKoiTeccDemoData(): Promise<boolean> {
+  await requireKoiTeccAdmin();
+  const db = await getDb();
+  const demoOrganizations = await db
+    .select({ id: organizations.id })
+    .from(organizations)
+    .where(inArray(organizations.id, [...DEMO_ORGANIZATION_IDS]));
+  return demoOrganizations.length > 0;
+}
+
+export async function seedKoiTeccDemoData(): Promise<void> {
+  await requireKoiTeccAdmin();
+  const db = await getDb();
+  const timestamp = nowIsoTimestamp();
+
+  await db.insert(user).values([
+    {
+      id: "koitecc-demo-owner-cedar",
+      name: "Cedar Manufacturing (Example)",
+      email: "cedar-owner@koitecc.example",
+      role: "client",
+      emailVerified: false,
+    },
+    {
+      id: "koitecc-demo-owner-harbor",
+      name: "Harbor Consulting (Example)",
+      email: "harbor-owner@koitecc.example",
+      role: "client",
+      emailVerified: false,
+    },
+  ]).onConflictDoNothing();
+
+  await db.insert(organizations).values([
+    {
+      id: DEMO_ORGANIZATION_IDS[0],
+      userId: "koitecc-demo-owner-cedar",
+      name: "Cedar Manufacturing (Example)",
+      targetLevel: 1,
+      handlesCui: false,
+      employeeCount: "11-50",
+      itSetup: "mixed",
+      hasItProvider: true,
+      industry: "other",
+      takesCardPayments: false,
+      enabledFrameworks: '["cmmc"]',
+      createdAt: timestamp,
+    },
+    {
+      id: DEMO_ORGANIZATION_IDS[1],
+      userId: "koitecc-demo-owner-harbor",
+      name: "Harbor Consulting (Example)",
+      targetLevel: 2,
+      handlesCui: true,
+      employeeCount: "1-10",
+      itSetup: "cloud",
+      hasItProvider: true,
+      industry: "professional_services",
+      takesCardPayments: true,
+      enabledFrameworks: '["cmmc"]',
+      createdAt: timestamp,
+    },
+  ]).onConflictDoNothing();
+
+  await db.insert(koiteccAssociates).values([
+    {
+      id: "koitecc-demo-associate-jordan",
+      name: "Jordan Lee (Example)",
+      email: "jordan.lee@koitecc.example",
+      title: "Cybersecurity Associate",
+      active: true,
+      createdAt: timestamp,
+    },
+    {
+      id: "koitecc-demo-associate-morgan",
+      name: "Morgan Patel (Example)",
+      email: "morgan.patel@koitecc.example",
+      title: "Readiness Advisor",
+      active: true,
+      createdAt: timestamp,
+    },
+  ]).onConflictDoNothing();
+
+  await db.insert(submissions).values([
+    {
+      id: "koitecc-demo-cedar-accepted",
+      orgId: DEMO_ORGANIZATION_IDS[0],
+      practiceId: "AC.L1-b.1.i",
+      framework: "cmmc",
+      status: "accepted",
+      note: "Example evidence: the user list matches the company account directory.",
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
+    {
+      id: "koitecc-demo-cedar-needs-work",
+      orgId: DEMO_ORGANIZATION_IDS[0],
+      practiceId: "AC.L1-b.1.ii",
+      framework: "cmmc",
+      status: "needs_work",
+      note: "Example note: missing a dated list of former employee account removals.",
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
+    {
+      id: "koitecc-demo-harbor-under-review",
+      orgId: DEMO_ORGANIZATION_IDS[1],
+      practiceId: "AC.L1-b.1.i",
+      framework: "cmmc",
+      status: "submitted",
+      note: "Example submission for an associate workspace review.",
+      createdAt: timestamp,
+      updatedAt: timestamp,
+    },
+  ]).onConflictDoNothing();
+}
+
+async function listKoiTeccOrganizationsFromDatabase(): Promise<KoiTeccOrganization[]> {
   const db = await getDb();
   const organizationRows = await db
     .select({
@@ -138,7 +394,7 @@ export async function assignKoiTeccAssociate(
   organizationId: string,
   associateId: string,
 ): Promise<void> {
-  await requireKoiTeccAdmin();
+  await requireKoiTeccWorkspaceAccess(associateId);
   const db = await getDb();
   const [associate] = await db
     .select({ id: koiteccAssociates.id })
@@ -181,27 +437,82 @@ export async function removeKoiTeccAssociate(
     );
 }
 
+export async function deleteKoiTeccOrganization(organizationId: string): Promise<void> {
+  await requireKoiTeccAdmin();
+  const db = await getDb();
+  const [organization] = await db
+    .select({ id: organizations.id })
+    .from(organizations)
+    .where(eq(organizations.id, organizationId))
+    .limit(1);
+  if (!organization) throw new Error("Organization not found.");
+
+  await db.delete(organizationStaffAssignments)
+    .where(eq(organizationStaffAssignments.organizationId, organizationId));
+  const submissionRows = await db
+    .select({ id: submissions.id })
+    .from(submissions)
+    .where(eq(submissions.orgId, organizationId));
+  const submissionIds = submissionRows.map((submission) => submission.id);
+  if (submissionIds.length > 0) {
+    await db.delete(reviews).where(inArray(reviews.submissionId, submissionIds));
+    await db.delete(evidenceFiles).where(inArray(evidenceFiles.submissionId, submissionIds));
+  }
+  await db.delete(submissions).where(eq(submissions.orgId, organizationId));
+  await db.delete(organizations).where(eq(organizations.id, organizationId));
+}
+
+export async function createKoiTeccAssociate(
+  name: string,
+  email: string,
+  title: string,
+): Promise<void> {
+  await requireKoiTeccAdmin();
+  const normalizedName = name.trim();
+  const normalizedEmail = email.trim().toLowerCase();
+  const normalizedTitle = title.trim();
+  if (normalizedName.length === 0 || normalizedEmail.length === 0 || normalizedTitle.length === 0) {
+    throw new Error("Enter the employee name, email, and title.");
+  }
+  const db = await getDb();
+  await db.insert(koiteccAssociates).values({
+    id: nanoid(),
+    name: normalizedName,
+    email: normalizedEmail,
+    title: normalizedTitle,
+    active: true,
+    createdAt: nowIsoTimestamp(),
+  });
+}
+
+export async function deleteKoiTeccAssociate(associateId: string): Promise<void> {
+  await requireKoiTeccAdmin();
+  const db = await getDb();
+  await db
+    .delete(organizationStaffAssignments)
+    .where(eq(organizationStaffAssignments.associateId, associateId));
+  await db
+    .delete(koiteccAssociates)
+    .where(eq(koiteccAssociates.id, associateId));
+}
+
 export async function getKoiTeccAssociate(
   associateId: string,
 ): Promise<KoiTeccAssociate | null> {
-  await requireKoiTeccAdmin();
-  const db = await getDb();
-  const [associate] = await db
-    .select()
-    .from(koiteccAssociates)
-    .where(and(eq(koiteccAssociates.id, associateId), eq(koiteccAssociates.active, true)))
-    .limit(1);
-  return associate ?? null;
+  try {
+    return await requireKoiTeccWorkspaceAccess(associateId);
+  } catch (error) {
+    if (error instanceof Error && error.message === "Associate not found.") return null;
+    throw error;
+  }
 }
 
 export async function listAssociateWorkspaceOrganizations(
   associateId: string,
 ): Promise<AssociateWorkspaceOrganization[]> {
-  await requireKoiTeccAdmin();
-  const associate = await getKoiTeccAssociate(associateId);
-  if (!associate) throw new Error("Associate not found.");
+  await requireKoiTeccWorkspaceAccess(associateId);
 
-  const organizations = (await listKoiTeccOrganizations()).filter((organization) =>
+  const organizations = (await listKoiTeccOrganizationsFromDatabase()).filter((organization) =>
     organization.associates.some((assignedAssociate) => assignedAssociate.id === associateId),
   );
   const db = await getDb();
@@ -367,9 +678,7 @@ export async function createAssociateUpdate(
   organizationId: string,
   message: string,
 ): Promise<void> {
-  await requireKoiTeccAdmin();
-  const associate = await getKoiTeccAssociate(associateId);
-  if (!associate) throw new Error("Associate not found.");
+  await requireKoiTeccWorkspaceAccess(associateId);
 
   const db = await getDb();
   const [assignment] = await db

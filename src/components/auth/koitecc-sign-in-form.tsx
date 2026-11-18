@@ -3,5 +3,11 @@
 import { SignInForm } from "@/components/auth/sign-in-form";
 
 export function KoiTeccSignInForm() {
-  return <SignInForm redirectTo="/koitecc" audience="KoiTecc administrators" />;
+  return (
+    <SignInForm
+      redirectTo="/koitecc"
+      audience="KoiTecc administrators"
+      signUpHref="/koitecc/sign-up"
+    />
+  );
 }

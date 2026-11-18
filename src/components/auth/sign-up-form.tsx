@@ -18,10 +18,20 @@ type SignUpErrorResponse = {
   };
 };
 
-export function SignUpForm({ redirectTo }: { redirectTo: string }) {
+export function SignUpForm({
+  redirectTo,
+  signInHref = "/sign-in",
+  initialEmail,
+  lockEmail = false,
+}: {
+  redirectTo: string;
+  signInHref?: string;
+  initialEmail?: string;
+  lockEmail?: boolean;
+}) {
   const router = useRouter();
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(initialEmail ?? "");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [creatingAccount, setCreatingAccount] = useState(false);
@@ -119,6 +129,7 @@ export function SignUpForm({ redirectTo }: { redirectTo: string }) {
           autoComplete="email"
           required
           autoCapitalize="none"
+          readOnly={lockEmail}
           inputMode="email"
           placeholder="you@company.com"
           enterKeyHint="next"
@@ -156,7 +167,7 @@ export function SignUpForm({ redirectTo }: { redirectTo: string }) {
 
       <p className="mt-auto text-center text-sm text-text-secondary">
         Already have an account?{" "}
-        <Link href="/sign-in" className="font-medium text-primary-text underline-offset-4 hover:underline">
+        <Link href={signInHref} className="font-medium text-primary-text underline-offset-4 hover:underline">
           Sign in
         </Link>
       </p>

@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { X } from "lucide-react";
+import { DemoDataPopover } from "@/components/koitecc/demo-data-popover";
+import { DismissibleSuccessBanner } from "@/components/koitecc/dismissible-success-banner";
+import { OrganizationDeleteButton } from "@/components/koitecc/organization-delete-button";
 import {
   assignKoiTeccAssociateAction,
   removeKoiTeccAssociateAction,
 } from "@/app/koitecc/actions";
-import { requireKoiTeccAdmin, listKoiTeccAssociates, listKoiTeccOrganizations } from "@/lib/koitecc";
+import {
+  requireKoiTeccAdmin,
+  listKoiTeccAssociates,
+  listKoiTeccOrganizations,
+} from "@/lib/koitecc";
 
 export const metadata: Metadata = { title: "KoiTecc administrator workspace — CMMC Ready" };
 export const dynamic = "force-dynamic";
@@ -28,6 +35,7 @@ export default async function KoiTeccAdminPage({ searchParams }: KoiTeccAdminPag
 
   return (
     <div className="flex min-h-dvh flex-col gap-6 px-4 pb-[calc(32px+env(safe-area-inset-bottom))] pt-[calc(16px+env(safe-area-inset-top))]">
+      <DemoDataPopover />
       <header className="border-b border-border-subtle pb-5">
         <p className="caption text-muted">KOITECC ADMINISTRATOR WORKSPACE</p>
         <h1 className="mt-2 text-[28px] font-semibold tracking-[-0.03em] text-ink">Partner organizations</h1>
@@ -46,16 +54,25 @@ export default async function KoiTeccAdminPage({ searchParams }: KoiTeccAdminPag
           Associate assignment removed.
         </p>
       ) : null}
+      <DismissibleSuccessBanner
+        visible={resolvedSearchParams.demo === "loaded"}
+        message="Example organizations and associates loaded."
+      />
+      <DismissibleSuccessBanner
+        visible={resolvedSearchParams.organization === "deleted"}
+        message="Organization deleted."
+      />
 
       <section className="grid gap-3 sm:grid-cols-3">
         <div className="rounded-card border border-border bg-surface p-4">
           <p className="caption text-muted">Organizations</p>
           <p className="mt-1 text-2xl font-semibold text-ink">{organizations.length}</p>
         </div>
-        <div className="rounded-card border border-border bg-surface p-4">
+        <Link href="/koitecc/employees" className="focus-outline rounded-card border border-border bg-surface p-4 transition-colors hover:border-accent hover:bg-accent/5">
           <p className="caption text-muted">Active associates</p>
           <p className="mt-1 text-2xl font-semibold text-ink">{associates.length}</p>
-        </div>
+          <p className="mt-2 text-sm font-medium text-primary-text">Employee Management</p>
+        </Link>
         <div className="rounded-card border border-border bg-surface p-4">
           <p className="caption text-muted">Unassigned organizations</p>
           <p className="mt-1 text-2xl font-semibold text-ink">
@@ -79,13 +96,19 @@ export default async function KoiTeccAdminPage({ searchParams }: KoiTeccAdminPag
           <ul className="grid gap-4">
             {organizations.map((organization) => (
               <li key={organization.id} className="rounded-card border border-border bg-surface p-5">
-                <div className="flex flex-col gap-1">
-                  <h3 className="text-lg font-semibold text-ink">{organization.name}</h3>
-                  <p className="text-sm text-text-secondary">
-                    Account owner: {organization.ownerName ?? "Legacy account"}{" "}
-                    {organization.ownerEmail ? `(${organization.ownerEmail})` : ""}
-                  </p>
-                  <p className="caption text-muted">Registered {formatDate(organization.createdAt)}</p>
+                <div className="flex items-start gap-3">
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-lg font-semibold text-ink">{organization.name}</h3>
+                    <p className="text-sm text-text-secondary">
+                      Account owner: {organization.ownerName ?? "Legacy account"}{" "}
+                      {organization.ownerEmail ? `(${organization.ownerEmail})` : ""}
+                    </p>
+                    <p className="caption text-muted">Registered {formatDate(organization.createdAt)}</p>
+                  </div>
+                  <OrganizationDeleteButton
+                    organizationId={organization.id}
+                    organizationName={organization.name}
+                  />
                 </div>
                 <div className="mt-4 flex flex-wrap gap-2 text-sm">
                   <span className="status-chip border border-border bg-surface-alt text-text-secondary">
