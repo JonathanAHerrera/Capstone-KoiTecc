@@ -44,7 +44,7 @@ test.each([alice, associateUser, missingUser])("$name cannot read or mutate admi
       () => assignKoiTeccAssociate(aliceOrg, "jordan"), () => removeKoiTeccAssociate(aliceOrg, "jordan"),
       () => createAssociateUpdate("jordan", aliceOrg, "Unauthorized update"),
     ];
-    for (const action of forbidden) await expect(action()).rejects.toThrow("administrator access");
+    for (const action of forbidden) await expect(action()).rejects.toThrow("access is required");
   });
   expect(await (await getDb()).select().from(organizationStaffAssignments)).toHaveLength(0);
   expect(await (await getDb()).select().from(associateUpdates)).toHaveLength(0);

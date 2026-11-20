@@ -395,7 +395,7 @@ export async function assignKoiTeccAssociate(
   organizationId: string,
   associateId: string,
 ): Promise<void> {
-  await requireKoiTeccWorkspaceAccess(associateId);
+  await requireKoiTeccAdmin();
   const db = await getDb();
   const [associate] = await db
     .select({ id: koiteccAssociates.id })
