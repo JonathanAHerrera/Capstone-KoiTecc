@@ -4,7 +4,8 @@ import path from "node:path";
 import { afterAll, beforeAll, expect, test, vi } from "vitest";
 import { eq } from "drizzle-orm";
 import { user, verification } from "@/db/auth-schema";
-import { requireKoiTeccAdmin } from "@/lib/koitecc";
+import { approveKoiTeccAssociateAccount, getAssociateWorkspaceForCurrentUser, requireKoiTeccAdmin, revokeKoiTeccAssociateAccount } from "@/lib/koitecc";
+import { koiteccAssociates } from "@/db/schema";
 import { interviewWithMock } from "@/ai/interview-mock";
 import { closeDb, getDb } from "@/db/client";
 import { createOrganization as createOrganizationForSession } from "@/lib/org";
@@ -113,6 +114,35 @@ test("public signup ignores a requested admin role and cannot enter the staff wo
   const [stored] = await (await getDb()).select().from(user).where(eq(user.id, actor!.id));
   expect(stored.role).toBe("client");
   await expect(authenticated(requireKoiTeccAdmin)).rejects.toThrow("administrator access");
+});
+
+test("real signup cookies cannot claim employee access and obey approval and revocation without signing in again", async () => {
+  const db = await getDb();
+  const email = "pending-staff@cedar-machining.example";
+  await db.insert(koiteccAssociates).values({ id: "http-staff", name: "Pending Staff", email, title: "Advisor", createdAt: new Date().toISOString() });
+  const signup = await post("sign-up/email", { name: "Pending Staff", email, password, role: "associate" });
+  expect(signup.status).toBe(200);
+  const staffCookie = useSession(signup);
+  const staff = (await getSessionUser())!;
+  expect(staff.emailVerified).toBe(false);
+  await expect(authenticated(getAssociateWorkspaceForCurrentUser)).rejects.toThrow(/approval/i);
+  await expect(authenticated(() => approveKoiTeccAssociateAccount("http-staff", staff.id))).rejects.toThrow("administrator access");
+
+  const administratorSignup = await post("sign-up/email", { name: "Approval Admin", email: "approval-admin@cedar-machining.example", password });
+  expect(administratorSignup.status).toBe(200);
+  const administratorCookie = useSession(administratorSignup);
+  const administrator = (await getSessionUser())!;
+  // Bootstrap only the fixture administrator; public signup cannot assign this role.
+  await db.update(user).set({ role: "admin" }).where(eq(user.id, administrator.id));
+  await authenticated(() => approveKoiTeccAssociateAccount("http-staff", staff.id));
+
+  request.headers = new Headers({ cookie: staffCookie });
+  expect((await authenticated(getAssociateWorkspaceForCurrentUser)).id).toBe("http-staff");
+  request.headers = new Headers({ cookie: administratorCookie });
+  await authenticated(() => revokeKoiTeccAssociateAccount("http-staff"));
+  request.headers = new Headers({ cookie: staffCookie });
+  expect(await getSessionUser()).not.toBeNull();
+  await expect(authenticated(getAssociateWorkspaceForCurrentUser)).rejects.toThrow(/approval/i);
 });
 
 test("password recovery is private, single-use, and changes only the target account", async () => {

@@ -1,17 +1,47 @@
 import { beforeEach, expect, test, vi } from "vitest";
 import { revalidatePath } from "next/cache";
-import { assignKoiTeccAssociate, createAssociateUpdate, removeKoiTeccAssociate } from "@/lib/koitecc";
-import { assignKoiTeccAssociateAction, createAssociateUpdateAction, removeKoiTeccAssociateAction } from "./actions";
+import { approveKoiTeccAssociateAccount, revokeKoiTeccAssociateAccount, assignKoiTeccAssociate, createAssociateUpdate, removeKoiTeccAssociate } from "@/lib/koitecc";
+import { approveKoiTeccAssociateAccountAction, revokeKoiTeccAssociateAccountAction, assignKoiTeccAssociateAction, createAssociateUpdateAction, removeKoiTeccAssociateAction } from "./actions";
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("next/navigation", () => ({ redirect: (url: string) => { throw new Error(`REDIRECT:${url}`); } }));
-vi.mock("@/lib/koitecc", () => ({ assignKoiTeccAssociate: vi.fn(), removeKoiTeccAssociate: vi.fn(), createAssociateUpdate: vi.fn() }));
+vi.mock("@/lib/koitecc", () => ({ approveKoiTeccAssociateAccount: vi.fn(), revokeKoiTeccAssociateAccount: vi.fn(), assignKoiTeccAssociate: vi.fn(), removeKoiTeccAssociate: vi.fn(), createAssociateUpdate: vi.fn() }));
 const form = (values: Record<string, string>) => {
   const data = new FormData();
   for (const [key, value] of Object.entries(values)) data.set(key, value);
   return data;
 };
 beforeEach(() => { vi.resetAllMocks(); });
+
+test.each([
+  {},
+  { associateId: "employee", userId: "account" },
+  { associateId: " ", userId: "account", confirmIdentity: "on" },
+  { associateId: "employee", userId: " ", confirmIdentity: "on" },
+  { associateId: "employee", userId: "account", confirmIdentity: "false" },
+])("approval requires a specific account and explicit identity confirmation", async (values) => {
+  await expect(approveKoiTeccAssociateAccountAction(form(values as Record<string, string>))).rejects.toThrow("confirm");
+  expect(approveKoiTeccAssociateAccount).not.toHaveBeenCalled();
+  expect(revalidatePath).not.toHaveBeenCalled();
+});
+
+test.each([
+  { action: approveKoiTeccAssociateAccountAction, mutation: approveKoiTeccAssociateAccount, status: "approved", args: ["employee", "account"] },
+  { action: revokeKoiTeccAssociateAccountAction, mutation: revokeKoiTeccAssociateAccount, status: "revoked", args: ["employee"] },
+])("account access actions refresh the workspace only after authorized success", async ({ action, mutation, status, args }) => {
+  const values = form({ associateId: " employee ", userId: " account ", confirmIdentity: "on" });
+  vi.mocked(mutation).mockRejectedValueOnce(new Error("administrator access is required"));
+  await expect(action(values)).rejects.toThrow("administrator access");
+  expect(revalidatePath).not.toHaveBeenCalled();
+  await expect(action(values)).rejects.toThrow(`REDIRECT:/koitecc/employees?employee=${status}`);
+  expect(mutation).toHaveBeenLastCalledWith(...args);
+  expect(revalidatePath).toHaveBeenCalledWith("/koitecc", "layout");
+});
+
+test("revocation rejects a missing employee ID", async () => {
+  await expect(revokeKoiTeccAssociateAccountAction(form({}))).rejects.toThrow();
+  expect(revokeKoiTeccAssociateAccount).not.toHaveBeenCalled();
+});
 
 test.each([assignKoiTeccAssociateAction, removeKoiTeccAssociateAction])("assignment boundary rejects missing or blank IDs before mutations", async (action) => {
   const cases: Record<string, string>[] = [{}, { organizationId: "   ", associateId: "jordan" }, { organizationId: "client", associateId: "" }];

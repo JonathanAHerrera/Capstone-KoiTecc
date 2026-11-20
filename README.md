@@ -80,7 +80,9 @@ Each employee row also provides a signup link:
 
 `/koitecc/associate/sign-up?email=employee@example.com`
 
-The employee opens that link, creates an account with that email, and is redirected to `/koitecc/associate`. The signup server verifies that an active associate record matches the email, links it to the new user, and sets the user role to `associate`. If the employee opens the link while signed in to another account, the page offers sign-out or alternate-browser options rather than linking the wrong account.
+The employee opens that link, creates an account with that email, and reaches an awaiting-approval screen. An administrator must verify the person's identity through a trusted channel, then approve the specific account in Employee Management. Matching an email alone never grants staff access. Approval and revocation are audited; only administrators can assign organizations. Approved associates see only their assigned organizations. If the employee opens the link while signed in to another account, the page offers sign-out or alternate-browser options.
+
+Existing automatically linked associate accounts also require approval after upgrading. Administrators can revoke account access in Employee Management; subsequent requests are denied even when the account still has a signed-in session. Organization assignments remain in place for later reapproval.
 
 ## Scripts
 

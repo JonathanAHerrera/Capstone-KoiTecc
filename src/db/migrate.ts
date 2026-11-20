@@ -107,6 +107,8 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
   `CREATE TABLE IF NOT EXISTS koitecc_associates (
     id TEXT PRIMARY KEY,
     user_id TEXT REFERENCES user(id) ON DELETE SET NULL,
+    approved_at TEXT,
+    approved_by_user_id TEXT REFERENCES user(id) ON DELETE SET NULL,
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     title TEXT NOT NULL,
@@ -311,6 +313,8 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
 const ADDED_COLUMNS: readonly { table: string; column: string; definition: string }[] = [
   { table: "user", column: "role", definition: "TEXT NOT NULL DEFAULT 'client'" },
   { table: "koitecc_associates", column: "user_id", definition: "TEXT REFERENCES user(id) ON DELETE SET NULL" },
+  { table: "koitecc_associates", column: "approved_at", definition: "TEXT" },
+  { table: "koitecc_associates", column: "approved_by_user_id", definition: "TEXT REFERENCES user(id) ON DELETE SET NULL" },
   // Databases created before auth have an organizations table with no owner column. SQLite cannot
   // add a NOT NULL foreign-key column to an existing table, so legacy rows keep NULL here; no user
   // can own them, and every tenant query filters by user_id, so they are simply unreachable.

@@ -93,6 +93,29 @@ test("upgrading the pre-staff auth schema defaults existing users to client and 
   } finally { client.close(); }
 });
 
+test("legacy staff bindings require approval after migration and explicit approvals survive reruns", async () => {
+  const { ensureSchema } = await import("@/db/migrate");
+  const client = createClient({ url: `file:${path.join(temporaryDirectory, "legacy-staff.db")}` });
+  try {
+    await client.execute(`CREATE TABLE koitecc_associates (
+      id TEXT PRIMARY KEY, user_id TEXT, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE,
+      title TEXT NOT NULL, active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL
+    )`);
+    await client.execute("INSERT INTO koitecc_associates VALUES ('legacy', 'staff', 'Staff', 'staff@example.test', 'Advisor', 1, '2026-01-01')");
+    await ensureSchema(client);
+    const profile = (await client.execute("SELECT * FROM koitecc_associates WHERE id = 'legacy'")).rows[0];
+    expect(profile.user_id).toBe("staff");
+    expect(profile.approved_at).toBeNull();
+    expect(profile.approved_by_user_id).toBeNull();
+    await client.execute("INSERT INTO user (id, name, email, role) VALUES ('admin', 'Admin', 'admin@example.test', 'admin')");
+    await client.execute("UPDATE koitecc_associates SET approved_at = '2026-11-20', approved_by_user_id = 'admin' WHERE id = 'legacy'");
+    await ensureSchema(client);
+    const approved = (await client.execute("SELECT * FROM koitecc_associates WHERE id = 'legacy'")).rows[0];
+    expect(approved.approved_at).toBe("2026-11-20");
+    expect(approved.approved_by_user_id).toBe("admin");
+  } finally { client.close(); }
+});
+
 afterAll(async () => {
   const { closeDb } = await import("@/db/client");
   await closeDb();

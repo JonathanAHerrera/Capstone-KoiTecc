@@ -1,8 +1,9 @@
-import { and, desc, eq, inArray } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, ne, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { getDb, nowIsoTimestamp } from "@/db/client";
 import {
   associateUpdates,
+  auditLog,
   evidenceFiles,
   reviews,
   incidents,
@@ -22,6 +23,59 @@ import { getSessionUser } from "@/lib/session";
 import { deriveStatusFromSubmission } from "@/lib/submissions";
 
 export type KoiTeccAssociate = typeof koiteccAssociates.$inferSelect;
+
+export class AssociateApprovalRequiredError extends Error {
+  constructor() {
+    super("Administrator approval is required before you can access an associate workspace.");
+    this.name = "AssociateApprovalRequiredError";
+  }
+}
+
+export async function listKoiTeccAssociateAccounts() {
+  await requireKoiTeccAdmin();
+  return (await getDb()).select({
+    associateId: koiteccAssociates.id, userId: user.id, name: user.name,
+    email: user.email, emailVerified: user.emailVerified, createdAt: user.createdAt,
+  }).from(koiteccAssociates).innerJoin(user, sql`lower(${user.email}) = lower(${koiteccAssociates.email})`)
+    .where(and(eq(koiteccAssociates.active, true), ne(user.role, "admin")));
+}
+
+export async function approveKoiTeccAssociateAccount(associateId: string, userId: string): Promise<void> {
+  const administrator = await requireKoiTeccAdmin();
+  const db = await getDb();
+  await db.transaction(async (tx) => {
+    const [associate] = await tx.select().from(koiteccAssociates)
+      .where(and(eq(koiteccAssociates.id, associateId), eq(koiteccAssociates.active, true))).limit(1);
+    if (!associate) throw new Error("Associate not found.");
+    const [account] = await tx.select().from(user).where(eq(user.id, userId)).limit(1);
+    if (!account || account.email.toLowerCase() !== associate.email.toLowerCase()) throw new Error("The account does not match this employee.");
+    if (account.role === "admin") throw new Error("An administrator account cannot be converted to an associate.");
+    if (associate.userId && associate.userId !== userId && associate.approvedAt && associate.approvedByUserId) throw new Error("Another account is already approved for this employee.");
+    if (associate.userId === userId && associate.approvedAt && associate.approvedByUserId && account.role === "associate") return;
+    const timestamp = nowIsoTimestamp();
+    await tx.update(koiteccAssociates).set({ userId, approvedAt: timestamp, approvedByUserId: administrator.id }).where(eq(koiteccAssociates.id, associateId));
+    await tx.update(user).set({ role: "associate" }).where(eq(user.id, userId));
+    await tx.insert(auditLog).values({ id: nanoid(), actorUserId: administrator.id, action: "associate_access_approved", targetType: "associate", targetId: associateId, metadata: JSON.stringify({ userId }), createdAt: timestamp });
+  });
+}
+
+export async function revokeKoiTeccAssociateAccount(associateId: string): Promise<void> {
+  const administrator = await requireKoiTeccAdmin();
+  const db = await getDb();
+  await db.transaction(async (tx) => {
+    const [associate] = await tx.select().from(koiteccAssociates).where(eq(koiteccAssociates.id, associateId)).limit(1);
+    if (!associate) throw new Error("Associate not found.");
+    await tx.update(koiteccAssociates).set({ userId: null, approvedAt: null, approvedByUserId: null }).where(eq(koiteccAssociates.id, associateId));
+    if (associate.userId) {
+      const remaining = await tx.select({ id: koiteccAssociates.id }).from(koiteccAssociates).where(and(
+        eq(koiteccAssociates.userId, associate.userId), eq(koiteccAssociates.active, true),
+        isNotNull(koiteccAssociates.approvedAt), isNotNull(koiteccAssociates.approvedByUserId),
+      )).limit(1);
+      if (!remaining.length) await tx.update(user).set({ role: "client" }).where(and(eq(user.id, associate.userId), eq(user.role, "associate")));
+    }
+    await tx.insert(auditLog).values({ id: nanoid(), actorUserId: administrator.id, action: "associate_access_revoked", targetType: "associate", targetId: associateId, metadata: JSON.stringify({ userId: associate.userId }), createdAt: nowIsoTimestamp() });
+  });
+}
 
 export type KoiTeccOrganization = OrganizationRow & {
   ownerName: string | null;
@@ -132,20 +186,10 @@ export async function linkKoiTeccAssociateForCurrentUser(): Promise<KoiTeccAssoc
   if (!associate) {
     throw new Error("No active KoiTecc associate record matches this account.");
   }
-  if (associate.userId && associate.userId !== sessionUser.id) {
-    throw new Error("This associate record is already linked to another account.");
-  }
-
-  await db
-    .update(koiteccAssociates)
-    .set({ userId: sessionUser.id })
-    .where(eq(koiteccAssociates.id, associate.id));
-  await db
-    .update(user)
-    .set({ role: "associate" })
-    .where(eq(user.id, sessionUser.id));
-
-  return { ...associate, userId: sessionUser.id };
+  // An email match identifies a pending signup only; it never grants a role.
+  // Legacy auto-linked records also need explicit approval after migration.
+  if (associate.userId !== sessionUser.id || !associate.approvedAt || !associate.approvedByUserId) throw new AssociateApprovalRequiredError();
+  return requireKoiTeccWorkspaceAccess(associate.id);
 }
 
 async function requireKoiTeccWorkspaceAccess(
@@ -170,29 +214,18 @@ async function requireKoiTeccWorkspaceAccess(
   if (staffUser?.role === "admin") return associate;
   if (
     staffUser?.role !== "associate" ||
-    (associate.userId !== staffUser.id && associate.email.toLowerCase() !== staffUser.email.toLowerCase())
+    associate.userId !== staffUser.id
   ) {
     throw new Error("Associate workspace access is required.");
   }
+  if (!associate.approvedAt || !associate.approvedByUserId) throw new AssociateApprovalRequiredError();
   return associate;
 }
 
 export async function getAssociateWorkspaceForCurrentUser(): Promise<KoiTeccAssociate> {
   const sessionUser = await getSessionUser();
   if (!sessionUser) throw new Error("Not authenticated.");
-  const db = await getDb();
-  const [associate] = await db
-    .select()
-    .from(koiteccAssociates)
-    .where(
-      and(
-        eq(koiteccAssociates.active, true),
-        eq(koiteccAssociates.email, sessionUser.email),
-      ),
-    )
-    .limit(1);
-  if (!associate) throw new Error("No active associate profile is linked to this account.");
-  return requireKoiTeccWorkspaceAccess(associate.id);
+  return linkKoiTeccAssociateForCurrentUser();
 }
 
 export async function listKoiTeccAssociates(): Promise<KoiTeccAssociate[]> {

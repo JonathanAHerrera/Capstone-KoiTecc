@@ -12,7 +12,30 @@ import {
   deleteKoiTeccOrganization,
   createKoiTeccAssociate,
   deleteKoiTeccAssociate,
+  approveKoiTeccAssociateAccount,
+  revokeKoiTeccAssociateAccount,
 } from "@/lib/koitecc";
+
+const AccountApprovalSchema = z.object({
+  associateId: z.string().trim().min(1).max(128),
+  userId: z.string().trim().min(1).max(128),
+  confirmIdentity: z.literal("on"),
+});
+
+export async function approveKoiTeccAssociateAccountAction(formData: FormData): Promise<void> {
+  const parsed = AccountApprovalSchema.safeParse({ associateId: formData.get("associateId"), userId: formData.get("userId"), confirmIdentity: formData.get("confirmIdentity") });
+  if (!parsed.success) throw new Error("Select an employee account and confirm you have verified their identity.");
+  await approveKoiTeccAssociateAccount(parsed.data.associateId, parsed.data.userId);
+  revalidatePath("/koitecc", "layout");
+  redirect("/koitecc/employees?employee=approved");
+}
+
+export async function revokeKoiTeccAssociateAccountAction(formData: FormData): Promise<void> {
+  const associateId = z.string().trim().min(1).max(128).parse(formData.get("associateId"));
+  await revokeKoiTeccAssociateAccount(associateId);
+  revalidatePath("/koitecc", "layout");
+  redirect("/koitecc/employees?employee=revoked");
+}
 
 export async function seedKoiTeccDemoDataAction(): Promise<void> {
   await seedKoiTeccDemoData();
