@@ -6,7 +6,7 @@ import { useState } from "react";
 import { AuthTextField } from "@/components/auth/auth-text-field";
 import { BigButton } from "@/components/ui/big-button";
 
-export function ForgotPasswordForm() {
+export function ForgotPasswordForm({ backHref = "/sign-in" }: { backHref?: string }) {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -86,7 +86,7 @@ export function ForgotPasswordForm() {
       </form>
 
       <p className="mt-auto text-center text-sm text-text-secondary">
-        <Link href="/sign-in" className="font-medium text-primary-text underline-offset-4 hover:underline">
+        <Link href={backHref} className="font-medium text-primary-text underline-offset-4 hover:underline">
           Back to sign in
         </Link>
       </p>

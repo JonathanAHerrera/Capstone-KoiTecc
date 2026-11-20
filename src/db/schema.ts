@@ -47,6 +47,7 @@ export const organizations = sqliteTable(
 
 export const koiteccAssociates = sqliteTable("koitecc_associates", {
   id: text("id").primaryKey(),
+  userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
   name: text("name").notNull(),
   email: text("email").notNull().unique(),
   title: text("title").notNull(),

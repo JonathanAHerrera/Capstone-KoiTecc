@@ -106,6 +106,7 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
     ON organizations (user_id)`,
   `CREATE TABLE IF NOT EXISTS koitecc_associates (
     id TEXT PRIMARY KEY,
+    user_id TEXT REFERENCES user(id) ON DELETE SET NULL,
     name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     title TEXT NOT NULL,
@@ -118,6 +119,8 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
     associate_id TEXT NOT NULL REFERENCES koitecc_associates(id) ON DELETE CASCADE,
     created_at TEXT NOT NULL
   )`,
+  `CREATE INDEX IF NOT EXISTS koitecc_associates_user_idx
+    ON koitecc_associates (user_id)`,
   `CREATE UNIQUE INDEX IF NOT EXISTS organization_staff_assignment_unique
     ON organization_staff_assignments (organization_id, associate_id)`,
   `CREATE INDEX IF NOT EXISTS organization_staff_assignments_org_idx
@@ -307,6 +310,7 @@ const CREATE_TABLE_STATEMENTS: readonly string[] = [
 // tables, so each one is back-filled with ALTER TABLE when absent.
 const ADDED_COLUMNS: readonly { table: string; column: string; definition: string }[] = [
   { table: "user", column: "role", definition: "TEXT NOT NULL DEFAULT 'client'" },
+  { table: "koitecc_associates", column: "user_id", definition: "TEXT REFERENCES user(id) ON DELETE SET NULL" },
   // Databases created before auth have an organizations table with no owner column. SQLite cannot
   // add a NOT NULL foreign-key column to an existing table, so legacy rows keep NULL here; no user
   // can own them, and every tenant query filters by user_id, so they are simply unreachable.

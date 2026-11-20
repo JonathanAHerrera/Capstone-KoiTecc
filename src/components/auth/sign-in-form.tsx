@@ -13,9 +13,13 @@ type SignInStep = "credentials" | "two-factor";
 export function SignInForm({
   redirectTo,
   audience = "your readiness workspace",
+  forgotPasswordHref = "/forgot-password",
+  signUpHref,
 }: {
   redirectTo: string;
   audience?: string;
+  forgotPasswordHref?: string;
+  signUpHref?: string;
 }) {
   const router = useRouter();
   const [step, setStep] = useState<SignInStep>("credentials");
@@ -172,10 +176,18 @@ export function SignInForm({
       </form>
 
       <p className="text-center text-sm text-text-secondary">
-        <Link href="/forgot-password" className="font-medium text-primary-text underline-offset-4 hover:underline">
+        <Link href={forgotPasswordHref} className="font-medium text-primary-text underline-offset-4 hover:underline">
           Forgot your password?
         </Link>
       </p>
+      {signUpHref ? (
+        <p className="text-center text-sm text-text-secondary">
+          Need administrator access?{" "}
+          <Link href={signUpHref} className="font-medium text-primary-text underline-offset-4 hover:underline">
+            Create a KoiTecc account
+          </Link>
+        </p>
+      ) : null}
 
       {audience === "your readiness workspace" ? (
         <p className="mt-auto text-center text-sm text-text-secondary">

@@ -10,8 +10,23 @@ import { NextResponse, type NextRequest } from "next/server";
 // of session state — the free outside scan (/scan page + /api/scan) is a no-login lead magnet, and
 // "/" is the public value landing; both must stay reachable without a session (and the home page
 // itself redirects a signed-in user onward, so "/" is intentionally not in AUTH_PATHS).
-const AUTH_PATHS = ["/sign-in", "/sign-up", "/koitecc/sign-in"];
-const PUBLIC_PATHS = [...AUTH_PATHS, "/", "/scan", "/api/scan"];
+const AUTH_PATHS = [
+  "/sign-in",
+  "/sign-up",
+  "/koitecc/sign-in",
+  "/koitecc/associate/sign-up",
+  "/koitecc/associate/sign-in",
+  "/koitecc/associate/forgot-password",
+];
+const PUBLIC_PATHS = [
+  ...AUTH_PATHS,
+  "/koitecc/sign-up",
+  "/koitecc/associate/sign-up",
+  "/koitecc/associate/setup",
+  "/",
+  "/scan",
+  "/api/scan",
+];
 
 function matchesPath(pathname: string, paths: string[]): boolean {
   return paths.some((path) => pathname === path || pathname.startsWith(`${path}/`));

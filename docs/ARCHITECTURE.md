@@ -15,7 +15,7 @@ All builder agents code against THIS document. If you must deviate, update this 
 - Uploads: stored on disk at `data/uploads/<fileId>.<ext>`; served by `GET /api/files/[fileId]`.
 - AI review: `@anthropic-ai/sdk`, model `claude-opus-5-5` (override `CMMC_REVIEWER_MODEL`). When `ANTHROPIC_API_KEY` is unset the reviewer returns a deterministic MOCK verdict so the whole app works end-to-end without spending money.
 - Package manager: pnpm. Scripts: `pnpm dev`, `pnpm build`, `pnpm lint`, `pnpm typecheck` (`tsc --noEmit`), `pnpm test` / `pnpm test:watch` (Vitest; config in `vitest.config.ts`, `vite-tsconfig-paths` resolves the `@/` alias, tests are `src/**/*.test.ts(x)`).
-- Better Auth provides email/password sessions. Each client account owns exactly one organization; KoiTecc administrator accounts can view all organizations through the protected `/koitecc` workspace. Associate records are seeded in `koitecc_associates` and assigned through `organization_staff_assignments`; associates do not have a staff sign-in flow yet.
+- Better Auth provides email/password sessions. Each client account owns exactly one organization; KoiTecc administrator accounts can view all organizations through the protected `/koitecc` workspace. Associate records are seeded in `koitecc_associates`, linked to Better Auth users by `user_id`, and assigned through `organization_staff_assignments`. Associates sign in at `/koitecc/associate/sign-in` and are redirected to their own assigned-company workspace.
 
 ## Static practice catalog
 `src/data/cmmc-practices.json` (produced by research) — array of `Practice`:
@@ -66,11 +66,40 @@ reviews: id (pk), submissionId (fk), verdict (text "accepted" | "needs_work"), c
 ```
 Derived practice status (never stored): `not_started` (no submission) → `in_progress` (draft) → `under_review` (submitted|reviewing) → `accepted` | `needs_work`.
 
+## KoiTecc workspaces
+
+The KoiTecc area is a staff-facing application surface and is separate from normal client onboarding.
+
+### Administrator bootstrap
+
+- `/koitecc/sign-up` creates a normal Better Auth account and then directs the user to `/koitecc/setup`.
+- `/koitecc/setup` displays `pnpm koitecc:setup -- <account-email>`.
+- `scripts/setup-koitecc.ts` is run by someone with trusted remote-terminal/database access. It promotes the named existing user to role `admin`; it does not create an administrator password or public staff registration.
+- `/koitecc/sign-in` authenticates a promoted administrator. `/koitecc` is protected by both Better Auth session checks and `requireKoiTeccAdmin()`.
+
+### Administrator and employee management
+
+- `/koitecc` lists organizations, active associates, assignments, and organization deletion controls.
+- `/koitecc/employees` lists active associates and their assigned organizations. It supports creating and deleting associate records but does not assign organizations.
+- Organization assignment and removal remain organization-level operations on `/koitecc`.
+- `seedKoiTeccDemoData()` adds repeatable, clearly labeled demo organizations and associates using fixed IDs. Repeated seeding reuses those records and does not clear or rewrite existing assignments.
+- Organization deletion is admin-only and removes organization staff assignments and organization child records. Employee deletion removes the associate and all of that associate's organization assignments.
+
+### Associate signup and workspace
+
+- Administrators generate `/koitecc/associate/sign-up?email=<associate-email>` from Employee Management.
+- The employee creates a Better Auth account at that route using the invited email. `/koitecc/associate/setup` matches the active signed-in user against `koitecc_associates.email`, links `user_id`, and sets the user role to `associate`.
+- If the link is opened while signed in to another account, the UI requires sign-out or opening the link in another browser/incognito window instead of linking the wrong account.
+- `/koitecc/associate/sign-in` signs associates in. `/koitecc/associate` redirects to `/koitecc/associates/[associateId]`.
+- The associate detail route is restricted to the linked associate or an administrator. It lists only organizations assigned through `organization_staff_assignments`.
+
+Local development uses `data/app.db`; separate clones and machines do not share organizations or staff records. Deployment must use one persistent database shared by all application instances.
+
 ## Server modules
 - `src/db/client.ts` — singleton drizzle client; calls `ensureSchema()` once. `getDb()` is async (see Stack).
 - `src/lib/practice-types.ts` — `Practice`, `EvidenceKind`, `DerivedPracticeStatus`, `PracticeFamily`, `CmmcLevel`, `CANONICAL_FAMILY_ORDER`, `FAMILY_NAMES`, `EVIDENCE_KINDS`.
 - `src/lib/org.ts` — `getOrganization()`, `requireOrganization()` (throws if none), `createOrganization(input)` (validates with `CreateOrganizationInputSchema`; if an org already exists it updates that row in place instead of inserting a second one, preserving the one-client-account/one-org invariant).
-- `src/lib/koitecc.ts` — `requireKoiTeccAdmin()`, `listKoiTeccOrganizations()`, `listKoiTeccAssociates()`, `assignKoiTeccAssociate()`, `removeKoiTeccAssociate()`, `listAssociateWorkspaceOrganizations()`, and `createAssociateUpdate()` for the administrator-only portfolio and associate workspace. The associate detail route is `/koitecc/associates/[associateId]`; it currently requires administrator access because associate sign-in remains deferred. `scripts/setup-koitecc.ts` promotes an existing user and seeds demo associates without creating public staff registration.
+- `src/lib/koitecc.ts` — administrator, employee, organization, and associate-workspace operations. It includes access checks, organization/associate listing, organization and employee deletion, demo seeding, assignment management, associate signup linking, workspace detail derivation, updates, and concern resolution.
 - `src/lib/submissions.ts` — `getOrCreateDraftSubmission(practiceId)`, `getSubmissionWithEvidence(practiceId)` → `{ submission, evidenceFiles, latestReview } | null`, `getSubmissionWithEvidenceById(submissionId)`, `getSubmissionById(submissionId)`, `getSubmissionForPractice(practiceId)`, `listPracticeStatuses()` → `Record<practiceId, DerivedPracticeStatus>` (every catalog practice present; missing → `not_started`), `saveSubmissionNote(practiceId, note)`, `markSubmitted(submissionId)`, `markSubmissionStatus(submissionId, status)`, `deriveStatusFromSubmission(submission | null)` (pure).
 - `src/lib/reviews.ts` — review-row helpers shared by submissions and the reviewer: `ReviewRecord` (JSON columns parsed into typed arrays), `getLatestReviewForSubmission(submissionId)`, `listReviewsForSubmission(submissionId)`, `insertReview(input)`.
 - `src/lib/evidence.ts` — `storeEvidenceFile(submissionId, kind, file: File)` (DEVIATION: takes `kind` as the 2nd arg because the row needs it; validates kind ∈ practice.evidenceTypes, size ≤ 25 MB, allowed MIME; throws `EvidenceValidationError` with `statusCode`), `deleteEvidenceFile(id)` → boolean, `readEvidenceFile(id)` → `{ file, absolutePath } | null` (caller streams or reads), `readEvidenceFileBytes(file)`, `getEvidenceFile(id)`, `listEvidenceFilesForSubmission(submissionId)`, `isEvidenceKind(value)`, `MAX_EVIDENCE_FILE_BYTES`. `width`/`height` are stored as null for MVP (no image decoder dependency).

@@ -25,6 +25,12 @@ export function ValueLanding() {
         >
           Sign in
         </Link>
+        <Link
+          href="/koitecc/sign-in"
+          className="focus-outline inline-flex h-11 items-center rounded-full border-2 border-accent bg-surface px-3 text-sm font-semibold text-primary-text shadow-float hover:bg-accent/10"
+        >
+          Admin sign in
+        </Link>
       </header>
 
       <section className="flex flex-col gap-4">

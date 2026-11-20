@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Bell, CircleAlert, FileText, Users } from "lucide-react";
 import { createAssociateUpdateAction } from "@/app/koitecc/actions";
+import { ConcernDialog } from "@/components/koitecc/concern-dialog";
 import {
   getKoiTeccAssociate,
   listAssociateWorkspaceOrganizations,
@@ -159,6 +160,114 @@ export default async function AssociateWorkspacePage({
                   </div>
                 </div>
 
+                <section className="mt-6 grid gap-4 border-t border-border-subtle pt-5 lg:grid-cols-2">
+                  <div className="rounded-card border border-accent/30 bg-accent/5 p-4">
+                    <p className="caption text-accent">Current position</p>
+                    {organization.currentPractice && organization.currentFamily ? (
+                      <>
+                        <h4 className="mt-2 text-base font-semibold text-ink">
+                          {organization.currentFamily.code} · {organization.currentFamily.name}
+                        </h4>
+                        <p className="mt-1 text-sm font-medium text-primary-text">
+                          Next requirement: {organization.currentPractice.title}
+                        </p>
+                        <p className="mt-2 text-sm text-text-secondary">
+                          This is the first requirement in the organization&apos;s ordered path that is not
+                          accepted. The client is currently working in this section or needs follow-up here.
+                        </p>
+                        <span className="mt-3 inline-flex rounded-full border border-accent/40 bg-surface px-3 py-1 text-xs font-semibold capitalize text-accent">
+                          {statusLabel(organization.currentPractice.status)}
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <h4 className="mt-2 text-base font-semibold text-ink">All requirements accepted</h4>
+                        <p className="mt-1 text-sm text-text-secondary">
+                          This organization has reached the end of its currently selected CMMC path.
+                        </p>
+                      </>
+                    )}
+                  </div>
+                  <div className="rounded-card border border-border bg-surface-alt p-4">
+                    <p className="caption text-muted">Progress interpretation</p>
+                    <p className="mt-2 text-sm text-text-secondary">
+                      {organization.progress.accepted} of {organization.progress.total} requirements are accepted.
+                      There are {organization.progress.needsWork} needing work, {organization.progress.underReview} under
+                      review, {organization.progress.inProgress} in progress, and {organization.progress.notStarted} not started.
+                    </p>
+                    <p className="mt-2 text-sm text-text-secondary">
+                      The current section is determined by the first non-accepted requirement in the catalog order,
+                      not simply by the most recently edited submission.
+                    </p>
+                  </div>
+                </section>
+
+                <section className="mt-6 border-t border-border-subtle pt-5">
+                  <div className="flex items-center justify-between gap-3">
+                    <div>
+                      <h4 className="font-semibold text-ink">Requirement-by-requirement progress</h4>
+                      <p className="mt-1 text-sm text-text-secondary">
+                        Completed practices are listed individually, followed by the requirements still requiring client action.
+                      </p>
+                    </div>
+                    <span className="status-chip shrink-0 border border-border bg-surface-alt text-text-secondary">
+                      {organization.families.length} sections
+                    </span>
+                  </div>
+                  <div className="mt-4 flex flex-col gap-3">
+                    {organization.families.map((family) => (
+                      <details key={family.code} className="rounded-card border border-border-subtle bg-surface-alt" open={family.code === organization.currentFamily?.code}>
+                        <summary className="flex min-h-12 cursor-pointer list-none items-center gap-3 px-4 py-3">
+                          <span className="flex-1">
+                            <span className="block text-sm font-semibold text-ink">{family.code} · {family.name}</span>
+                            <span className="caption mt-0.5 block text-muted">
+                              {family.completedCount} of {family.totalCount} accepted
+                            </span>
+                          </span>
+                          <span className="h-2 w-24 overflow-hidden rounded-full bg-border sm:w-36">
+                            <span
+                              className="block h-full rounded-full bg-success"
+                              style={{ width: `${family.totalCount === 0 ? 0 : (family.completedCount / family.totalCount) * 100}%` }}
+                            />
+                          </span>
+                        </summary>
+                        <div className="border-t border-border-subtle px-4 py-3">
+                          {family.completedPractices.length > 0 ? (
+                            <div>
+                              <p className="caption font-semibold text-success-ink">Completed practices</p>
+                              <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+                                {family.completedPractices.map((practice) => (
+                                  <li key={practice.id} className="rounded-card border border-success/30 bg-success/10 px-3 py-2">
+                                    <p className="text-sm font-medium text-ink">{practice.title}</p>
+                                    <p className="caption mt-0.5 text-success-ink">{practice.id} · Accepted</p>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ) : null}
+                          {family.remainingPractices.length > 0 ? (
+                            <div className={family.completedPractices.length > 0 ? "mt-4" : ""}>
+                              <p className="caption font-semibold text-warning-ink">Remaining or awaiting follow-up</p>
+                              <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+                                {family.remainingPractices.map((practice) => (
+                                  <li key={practice.id} className="rounded-card border border-warning/30 bg-warning/10 px-3 py-2">
+                                    <p className="text-sm font-medium text-ink">{practice.title}</p>
+                                    <p className="caption mt-0.5 capitalize text-warning-ink">
+                                      {practice.id} · {statusLabel(practice.status)}
+                                    </p>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-success-ink">Every practice in this section is accepted.</p>
+                          )}
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                </section>
+
                 <div className="mt-6 grid gap-5 border-t border-border-subtle pt-5 lg:grid-cols-2">
                   <section>
                     <div className="flex items-center gap-2">
@@ -189,9 +298,18 @@ export default async function AssociateWorkspacePage({
                       <ul className="mt-3 flex flex-col gap-2">
                         {organization.concerns.slice(0, 5).map((concern) => (
                           <li key={`${concern.kind}-${concern.id}`} className="rounded-card border border-warning/40 bg-warning/10 p-3">
-                            <p className="text-sm font-medium capitalize text-ink">{concern.title}</p>
-                            <p className="mt-1 text-sm text-text-secondary">{concern.detail}</p>
-                            <p className="caption mt-2 text-muted">{statusLabel(concern.status)} · {formatDate(concern.createdAt)}</p>
+                            <div className="flex items-center gap-3">
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm font-medium capitalize text-ink">{concern.title}</p>
+                                <p className="mt-1 text-sm text-text-secondary">{concern.detail}</p>
+                                <p className="caption mt-2 text-muted">{statusLabel(concern.status)} · {formatDate(concern.createdAt)}</p>
+                              </div>
+                              <ConcernDialog
+                                associateId={associate.id}
+                                concern={concern}
+                                organizationName={organization.name}
+                              />
+                            </div>
                           </li>
                         ))}
                       </ul>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
@@ -288,6 +289,12 @@ export function OnboardingFlow({ levelEstimates, hasExistingPath, initialAnswers
           )}
         </motion.div>
       </AnimatePresence>
+      <p className="mt-4 text-center text-sm text-text-secondary">
+        Are you a KoiTecc administrator?{" "}
+        <Link href="/koitecc/sign-up" className="font-medium text-primary-text underline-offset-4 hover:underline">
+          Set up the administrator workspace
+        </Link>
+      </p>
     </OnboardingScreenFrame>
   );
 }

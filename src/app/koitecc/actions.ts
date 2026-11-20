@@ -7,7 +7,56 @@ import {
   assignKoiTeccAssociate,
   createAssociateUpdate,
   removeKoiTeccAssociate,
+  resolveAssociateConcern,
+  seedKoiTeccDemoData,
+  deleteKoiTeccOrganization,
+  createKoiTeccAssociate,
+  deleteKoiTeccAssociate,
 } from "@/lib/koitecc";
+
+export async function seedKoiTeccDemoDataAction(): Promise<void> {
+  await seedKoiTeccDemoData();
+  revalidatePath("/koitecc");
+  redirect("/koitecc?demo=loaded");
+}
+
+export async function deleteKoiTeccOrganizationAction(formData: FormData): Promise<void> {
+  const organizationId = formData.get("organizationId");
+  if (typeof organizationId !== "string" || organizationId.trim().length === 0) {
+    throw new Error("Choose an organization to delete.");
+  }
+  await deleteKoiTeccOrganization(organizationId);
+  revalidatePath("/koitecc");
+  redirect("/koitecc?organization=deleted");
+}
+
+export async function createKoiTeccAssociateAction(formData: FormData): Promise<void> {
+  const name = formData.get("name");
+  const email = formData.get("email");
+  const title = formData.get("title");
+  if (
+    typeof name !== "string" ||
+    typeof email !== "string" ||
+    typeof title !== "string"
+  ) {
+    throw new Error("Enter the employee name, email, and title.");
+  }
+  await createKoiTeccAssociate(name, email, title);
+  revalidatePath("/koitecc");
+  revalidatePath("/koitecc/employees");
+  redirect("/koitecc/employees?employee=added");
+}
+
+export async function deleteKoiTeccAssociateAction(formData: FormData): Promise<void> {
+  const associateId = formData.get("associateId");
+  if (typeof associateId !== "string" || associateId.trim().length === 0) {
+    throw new Error("Choose an employee to delete.");
+  }
+  await deleteKoiTeccAssociate(associateId);
+  revalidatePath("/koitecc");
+  revalidatePath("/koitecc/employees");
+  redirect("/koitecc/employees?employee=deleted");
+}
 
 const AssignmentInputSchema = z.object({
   organizationId: z.string().trim().min(1),
@@ -59,4 +108,27 @@ export async function createAssociateUpdateAction(formData: FormData): Promise<v
   );
   revalidatePath(`/koitecc/associates/${parsed.data.associateId}`);
   redirect(`/koitecc/associates/${parsed.data.associateId}?update=success`);
+}
+
+const ResolveConcernInputSchema = AssignmentInputSchema.extend({
+  concernId: z.string().trim().min(1),
+  concernKind: z.enum(["reviewer_task", "incident"]),
+});
+
+export async function resolveAssociateConcernAction(formData: FormData): Promise<void> {
+  const parsed = ResolveConcernInputSchema.safeParse({
+    associateId: formData.get("associateId"),
+    organizationId: formData.get("organizationId"),
+    concernId: formData.get("concernId"),
+    concernKind: formData.get("concernKind"),
+  });
+  if (!parsed.success) throw new Error("Could not identify this concern.");
+
+  await resolveAssociateConcern(
+    parsed.data.associateId,
+    parsed.data.organizationId,
+    parsed.data.concernId,
+    parsed.data.concernKind,
+  );
+  revalidatePath(`/koitecc/associates/${parsed.data.associateId}`);
 }

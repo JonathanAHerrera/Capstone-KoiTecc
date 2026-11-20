@@ -43,11 +43,44 @@ Set `ANTHROPIC_API_KEY` in `.env.local` and restart. The reviewer and scanner us
 - **SB 2610 program** — tiers the expected security program by headcount and builds an evidence binder dossier (`/sb2610`).
 - **Standards & Policy Radar** — a relevance-scored feed of standards/policy updates for the org's profile (`/radar`).
 - **Reviewer task inbox** — durable in-app records of help requests from the scam checker and incident flows (`/reviewer-tasks`).
-- **KoiTecc administrator workspace** — separate staff sign-in (`/koitecc/sign-in`), organization portfolio, and associate assignment (`/koitecc`). Run `pnpm koitecc:setup -- your-account@example.com` after creating an account to promote that account and seed demo associates. No public KoiTecc staff sign-up is provided.
-- **Associate workspace** — administrator-accessible assigned-company detail view (`/koitecc/associates/[associateId]`) with requirement progress, client notes, open concerns, and persisted announcements/updates.
+- **KoiTecc workspaces** — a separate administrator and associate staff area for managing partner organizations. See **KoiTecc administration workflows** below.
 - **Tamper-evident ledger** — a hash-chained audit ledger records evidence, verdicts, incidents, and help requests.
 
 Auth: email/password via Better Auth (`/sign-in`, `/sign-up`); each account owns one organization and all reads are tenant-scoped.
+
+## KoiTecc administration workflows
+
+The KoiTecc side is intentionally separate from the normal organization/client onboarding flow.
+
+### Administrator setup
+
+1. Create a normal account at `/koitecc/sign-up`.
+2. From the remote project terminal, run `pnpm koitecc:setup -- your-account@example.com`.
+3. Return to the setup page and select **Check administrator access**.
+4. The account is redirected to `/koitecc`.
+
+This terminal command is a privileged bootstrap operation. It must be run by someone who has trusted access to the deployed database.
+
+### Administrator workspace
+
+The administrator workspace at `/koitecc` lists registered organizations, active associates, and associate assignments. It supports:
+
+- Opening an associate's assigned-company workspace.
+- Assigning and removing associates for individual organizations.
+- Deleting organizations with confirmation.
+- Opening **Employee Management** at `/koitecc/employees`.
+
+Use **First time using KoiTecc?** to load a repeatable set of two clearly labeled example organizations and two example associates. Existing organizations and assignments are preserved. The example records can be deleted through the existing organization and employee management controls.
+
+### Associate employees
+
+Administrators add associates at `/koitecc/employees` with a name, email, and title. The Employee Management table lists active associates, their assigned organizations, and delete controls. Assignments remain a separate organization-level action.
+
+Each employee row also provides a signup link:
+
+`/koitecc/associate/sign-up?email=employee@example.com`
+
+The employee opens that link, creates an account with that email, and is redirected to `/koitecc/associate`. The signup server verifies that an active associate record matches the email, links it to the new user, and sets the user role to `associate`. If the employee opens the link while signed in to another account, the page offers sign-out or alternate-browser options rather than linking the wrong account.
 
 ## Scripts
 
@@ -58,6 +91,7 @@ Auth: email/password via Better Auth (`/sign-in`, `/sign-up`); each account owns
 | `pnpm typecheck` / `pnpm lint` | Type and lint checks |
 | `pnpm test` / `pnpm test:watch` | Vitest suite |
 | `pnpm smoke` | End-to-end data-layer smoke test against a temp DB |
+| `pnpm koitecc:setup -- account@example.com` | Promote an existing account to KoiTecc administrator and run trusted database bootstrap |
 
 Storage: SQLite via `@libsql/client` + `drizzle-orm` at `data/app.db`, encrypted uploads at `data/uploads/` (override with `CMMC_DB_PATH`, `CMMC_UPLOADS_DIR`). Delete `data/` to reset.
 
