@@ -72,6 +72,27 @@ describe("ensureSchema against a pre-auth database", () => {
   });
 });
 
+test("upgrading the pre-staff auth schema defaults existing users to client and preserves data on repeat migrations", async () => {
+  const { ensureSchema } = await import("@/db/migrate");
+  const client = createClient({ url: `file:${path.join(temporaryDirectory, "pre-staff.db")}` });
+  try {
+    await client.execute(`CREATE TABLE user (
+      id TEXT PRIMARY KEY, name TEXT NOT NULL, email TEXT NOT NULL UNIQUE,
+      email_verified INTEGER NOT NULL DEFAULT 0, image TEXT,
+      created_at INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL DEFAULT 0,
+      two_factor_enabled INTEGER DEFAULT 0
+    )`);
+    await client.execute("INSERT INTO user (id, name, email) VALUES ('existing-owner', 'Existing Owner', 'existing@example.test')");
+    await ensureSchema(client);
+    expect((await client.execute("SELECT role FROM user WHERE id = 'existing-owner'")).rows[0].role).toBe("client");
+    await client.execute("UPDATE user SET role = 'admin' WHERE id = 'existing-owner'");
+    await ensureSchema(client);
+    expect((await client.execute("SELECT role FROM user WHERE id = 'existing-owner'")).rows[0].role).toBe("admin");
+    const tables = (await client.execute("SELECT name FROM sqlite_master WHERE type = 'table'")).rows.map((row) => row.name);
+    expect(tables).toEqual(expect.arrayContaining(["koitecc_associates", "organization_staff_assignments", "associate_updates"]));
+  } finally { client.close(); }
+});
+
 afterAll(async () => {
   const { closeDb } = await import("@/db/client");
   await closeDb();

@@ -110,7 +110,7 @@ export async function getOrCreateDraftSubmissionAction(
 }
 
 // Clears the organization, submissions, evidence, reviews, and radar data so the next
-// visit starts at onboarding again. Testing aid for the single-org MVP.
+// visit starts at onboarding again, scoped to the signed-in owner's organization.
 export async function resetAllDataAction(): Promise<ActionResult<null>> {
   try {
     await resetAllData();

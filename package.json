@@ -10,6 +10,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:report": "tsx scripts/test-status-report.ts",
+    "gmail:setup": "tsx scripts/setup-gmail.ts",
+    "gmail:send": "tsx scripts/send-gmail-report.ts",
     "smoke": "tsx scripts/smoke.ts",
     "koitecc:setup": "tsx scripts/setup-koitecc.ts"
   },
@@ -38,6 +41,7 @@
     "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "16.3.8",
+    "google-auth-library": "^11.3.4",
     "tailwindcss": "^4",
     "tsx": "^4.23.15",
     "typescript": "^5",

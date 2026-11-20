@@ -1,7 +1,10 @@
 import { mkdtempSync } from "node:fs";
 import { createHmac, randomBytes } from "node:crypto";
 import path from "node:path";
-import { afterAll, beforeAll, expect, test } from "vitest";
+import { afterAll, beforeAll, expect, test, vi } from "vitest";
+import { eq } from "drizzle-orm";
+import { user, verification } from "@/db/auth-schema";
+import { requireKoiTeccAdmin } from "@/lib/koitecc";
 import { interviewWithMock } from "@/ai/interview-mock";
 import { closeDb, getDb } from "@/db/client";
 import { createOrganization as createOrganizationForSession } from "@/lib/org";
@@ -53,6 +56,9 @@ function useSession(response: Response) {
 beforeAll(async () => {
   await getDb();
   ({ auth } = await import("@/lib/auth"));
+  // Better Auth disables origin checks automatically in test mode. Exercise the
+  // production boundary explicitly so redirect/CSRF tests cannot silently bypass it.
+  (await auth.$context).skipOriginCheck = false;
 });
 afterAll(async () => { await closeDb(); });
 
@@ -97,6 +103,56 @@ test("real sign-up/sign-in sessions protect the agent across tenants and after l
   request.headers = new Headers({ cookie: ownerCookie });
   expect(await getLatestInterviewSnapshot("AC")).toEqual(saved);
 }, 30_000);
+
+test("public signup ignores a requested admin role and cannot enter the staff workspace", async () => {
+  const response = await post("sign-up/email", { name: "Untrusted Client", email: "untrusted@cedar-machining.example", password, role: "admin" });
+  expect(response.status).toBe(200);
+  useSession(response);
+  const actor = await getSessionUser();
+  expect(actor).toBeTruthy();
+  const [stored] = await (await getDb()).select().from(user).where(eq(user.id, actor!.id));
+  expect(stored.role).toBe("client");
+  await expect(authenticated(requireKoiTeccAdmin)).rejects.toThrow("administrator access");
+});
+
+test("password recovery is private, single-use, and changes only the target account", async () => {
+  const email = "recovery@cedar-machining.example";
+  expect((await post("sign-up/email", { name: "Recovery Owner", email, password })).status).toBe(200);
+  const log = vi.spyOn(console, "info").mockImplementation(() => {});
+  try {
+    const requestReset = (address: string) => post("request-password-reset", { email: address, redirectTo: "http://localhost:3000/reset-password" });
+    const existing = await requestReset(email);
+    const nonexistent = await requestReset("no-account@cedar-machining.example");
+    expect(existing.status).toBe(200);
+    expect(nonexistent.status).toBe(200);
+    expect(await existing.json()).toEqual(await nonexistent.json());
+    expect(log).toHaveBeenCalledTimes(1);
+    const [record] = await (await getDb()).select().from(verification);
+    expect(record.identifier).toMatch(/^reset-password:/);
+    const token = record.identifier.replace("reset-password:", "");
+    expect((await post("reset-password", { token: "made-up-token", newPassword: password })).status).toBe(400);
+    expect((await post("reset-password", { token, newPassword: "short" })).status).toBe(400);
+    const newPassword = `New-${randomBytes(18).toString("hex")}`;
+    expect((await post("reset-password", { token, newPassword })).status).toBe(200);
+    expect((await post("reset-password", { token, newPassword: password })).status).toBe(400);
+    expect((await post("sign-in/email", { email, password })).status).toBe(401);
+    expect((await post("sign-in/email", { email, password: newPassword })).status).toBe(200);
+    expect((await post("sign-in/email", { email: "elena@cedar-machining.example", password })).status).toBe(200);
+  } finally { log.mockRestore(); }
+});
+
+test("expired recovery tokens are rejected and external reset redirects are blocked", async () => {
+  const log = vi.spyOn(console, "info").mockImplementation(() => {});
+  try {
+    const email = "recovery@cedar-machining.example";
+    expect((await post("request-password-reset", { email, redirectTo: "https://attacker.example/reset" })).status).toBe(403);
+    expect(log).not.toHaveBeenCalled();
+    expect((await post("request-password-reset", { email, redirectTo: "http://localhost:3000/reset-password" })).status).toBe(200);
+    const [record] = await (await getDb()).select().from(verification);
+    await (await getDb()).update(verification).set({ expiresAt: new Date(Date.now() - 60_000) }).where(eq(verification.id, record.id));
+    expect((await post("reset-password", { token: record.identifier.replace("reset-password:", ""), newPassword: password })).status).toBe(400);
+  } finally { log.mockRestore(); }
+});
 
 function totp(secret: string): string {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";

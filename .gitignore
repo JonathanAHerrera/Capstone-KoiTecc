@@ -40,5 +40,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 /data/
+# Local cloud/OAuth credentials, including downloads accidentally saved at the root.
+/.aws/
+/gmail-client.json
+/gmail-token.dpapi
+/credentials.json
+/token.json
+client_secret_*.json
 .env
 .env.local

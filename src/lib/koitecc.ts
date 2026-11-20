@@ -17,6 +17,7 @@ import { getPracticesForLevel, getPractice } from "@/lib/practices";
 import type { DerivedPracticeStatus } from "@/lib/practice-types";
 import { requireOrganization } from "@/lib/org";
 import { getSessionUser } from "@/lib/session";
+import { deriveStatusFromSubmission } from "@/lib/submissions";
 
 export type KoiTeccAssociate = typeof koiteccAssociates.$inferSelect;
 
@@ -219,13 +220,7 @@ export async function listAssociateWorkspaceOrganizations(
       const statuses: Record<string, DerivedPracticeStatus> = {};
       for (const practice of practices) {
         const submission = submissionRows.find((row) => row.practiceId === practice.id);
-        statuses[practice.id] = submission
-          ? submission.status === "draft"
-            ? "in_progress"
-            : submission.status === "submitted" || submission.status === "reviewing"
-              ? "under_review"
-              : submission.status
-          : "not_started";
+        statuses[practice.id] = deriveStatusFromSubmission(submission);
       }
 
       const notes = submissionRows
@@ -236,7 +231,7 @@ export async function listAssociateWorkspaceOrganizations(
             practiceId: submission.practiceId,
             practiceTitle: practice?.title ?? submission.practiceId,
             note: submission.note ?? "",
-            status: statuses[submission.practiceId],
+            status: deriveStatusFromSubmission(submission),
             updatedAt: submission.updatedAt,
           };
         });
